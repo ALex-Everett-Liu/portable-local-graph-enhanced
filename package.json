@@ -6,7 +6,7 @@
   "author": "",
   "scripts": {
     "start": "electron .",
-    "dev": "nodemon main.js",
+    "dev": "nodemon --exec \"electron .\"",
     "build": "electron-builder"
   },
   "build": {
