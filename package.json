@@ -1,0 +1,37 @@
+{
+  "name": "graph-app",
+  "version": "1.0.0",
+  "description": "Independent Graph Visualization Desktop App",
+  "main": "main.js",
+  "author": "",
+  "scripts": {
+    "start": "electron .",
+    "dev": "nodemon main.js",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.graphapp.id",
+    "productName": "Graph App",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite": "^4.1.2",
+    "sqlite3": "^5.1.4",
+    "uuid": "^9.0.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "nodemon": "^2.0.20"
+  }
+}
+

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.db
+*.log
+.DS_Store
+*.exe
+*.blockmap
+win-unpacked/
+mac/
+linux-unpacked/
+
