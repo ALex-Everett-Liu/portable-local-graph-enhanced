@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-11-20
+
+### Changed
+- Refactored `app.js` (1,133 lines) into modular architecture with 12 focused modules
+- Split application into separate concerns: state management, services, managers, and UI components
+- Migrated to ES6 modules (`import`/`export`) for better code organization
+- Updated `index.html` to use ES6 module syntax (`type="module"`)
+
+### Added
+- `state/appState.js` - Centralized global state management
+- `services/databaseService.js` - All database API operations
+- `managers/changeTracker.js` - Change tracking logic
+- `managers/viewStateManager.js` - View state saving functionality
+- `managers/modeManager.js` - Application mode switching
+- `ui/eventListeners.js` - Event listener setup
+- `ui/contextMenu.js` - Context menu handling
+- `ui/saveDiscardUI.js` - Save/discard functionality
+- `ui/dialogs/loadDialog.js` - Load database dialog with pagination
+- `ui/dialogs/saveAsDialog.js` - Save As dialog functionality
+- Refactored `app.js` to be a thin orchestrator (~58 lines)
+
+### Technical Details
+- Improved separation of concerns with single responsibility principle
+- Eliminated circular dependencies between modules
+- Better maintainability and testability with modular structure
+- Easier to scale and add new features without bloating existing files
+- All existing functionality preserved with improved code organization
+
 ## [0.1.4] - 2025-11-20
 
 ### Added
