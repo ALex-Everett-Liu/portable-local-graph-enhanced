@@ -25,6 +25,10 @@
             </div>
             
             <div class="toolbar-section">
+                <button id="load-btn" class="tool-btn" title="Load Database">
+                    <span class="icon">📂</span>
+                    <span>Load</span>
+                </button>
                 <button id="clear-btn" class="tool-btn danger" title="Clear All">
                     <span class="icon">🗑️</span>
                 </button>
@@ -91,6 +95,22 @@
                             <button id="node-ok">OK</button>
                             <button id="node-cancel">Cancel</button>
                             <button id="node-delete" class="danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="load-dialog" class="dialog hidden">
+                    <div class="dialog-content">
+                        <h3>Load Database</h3>
+                        <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
+                            Select a database file to load. Current unsaved changes will be lost.
+                        </p>
+                        <div id="database-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 8px;">
+                            <p style="text-align: center; color: #999;">Loading databases...</p>
+                        </div>
+                        <div class="dialog-buttons">
+                            <button id="load-ok">Load</button>
+                            <button id="load-cancel">Cancel</button>
                         </div>
                     </div>
                 </div>

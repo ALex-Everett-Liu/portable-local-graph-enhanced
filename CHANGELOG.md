@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.2] - 2025-01-XX
+## [0.1.2] - 2025-11-20
 
 ### Added
 - Canvas panning (dragging) in select mode - click and drag empty space to pan the canvas
@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - View state saved to `graph_metadata` table with single-row constraint (id = 1)
 - Debounced view state saving prevents excessive database writes during pan/zoom operations
 
-## [0.1.1] - 2025-01-XX
+## [0.1.1] - 2025-11-20
 
 ### Added
 - Modern UI redesign matching legacy code structure

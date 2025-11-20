@@ -1,15 +1,63 @@
 const sqlite3 = require("sqlite3").verbose();
 const { open } = require("sqlite");
 const path = require("path");
+const fs = require("fs").promises;
 
-// Create a database connection for the graph plugin
+// Singleton database manager instance
+let dbManager = null;
+
+class DatabaseManager {
+  constructor(dbPath = null) {
+    if (!dbPath) {
+      dbPath = path.join(__dirname, "graph.db");
+    }
+    this.dbPath = dbPath;
+    this.db = null;
+  }
+
+  async getDb() {
+    if (!this.db) {
+      this.db = await open({
+        filename: this.dbPath,
+        driver: sqlite3.Database,
+      });
+    }
+    return this.db;
+  }
+
+  async close() {
+    if (this.db) {
+      await this.db.close();
+      this.db = null;
+    }
+  }
+
+  async openFile(filePath) {
+    // Close current connection
+    await this.close();
+    
+    // Update path and open new connection
+    this.dbPath = filePath;
+    return await this.getDb();
+  }
+
+  getCurrentPath() {
+    return this.dbPath;
+  }
+}
+
+// Get or create singleton database manager
+function getDatabaseManager() {
+  if (!dbManager) {
+    dbManager = new DatabaseManager();
+  }
+  return dbManager;
+}
+
+// Create a database connection for the graph plugin (backward compatibility)
 async function getGraphDb() {
-  const dbPath = path.join(__dirname, "graph.db");
-
-  return open({
-    filename: dbPath,
-    driver: sqlite3.Database,
-  });
+  const manager = getDatabaseManager();
+  return await manager.getDb();
 }
 
 // Initialize graph database
@@ -155,9 +203,41 @@ async function populateGraphSequenceIds() {
   }
 }
 
+/**
+ * List all database files in the src directory
+ */
+async function listDatabaseFiles() {
+  const srcDir = __dirname;
+  const files = await fs.readdir(srcDir);
+  
+  const dbFiles = files
+    .filter(file => file.endsWith('.db'))
+    .map(file => ({
+      name: file,
+      path: path.join(srcDir, file),
+      fullPath: path.join(srcDir, file)
+    }));
+  
+  return dbFiles;
+}
+
+/**
+ * Switch to a different database file
+ */
+async function switchDatabase(filePath) {
+  const manager = getDatabaseManager();
+  await manager.openFile(filePath);
+  // Re-initialize the database schema
+  await initializeGraphDatabase();
+  return manager;
+}
+
 module.exports = {
   getGraphDb,
+  getDatabaseManager,
   initializeGraphDatabase,
   populateGraphSequenceIds,
+  listDatabaseFiles,
+  switchDatabase,
 };
 

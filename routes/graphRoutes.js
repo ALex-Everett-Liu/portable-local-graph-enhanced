@@ -46,5 +46,11 @@ router.post("/import", graphController.importGraphData);
 // Save view state (scale and offset)
 router.post("/view-state", graphController.saveViewState);
 
+// List available database files
+router.get("/databases", graphController.listDatabases);
+
+// Switch to a different database file
+router.post("/switch-database", graphController.switchDatabase);
+
 module.exports = router;
 

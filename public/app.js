@@ -81,6 +81,9 @@ function setupEventListeners() {
     document.getElementById('node-mode').addEventListener('click', () => setMode('node'));
     document.getElementById('edge-mode').addEventListener('click', () => setMode('edge'));
 
+    // Load button
+    document.getElementById('load-btn').addEventListener('click', () => showLoadDialog());
+
     // Action buttons
     document.getElementById('clear-btn').addEventListener('click', async () => {
         if (confirm('Clear all nodes and edges? This will delete all data from the database.')) {
@@ -159,6 +162,16 @@ function setupDialogs() {
     const reverseEdgeBtn = document.getElementById('reverse-edge-btn');
     if (reverseEdgeBtn) {
         reverseEdgeBtn.addEventListener('click', handleReverseEdgeDirection);
+    }
+
+    // Load dialog handlers
+    const loadOk = document.getElementById('load-ok');
+    if (loadOk) {
+        loadOk.addEventListener('click', handleLoadOK);
+    }
+    const loadCancel = document.getElementById('load-cancel');
+    if (loadCancel) {
+        loadCancel.addEventListener('click', handleLoadCancel);
     }
 }
 
@@ -723,6 +736,139 @@ function discardAllChanges() {
                 discardButton.disabled = false;
             }, 2000);
         }
+    }
+}
+
+// ========== Load Database Functions ==========
+
+let selectedDatabasePath = null;
+
+async function showLoadDialog() {
+    // Check for unsaved changes
+    const hasUnsavedChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
+    
+    if (hasUnsavedChanges) {
+        const proceed = confirm(
+            `You have ${unsavedChanges.nodes.size + unsavedChanges.edges.size} unsaved change(s). ` +
+            `Loading a new database will discard these changes. Continue?`
+        );
+        if (!proceed) {
+            return;
+        }
+    }
+
+    const dialog = document.getElementById('load-dialog');
+    const databaseList = document.getElementById('database-list');
+    
+    if (!dialog || !databaseList) return;
+    
+    // Show dialog
+    dialog.classList.remove('hidden');
+    
+    // Load database list
+    databaseList.innerHTML = '<p style="text-align: center; color: #999;">Loading databases...</p>';
+    selectedDatabasePath = null;
+    
+    try {
+        const response = await fetch(`${API_BASE}/databases`);
+        if (!response.ok) throw new Error('Failed to fetch databases');
+        
+        const data = await response.json();
+        const databases = data.databases || [];
+        
+        if (databases.length === 0) {
+            databaseList.innerHTML = '<p style="text-align: center; color: #999;">No database files found.</p>';
+            return;
+        }
+        
+        // Render database list
+        databaseList.innerHTML = '';
+        databases.forEach(db => {
+            const item = document.createElement('div');
+            item.className = 'database-item';
+            item.style.cssText = 'padding: 8px; margin: 4px 0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background: #f9f9f9;';
+            item.innerHTML = `<strong>${db.name}</strong><br><small style="color: #666;">${db.path}</small>`;
+            
+            item.addEventListener('click', () => {
+                // Remove previous selection
+                document.querySelectorAll('.database-item').forEach(el => {
+                    el.style.background = '#f9f9f9';
+                    el.style.borderColor = '#ddd';
+                });
+                
+                // Highlight selected
+                item.style.background = '#e3f2fd';
+                item.style.borderColor = '#2196f3';
+                selectedDatabasePath = db.path;
+            });
+            
+            item.addEventListener('mouseenter', () => {
+                if (selectedDatabasePath !== db.path) {
+                    item.style.background = '#f0f0f0';
+                }
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                if (selectedDatabasePath !== db.path) {
+                    item.style.background = '#f9f9f9';
+                }
+            });
+            
+            databaseList.appendChild(item);
+        });
+    } catch (error) {
+        console.error('Error loading databases:', error);
+        databaseList.innerHTML = `<p style="text-align: center; color: #f44336;">Error: ${error.message}</p>`;
+    }
+}
+
+function handleLoadOK() {
+    if (!selectedDatabasePath) {
+        alert('Please select a database file to load.');
+        return;
+    }
+    
+    loadDatabase(selectedDatabasePath);
+    hideLoadDialog();
+}
+
+function handleLoadCancel() {
+    hideLoadDialog();
+}
+
+function hideLoadDialog() {
+    const dialog = document.getElementById('load-dialog');
+    if (dialog) {
+        dialog.classList.add('hidden');
+    }
+    selectedDatabasePath = null;
+}
+
+async function loadDatabase(filePath) {
+    try {
+        // Switch database on server
+        const switchResponse = await fetch(`${API_BASE}/switch-database`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filePath })
+        });
+        
+        if (!switchResponse.ok) {
+            throw new Error('Failed to switch database');
+        }
+        
+        // Clear unsaved changes
+        unsavedChanges.nodes.clear();
+        unsavedChanges.edges.clear();
+        updateSaveButtonVisibility();
+        
+        // Reload graph data from new database
+        await loadGraphFromDb();
+        
+        console.log(`Loaded database from: ${filePath}`);
+    } catch (error) {
+        console.error('Error loading database:', error);
+        alert(`Failed to load database: ${error.message}`);
     }
 }
 

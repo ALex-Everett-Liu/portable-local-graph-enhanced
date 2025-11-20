@@ -1,5 +1,6 @@
 // graphController.js - HTTP logic for Graph Plugin operations
 const graphService = require("../services/graphService");
+const { listDatabaseFiles, switchDatabase } = require("../src/graph-database");
 
 /**
  * Get all graph data
@@ -144,6 +145,40 @@ exports.saveViewState = async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error("Error saving view state:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * List available database files
+ * GET /api/plugins/graph/databases
+ */
+exports.listDatabases = async (req, res) => {
+  try {
+    const databases = await listDatabaseFiles();
+    res.json({ databases });
+  } catch (error) {
+    console.error("Error listing databases:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Switch to a different database file
+ * POST /api/plugins/graph/switch-database
+ */
+exports.switchDatabase = async (req, res) => {
+  try {
+    const { filePath } = req.body;
+    if (!filePath) {
+      return res.status(400).json({ error: "filePath is required" });
+    }
+    
+    await switchDatabase(filePath);
+    
+    res.json({ success: true, message: "Database switched successfully" });
+  } catch (error) {
+    console.error("Error switching database:", error);
     res.status(500).json({ error: error.message });
   }
 };
