@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-11-20
+
+### Added
+- Configurable database directory - database files now stored in `data/` directory by default
+- Environment variable support (`GRAPH_DB_DIR`) for custom database directory location
+- Automatic database directory creation if it doesn't exist
+- Pagination for Load Database dialog - shows 10 databases per page when there are many files
+- Pagination controls with Previous/Next buttons and page information
+- Improved database file management with better organization
+
+### Changed
+- Database files moved from `src/` directory to `data/` directory at project root
+- Load Database dialog now supports pagination for better UX with many database files
+- Updated `.gitignore` to exclude `data/` directory
+- Updated documentation to reflect new database directory structure
+
+### Technical Details
+- Database directory defaults to `data/` but can be configured via `GRAPH_DB_DIR` environment variable
+- Pagination shows 10 items per page (configurable via `ITEMS_PER_PAGE` constant)
+- Database directory is automatically created on first use
+- Pagination controls only appear when there are more than 10 database files
+- Selection state persists across pagination pages
+
 ## [0.1.3] - 2025-11-20
 
 ### Added
@@ -24,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical Details
 - DatabaseManager class handles connection lifecycle and file switching
-- Database files are stored in `src/` directory
+- Database files are stored in `data/` directory (configurable via `GRAPH_DB_DIR` environment variable)
 - Save As creates new database files with full graph data (nodes, edges, view state)
 - File validation prevents overwriting existing databases and ensures `.db` extension
 - Database switching automatically reinitializes schema in new database files

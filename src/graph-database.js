@@ -3,13 +3,37 @@ const { open } = require("sqlite");
 const path = require("path");
 const fs = require("fs").promises;
 
+// Get database directory - can be configured via environment variable
+function getDatabaseDirectory() {
+  // Check for environment variable first
+  if (process.env.GRAPH_DB_DIR) {
+    return process.env.GRAPH_DB_DIR;
+  }
+  // Default to data/ directory at project root
+  return path.join(process.cwd(), "data");
+}
+
+// Ensure database directory exists
+async function ensureDatabaseDirectory() {
+  const dbDir = getDatabaseDirectory();
+  try {
+    await fs.access(dbDir);
+  } catch {
+    await fs.mkdir(dbDir, { recursive: true });
+    console.log(`Created database directory: ${dbDir}`);
+  }
+  return dbDir;
+}
+
 // Singleton database manager instance
 let dbManager = null;
 
 class DatabaseManager {
   constructor(dbPath = null) {
     if (!dbPath) {
-      dbPath = path.join(__dirname, "graph.db");
+      // Use default database file in data directory
+      const dbDir = getDatabaseDirectory();
+      dbPath = path.join(dbDir, "graph.db");
     }
     this.dbPath = dbPath;
     this.db = null;
@@ -62,6 +86,8 @@ async function getGraphDb() {
 
 // Initialize graph database
 async function initializeGraphDatabase() {
+  // Ensure database directory exists
+  await ensureDatabaseDirectory();
   const db = await getGraphDb();
 
   // Create graph_nodes table
@@ -204,18 +230,18 @@ async function populateGraphSequenceIds() {
 }
 
 /**
- * List all database files in the src directory
+ * List all database files in the database directory
  */
 async function listDatabaseFiles() {
-  const srcDir = __dirname;
-  const files = await fs.readdir(srcDir);
+  const dbDir = await ensureDatabaseDirectory();
+  const files = await fs.readdir(dbDir);
   
   const dbFiles = files
     .filter(file => file.endsWith('.db'))
     .map(file => ({
       name: file,
-      path: path.join(srcDir, file),
-      fullPath: path.join(srcDir, file)
+      path: path.join(dbDir, file),
+      fullPath: path.join(dbDir, file)
     }));
   
   return dbFiles;
@@ -239,5 +265,7 @@ module.exports = {
   populateGraphSequenceIds,
   listDatabaseFiles,
   switchDatabase,
+  getDatabaseDirectory,
+  ensureDatabaseDirectory,
 };
 

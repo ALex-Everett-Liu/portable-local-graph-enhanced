@@ -196,6 +196,9 @@ function setupDialogs() {
             }
         });
     }
+
+    // Setup pagination listeners
+    setupPaginationListeners();
 }
 
 function setMode(mode) {
@@ -765,6 +768,9 @@ function discardAllChanges() {
 // ========== Load Database Functions ==========
 
 let selectedDatabasePath = null;
+let allDatabases = [];
+let currentPage = 1;
+const ITEMS_PER_PAGE = 10;
 
 async function showLoadDialog() {
     // Check for unsaved changes
@@ -782,66 +788,155 @@ async function showLoadDialog() {
 
     const dialog = document.getElementById('load-dialog');
     const databaseList = document.getElementById('database-list');
+    const pagination = document.getElementById('database-pagination');
     
-    if (!dialog || !databaseList) return;
+    if (!dialog || !databaseList || !pagination) return;
     
     // Show dialog
     dialog.classList.remove('hidden');
     
     // Load database list
     databaseList.innerHTML = '<p style="text-align: center; color: #999;">Loading databases...</p>';
+    pagination.style.display = 'none';
     selectedDatabasePath = null;
+    currentPage = 1;
     
     try {
         const response = await fetch(`${API_BASE}/databases`);
         if (!response.ok) throw new Error('Failed to fetch databases');
         
         const data = await response.json();
-        const databases = data.databases || [];
+        allDatabases = data.databases || [];
         
-        if (databases.length === 0) {
+        if (allDatabases.length === 0) {
             databaseList.innerHTML = '<p style="text-align: center; color: #999;">No database files found.</p>';
+            pagination.style.display = 'none';
             return;
         }
         
-        // Render database list
-        databaseList.innerHTML = '';
-        databases.forEach(db => {
-            const item = document.createElement('div');
-            item.className = 'database-item';
-            item.style.cssText = 'padding: 8px; margin: 4px 0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background: #f9f9f9;';
-            item.innerHTML = `<strong>${db.name}</strong><br><small style="color: #666;">${db.path}</small>`;
-            
-            item.addEventListener('click', () => {
-                // Remove previous selection
-                document.querySelectorAll('.database-item').forEach(el => {
-                    el.style.background = '#f9f9f9';
-                    el.style.borderColor = '#ddd';
-                });
-                
-                // Highlight selected
-                item.style.background = '#e3f2fd';
-                item.style.borderColor = '#2196f3';
-                selectedDatabasePath = db.path;
-            });
-            
-            item.addEventListener('mouseenter', () => {
-                if (selectedDatabasePath !== db.path) {
-                    item.style.background = '#f0f0f0';
-                }
-            });
-            
-            item.addEventListener('mouseleave', () => {
-                if (selectedDatabasePath !== db.path) {
-                    item.style.background = '#f9f9f9';
-                }
-            });
-            
-            databaseList.appendChild(item);
-        });
+        // Render first page
+        renderDatabasePage();
     } catch (error) {
         console.error('Error loading databases:', error);
         databaseList.innerHTML = `<p style="text-align: center; color: #f44336;">Error: ${error.message}</p>`;
+        pagination.style.display = 'none';
+    }
+}
+
+function renderDatabasePage() {
+    const databaseList = document.getElementById('database-list');
+    const pagination = document.getElementById('database-pagination');
+    const paginationInfo = document.getElementById('pagination-info');
+    const prevBtn = document.getElementById('pagination-prev');
+    const nextBtn = document.getElementById('pagination-next');
+    
+    if (!databaseList || !pagination || !paginationInfo || !prevBtn || !nextBtn) return;
+    
+    const totalPages = Math.ceil(allDatabases.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, allDatabases.length);
+    const pageDatabases = allDatabases.slice(startIndex, endIndex);
+    
+    // Render database list for current page
+    databaseList.innerHTML = '';
+    pageDatabases.forEach(db => {
+        const item = document.createElement('div');
+        item.className = 'database-item';
+        item.style.cssText = 'padding: 8px; margin: 4px 0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background: #f9f9f9;';
+        item.innerHTML = `<strong>${db.name}</strong><br><small style="color: #666;">${db.path}</small>`;
+        
+        // Check if this item is selected
+        if (selectedDatabasePath === db.path) {
+            item.style.background = '#e3f2fd';
+            item.style.borderColor = '#2196f3';
+        }
+        
+        item.addEventListener('click', () => {
+            // Remove previous selection
+            document.querySelectorAll('.database-item').forEach(el => {
+                el.style.background = '#f9f9f9';
+                el.style.borderColor = '#ddd';
+            });
+            
+            // Highlight selected
+            item.style.background = '#e3f2fd';
+            item.style.borderColor = '#2196f3';
+            selectedDatabasePath = db.path;
+        });
+        
+        item.addEventListener('mouseenter', () => {
+            if (selectedDatabasePath !== db.path) {
+                item.style.background = '#f0f0f0';
+            }
+        });
+        
+        item.addEventListener('mouseleave', () => {
+            if (selectedDatabasePath !== db.path) {
+                item.style.background = '#f9f9f9';
+            }
+        });
+        
+        databaseList.appendChild(item);
+    });
+    
+    // Update pagination controls
+    if (totalPages > 1) {
+        pagination.style.display = 'block';
+        paginationInfo.textContent = `Page ${currentPage} of ${totalPages} (${allDatabases.length} total)`;
+        
+        // Update prev button
+        prevBtn.disabled = currentPage === 1;
+        if (currentPage === 1) {
+            prevBtn.style.opacity = '0.5';
+            prevBtn.style.cursor = 'not-allowed';
+            prevBtn.style.background = '#f0f0f0';
+        } else {
+            prevBtn.style.opacity = '1';
+            prevBtn.style.cursor = 'pointer';
+            prevBtn.style.background = '#f9f9f9';
+            prevBtn.onmouseenter = () => { prevBtn.style.background = '#e9e9e9'; };
+            prevBtn.onmouseleave = () => { prevBtn.style.background = '#f9f9f9'; };
+        }
+        
+        // Update next button
+        nextBtn.disabled = currentPage === totalPages;
+        if (currentPage === totalPages) {
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.cursor = 'not-allowed';
+            nextBtn.style.background = '#f0f0f0';
+        } else {
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+            nextBtn.style.background = '#f9f9f9';
+            nextBtn.onmouseenter = () => { nextBtn.style.background = '#e9e9e9'; };
+            nextBtn.onmouseleave = () => { nextBtn.style.background = '#f9f9f9'; };
+        }
+    } else {
+        pagination.style.display = 'none';
+    }
+}
+
+function setupPaginationListeners() {
+    const prevBtn = document.getElementById('pagination-prev');
+    const nextBtn = document.getElementById('pagination-next');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderDatabasePage();
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(allDatabases.length / ITEMS_PER_PAGE);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderDatabasePage();
+            }
+        });
     }
 }
 
@@ -865,6 +960,8 @@ function hideLoadDialog() {
         dialog.classList.add('hidden');
     }
     selectedDatabasePath = null;
+    allDatabases = [];
+    currentPage = 1;
 }
 
 async function loadDatabase(filePath) {

@@ -48,6 +48,8 @@ graph-app/
 │   ├── index.html       # Main HTML file
 │   ├── app.js           # Application logic
 │   └── graph.js         # Graph visualization class
+├── data/                # Database files (created automatically)
+│   └── graph.db         # Main database file
 ├── src/                 # Backend source files
 │   └── graph-database.js # Database initialization
 ├── controllers/         # HTTP request handlers
@@ -80,10 +82,32 @@ graph-app/
 
 ## Database
 
-The app uses SQLite database (`src/graph.db`) to store:
-- Nodes: position, label, color, radius, full content
-- Edges: connections between nodes with weights
-- Sequence IDs for ordering
+The app uses SQLite database files stored in the `data/` directory (created automatically at project root). By default, the main database file is `data/graph.db`.
+
+### Database Directory Configuration
+
+- **Default location**: `data/` directory at project root
+- **Custom location**: Set `GRAPH_DB_DIR` environment variable to specify a custom directory
+  ```bash
+  # Example: Use custom directory
+  export GRAPH_DB_DIR=/path/to/custom/directory
+  npm start
+  ```
+
+### Database Files
+
+All database files (`.db`) are stored in the configured directory:
+- Main database: `graph.db`
+- Additional databases: Created via "Save As" functionality
+- Database files are automatically created if the directory doesn't exist
+
+### Database Schema
+
+The database stores:
+- Nodes: position, label, color, radius, full content, layers, categories
+- Edges: connections between nodes with weights and categories
+- View state: canvas scale and offset (pan/zoom state)
+- Sequence IDs: for maintaining creation order
 
 ## API Endpoints
 

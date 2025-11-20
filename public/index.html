@@ -112,6 +112,11 @@
                         <div id="database-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 8px;">
                             <p style="text-align: center; color: #999;">Loading databases...</p>
                         </div>
+                        <div id="database-pagination" style="display: none; margin-top: 8px; text-align: center; font-size: 12px;">
+                            <button id="pagination-prev" style="padding: 6px 16px; margin: 0 4px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; cursor: pointer; transition: all 0.2s;">← Prev</button>
+                            <span id="pagination-info" style="margin: 0 12px; color: #666; font-weight: 500;"></span>
+                            <button id="pagination-next" style="padding: 6px 16px; margin: 0 4px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; cursor: pointer; transition: all 0.2s;">Next →</button>
+                        </div>
                         <div class="dialog-buttons">
                             <button id="load-ok">Load</button>
                             <button id="load-cancel">Cancel</button>
@@ -128,7 +133,7 @@
                         <label>Database filename:</label>
                         <input type="text" id="save-as-filename" placeholder="e.g., my-graph.db" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px;">
                         <p style="font-size: 11px; color: #999; margin-top: 4px;">
-                            File will be saved in the src/ directory. Include .db extension.
+                            File will be saved in the data/ directory. Include .db extension.
                         </p>
                         <div class="dialog-buttons">
                             <button id="save-as-ok">Save</button>

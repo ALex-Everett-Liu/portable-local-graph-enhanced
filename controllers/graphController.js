@@ -207,17 +207,13 @@ exports.saveAs = async (req, res) => {
     // Export current graph data
     const graphData = await graphService.exportGraphData(req.graphDb);
 
-    // Create new database file path (same directory as graph-database.js)
+    // Create new database file path in the database directory
     const path = require("path");
-    const { listDatabaseFiles } = require("../src/graph-database");
-    const databases = await listDatabaseFiles();
+    const { getDatabaseDirectory, ensureDatabaseDirectory } = require("../src/graph-database");
     
-    // Get src directory from existing database files
-    const srcDir = databases.length > 0 
-      ? path.dirname(databases[0].path)
-      : path.join(__dirname, "..", "src");
-    
-    const newDbPath = path.join(srcDir, filename);
+    // Ensure database directory exists and get its path
+    const dbDir = await ensureDatabaseDirectory();
+    const newDbPath = path.join(dbDir, filename);
 
     // Check if file already exists
     const fs = require("fs").promises;
