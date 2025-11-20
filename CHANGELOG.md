@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-01-XX
+
+### Added
+- Canvas panning (dragging) in select mode - click and drag empty space to pan the canvas
+- Zoom support with mouse wheel - scroll to zoom in/out (0.1x to 5x range)
+- View state persistence - canvas scale and offset are saved and restored between sessions
+- `graph_metadata` database table for storing view state (scale, offset)
+- `/api/plugins/graph/view-state` endpoint for saving view state independently
+- Automatic view state saving with debouncing (saves after 500ms of inactivity)
+- Mouse coordinate transformation to account for scale and offset
+
+### Changed
+- Updated Graph class to use `scale` instead of `zoom` for consistency
+- Mouse coordinate calculations now account for canvas transformations
+- Rendering now applies scale and offset transformations before drawing
+- Graph export/import now includes scale and offset data
+
+### Technical Details
+- Canvas transformations applied via `ctx.translate()` and `ctx.scale()`
+- Panning state tracked with `isPanning` flag and `lastPanPoint` coordinates
+- View state saved to `graph_metadata` table with single-row constraint (id = 1)
+- Debounced view state saving prevents excessive database writes during pan/zoom operations
+
 ## [0.1.1] - 2025-01-XX
 
 ### Added

@@ -9,10 +9,19 @@ const { v4: uuidv4 } = require("uuid");
 async function getAllGraphData(graphDb) {
   const nodes = await graphDb.all("SELECT * FROM graph_nodes");
   const edges = await graphDb.all("SELECT * FROM graph_edges");
+  
+  // Load view state (scale and offset)
+  const metadataRow = await graphDb.get("SELECT * FROM graph_metadata WHERE id = 1");
+  const scale = metadataRow ? metadataRow.scale : 1;
+  const offset = metadataRow 
+    ? { x: metadataRow.offset_x, y: metadataRow.offset_y }
+    : { x: 0, y: 0 };
 
   return {
     nodes,
     edges,
+    scale,
+    offset,
     metadata: {
       totalNodes: nodes.length,
       totalEdges: edges.length,
@@ -191,15 +200,24 @@ async function clearAllData(graphDb) {
 /**
  * Import graph data (bulk insert)
  * @param {Object} graphDb - Database connection
- * @param {Object} importData - Import data (nodes, edges)
+ * @param {Object} importData - Import data (nodes, edges, scale, offset)
  * @returns {Promise<Object>} Import result with counts
  */
 async function importGraphData(graphDb, importData) {
-  const { nodes, edges } = importData;
+  const { nodes, edges, scale, offset } = importData;
 
   // Clear existing data
   await graphDb.run("DELETE FROM graph_edges");
   await graphDb.run("DELETE FROM graph_nodes");
+  
+  // Save view state (scale and offset)
+  const now = Date.now();
+  const viewScale = scale || 1;
+  const viewOffset = offset || { x: 0, y: 0 };
+  await graphDb.run(`
+    INSERT OR REPLACE INTO graph_metadata (id, scale, offset_x, offset_y, updated_at)
+    VALUES (1, ?, ?, ?, ?)
+  `, [viewScale, viewOffset.x, viewOffset.y, now]);
 
   // Get max sequence IDs for nodes and edges
   const maxNodeSequenceResult = await graphDb.get(
@@ -274,6 +292,24 @@ async function importGraphData(graphDb, importData) {
   };
 }
 
+/**
+ * Save view state (scale and offset) without clearing data
+ * @param {Object} graphDb - Database connection
+ * @param {Object} viewState - View state (scale, offset)
+ * @returns {Promise<void>}
+ */
+async function saveViewState(graphDb, viewState) {
+  const { scale, offset } = viewState;
+  const now = Date.now();
+  const viewScale = scale || 1;
+  const viewOffset = offset || { x: 0, y: 0 };
+  
+  await graphDb.run(`
+    INSERT OR REPLACE INTO graph_metadata (id, scale, offset_x, offset_y, updated_at)
+    VALUES (1, ?, ?, ?, ?)
+  `, [viewScale, viewOffset.x, viewOffset.y, now]);
+}
+
 module.exports = {
   getAllGraphData,
   createNode,
@@ -284,5 +320,6 @@ module.exports = {
   deleteEdge,
   clearAllData,
   importGraphData,
+  saveViewState,
 };
 

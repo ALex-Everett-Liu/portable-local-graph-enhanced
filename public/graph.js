@@ -8,8 +8,10 @@ class Graph {
         this.selectedEdge = null;
         this.isDragging = false;
         this.dragOffset = { x: 0, y: 0 };
-        this.zoom = 1;
+        this.scale = 1;
         this.offset = { x: 0, y: 0 };
+        this.isPanning = false;
+        this.lastPanPoint = { x: 0, y: 0 };
         
         // Callbacks for database persistence
         this.callbacks = callbacks;
@@ -39,6 +41,7 @@ class Graph {
         this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+        this.canvas.addEventListener('wheel', (e) => this.handleWheel(e));
         this.canvas.addEventListener('contextmenu', (e) => this.handleRightClick(e));
         
         // Add tooltip element
@@ -85,6 +88,14 @@ class Graph {
         }
         
         return edge;
+    }
+
+    getMousePos(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left - this.offset.x) / this.scale,
+            y: (e.clientY - rect.top - this.offset.y) / this.scale
+        };
     }
 
     getNodeAt(x, y) {
@@ -151,6 +162,11 @@ class Graph {
     render() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // Apply transformations for scale and offset
+        this.ctx.save();
+        this.ctx.translate(this.offset.x, this.offset.y);
+        this.ctx.scale(this.scale, this.scale);
+
         // Draw edges
         this.edges.forEach(edge => {
             const fromNode = this.nodes.find(n => n.id === edge.from);
@@ -164,6 +180,8 @@ class Graph {
         this.nodes.forEach(node => {
             this.drawNode(node);
         });
+
+        this.ctx.restore();
     }
 
     drawNode(node) {
@@ -203,37 +221,43 @@ class Graph {
     }
 
     handleMouseDown(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const node = this.getNodeAt(x, y);
+        if (e.button !== 0) return; // Only handle left mouse button
+        
+        const pos = this.getMousePos(e);
+        const node = this.getNodeAt(pos.x, pos.y);
 
         if (window.appMode === 'select') {
             if (node) {
                 this.selectedNode = node;
                 this.selectedEdge = null;
                 this.isDragging = true;
-                this.dragOffset.x = x - node.x;
-                this.dragOffset.y = y - node.y;
+                this.dragOffset.x = pos.x - node.x;
+                this.dragOffset.y = pos.y - node.y;
             } else {
-                const edge = this.getEdgeAt(x, y);
+                const edge = this.getEdgeAt(pos.x, pos.y);
                 if (edge) {
                     this.selectedEdge = edge;
                     this.selectedNode = null;
                 } else {
+                    // Clicked empty space - start panning
                     this.selectedNode = null;
                     this.selectedEdge = null;
+                    this.isPanning = true;
+                    this.lastPanPoint = { x: e.clientX, y: e.clientY };
                 }
             }
         } else if (window.appMode === 'node') {
-            this.addNode(x, y);
+            if (!node) {
+                this.addNode(pos.x, pos.y);
+            }
         } else if (window.appMode === 'edge') {
             if (node) {
                 if (!this.tempEdgeStart) {
                     this.tempEdgeStart = node;
                 } else {
-                    this.addEdge(this.tempEdgeStart, node);
+                    if (this.tempEdgeStart !== node) {
+                        this.addEdge(this.tempEdgeStart, node);
+                    }
                     this.tempEdgeStart = null;
                 }
             }
@@ -243,17 +267,24 @@ class Graph {
     }
 
     handleMouseMove(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const pos = this.getMousePos(e);
 
         if (this.isDragging && this.selectedNode) {
-            this.selectedNode.x = x - this.dragOffset.x;
-            this.selectedNode.y = y - this.dragOffset.y;
+            // Drag node
+            this.selectedNode.x = pos.x - this.dragOffset.x;
+            this.selectedNode.y = pos.y - this.dragOffset.y;
+            this.render();
+        } else if (this.isPanning) {
+            // Pan canvas
+            const dx = e.clientX - this.lastPanPoint.x;
+            const dy = e.clientY - this.lastPanPoint.y;
+            this.offset.x += dx;
+            this.offset.y += dy;
+            this.lastPanPoint = { x: e.clientX, y: e.clientY };
             this.render();
         } else {
             // Show tooltip for node under cursor
-            const node = this.getNodeAt(x, y);
+            const node = this.getNodeAt(pos.x, pos.y);
             if (node && node.fullContent) {
                 this.tooltip.textContent = node.fullContent;
                 this.tooltip.style.display = 'block';
@@ -273,16 +304,23 @@ class Graph {
             }
         }
         this.isDragging = false;
+        this.isPanning = false;
+    }
+
+    handleWheel(e) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        this.scale *= delta;
+        this.scale = Math.max(0.1, Math.min(5, this.scale));
+        this.render();
     }
 
     handleRightClick(e) {
         e.preventDefault();
-        const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const pos = this.getMousePos(e);
 
-        const node = this.getNodeAt(x, y);
-        const edge = this.getEdgeAt(x, y);
+        const node = this.getNodeAt(pos.x, pos.y);
+        const edge = this.getEdgeAt(pos.x, pos.y);
 
         if (node || edge) {
             this.selectedNode = node;
@@ -306,13 +344,17 @@ class Graph {
         this.edges = [];
         this.selectedNode = null;
         this.selectedEdge = null;
+        this.scale = 1;
+        this.offset = { x: 0, y: 0 };
         this.render();
     }
 
     exportData() {
         return {
             nodes: this.nodes,
-            edges: this.edges
+            edges: this.edges,
+            scale: this.scale,
+            offset: this.offset
         };
     }
 
@@ -321,6 +363,8 @@ class Graph {
         this.edges = data.edges || [];
         this.selectedNode = null;
         this.selectedEdge = null;
+        this.scale = data.scale || 1;
+        this.offset = data.offset || { x: 0, y: 0 };
         this.render();
         
         // skipCallbacks is used when loading from database to avoid circular saves

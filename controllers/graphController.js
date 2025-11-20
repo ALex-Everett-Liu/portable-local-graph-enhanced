@@ -134,3 +134,17 @@ exports.importGraphData = async (req, res) => {
   }
 };
 
+/**
+ * Save view state (scale and offset)
+ * POST /api/plugins/graph/view-state
+ */
+exports.saveViewState = async (req, res) => {
+  try {
+    await graphService.saveViewState(req.graphDb, req.body);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error saving view state:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+

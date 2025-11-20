@@ -44,6 +44,35 @@ function init() {
     
     // Initialize save/discard button visibility
     updateSaveButtonVisibility();
+    
+    // Monitor scale and offset changes and save them
+    setupViewStateSaving();
+}
+
+function setupViewStateSaving() {
+    if (!graph) return;
+    
+    // Save view state when scale or offset changes
+    // We'll intercept the render calls or use a proxy
+    // For now, we'll save on pan/zoom end
+    const originalRender = graph.render.bind(graph);
+    let lastScale = graph.scale;
+    let lastOffset = { ...graph.offset };
+    
+    graph.render = function() {
+        originalRender();
+        
+        // Check if scale or offset changed
+        const scaleChanged = Math.abs(graph.scale - lastScale) > 0.001;
+        const offsetChanged = Math.abs(graph.offset.x - lastOffset.x) > 0.1 || 
+                             Math.abs(graph.offset.y - lastOffset.y) > 0.1;
+        
+        if (scaleChanged || offsetChanged) {
+            lastScale = graph.scale;
+            lastOffset = { ...graph.offset };
+            debouncedSaveViewState();
+        }
+    };
 }
 
 function setupEventListeners() {
@@ -223,7 +252,9 @@ async function loadGraphFromDb() {
                     from: edge.from_node_id,
                     to: edge.to_node_id,
                     weight: edge.weight
-                }))
+                })),
+                scale: data.scale || 1,
+                offset: data.offset || { x: 0, y: 0 }
             };
             
             // Store original state (in graph format)
@@ -354,6 +385,36 @@ async function clearGraphInDb() {
     } catch (error) {
         console.error('Error clearing graph in database:', error);
     }
+}
+
+async function saveViewStateToDb() {
+    if (!graph) return;
+    
+    try {
+        const exportData = graph.exportData();
+        const response = await fetch(`${API_BASE}/view-state`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                scale: exportData.scale,
+                offset: exportData.offset
+            })
+        });
+        if (!response.ok) throw new Error('Failed to save view state');
+    } catch (error) {
+        console.error('Error saving view state to database:', error);
+    }
+}
+
+// Debounce function for view state saving
+let viewStateSaveTimeout = null;
+function debouncedSaveViewState() {
+    if (viewStateSaveTimeout) {
+        clearTimeout(viewStateSaveTimeout);
+    }
+    viewStateSaveTimeout = setTimeout(() => {
+        saveViewStateToDb();
+    }, 500); // Save after 500ms of no changes
 }
 
 // ========== Change Tracking Functions ==========
@@ -540,6 +601,9 @@ async function saveAllChanges() {
                 originalState.edges.delete(edgeId);
             }
         }
+
+        // Save view state (scale and offset)
+        await saveViewStateToDb();
 
         // Clear unsaved changes
         const savedCount = unsavedChanges.nodes.size + unsavedChanges.edges.size;

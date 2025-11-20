@@ -43,5 +43,8 @@ router.delete("/clear", graphController.clearAllData);
 // Import graph data (bulk insert)
 router.post("/import", graphController.importGraphData);
 
+// Save view state (scale and offset)
+router.post("/view-state", graphController.saveViewState);
+
 module.exports = router;
 

@@ -45,6 +45,17 @@ async function initializeGraphDatabase() {
     )
   `);
 
+  // Create graph_metadata table for storing view state (scale, offset)
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS graph_metadata (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      scale REAL DEFAULT 1.0,
+      offset_x REAL DEFAULT 0,
+      offset_y REAL DEFAULT 0,
+      updated_at INTEGER
+    )
+  `);
+
   // Create indexes for better performance
   await db.exec(`
     CREATE INDEX IF NOT EXISTS idx_graph_edges_from ON graph_edges(from_node_id);
