@@ -84,6 +84,9 @@ function setupEventListeners() {
     // Load button
     document.getElementById('load-btn').addEventListener('click', () => showLoadDialog());
 
+    // Save As button
+    document.getElementById('save-as-btn').addEventListener('click', () => showSaveAsDialog());
+
     // Action buttons
     document.getElementById('clear-btn').addEventListener('click', async () => {
         if (confirm('Clear all nodes and edges? This will delete all data from the database.')) {
@@ -172,6 +175,26 @@ function setupDialogs() {
     const loadCancel = document.getElementById('load-cancel');
     if (loadCancel) {
         loadCancel.addEventListener('click', handleLoadCancel);
+    }
+
+    // Save As dialog handlers
+    const saveAsOk = document.getElementById('save-as-ok');
+    if (saveAsOk) {
+        saveAsOk.addEventListener('click', handleSaveAsOK);
+    }
+    const saveAsCancel = document.getElementById('save-as-cancel');
+    if (saveAsCancel) {
+        saveAsCancel.addEventListener('click', handleSaveAsCancel);
+    }
+
+    // Allow Enter key to submit Save As dialog
+    const saveAsFilename = document.getElementById('save-as-filename');
+    if (saveAsFilename) {
+        saveAsFilename.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSaveAsOK();
+            }
+        });
     }
 }
 
@@ -869,6 +892,89 @@ async function loadDatabase(filePath) {
     } catch (error) {
         console.error('Error loading database:', error);
         alert(`Failed to load database: ${error.message}`);
+    }
+}
+
+// ========== Save As Functions ==========
+
+function showSaveAsDialog() {
+    const dialog = document.getElementById('save-as-dialog');
+    const filenameInput = document.getElementById('save-as-filename');
+    
+    if (!dialog || !filenameInput) return;
+    
+    // Clear previous input
+    filenameInput.value = '';
+    
+    // Show dialog
+    dialog.classList.remove('hidden');
+    
+    // Focus input
+    setTimeout(() => filenameInput.focus(), 100);
+}
+
+function handleSaveAsOK() {
+    const filenameInput = document.getElementById('save-as-filename');
+    if (!filenameInput) return;
+    
+    const filename = filenameInput.value.trim();
+    
+    if (!filename) {
+        alert('Please enter a filename.');
+        return;
+    }
+    
+    // Ensure .db extension
+    const finalFilename = filename.endsWith('.db') ? filename : `${filename}.db`;
+    
+    saveAsDatabase(finalFilename);
+    hideSaveAsDialog();
+}
+
+function handleSaveAsCancel() {
+    hideSaveAsDialog();
+}
+
+function hideSaveAsDialog() {
+    const dialog = document.getElementById('save-as-dialog');
+    if (dialog) {
+        dialog.classList.add('hidden');
+    }
+}
+
+async function saveAsDatabase(filename) {
+    try {
+        const response = await fetch(`${API_BASE}/save-as`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to save database');
+        }
+        
+        const result = await response.json();
+        
+        // Ask if user wants to switch to the new database
+        const switchToNew = confirm(
+            `Graph saved successfully to "${filename}".\n\n` +
+            `Would you like to switch to the new database file?`
+        );
+        
+        if (switchToNew) {
+            // Switch to new database
+            await loadDatabase(result.filePath);
+        } else {
+            // Just reload current database to refresh state
+            await loadGraphFromDb();
+        }
+        
+        console.log(`Saved graph to: ${filename}`);
+    } catch (error) {
+        console.error('Error saving database:', error);
+        alert(`Failed to save database: ${error.message}`);
     }
 }
 

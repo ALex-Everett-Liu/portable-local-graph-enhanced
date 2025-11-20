@@ -183,3 +183,67 @@ exports.switchDatabase = async (req, res) => {
   }
 };
 
+/**
+ * Save current graph to a new database file
+ * POST /api/plugins/graph/save-as
+ */
+exports.saveAs = async (req, res) => {
+  try {
+    const { filename } = req.body;
+    if (!filename) {
+      return res.status(400).json({ error: "filename is required" });
+    }
+
+    // Validate filename
+    if (!filename.endsWith('.db')) {
+      return res.status(400).json({ error: "Filename must end with .db" });
+    }
+
+    // Validate filename doesn't contain path separators
+    if (filename.includes('/') || filename.includes('\\')) {
+      return res.status(400).json({ error: "Filename cannot contain path separators" });
+    }
+
+    // Export current graph data
+    const graphData = await graphService.exportGraphData(req.graphDb);
+
+    // Create new database file path (same directory as graph-database.js)
+    const path = require("path");
+    const { listDatabaseFiles } = require("../src/graph-database");
+    const databases = await listDatabaseFiles();
+    
+    // Get src directory from existing database files
+    const srcDir = databases.length > 0 
+      ? path.dirname(databases[0].path)
+      : path.join(__dirname, "..", "src");
+    
+    const newDbPath = path.join(srcDir, filename);
+
+    // Check if file already exists
+    const fs = require("fs").promises;
+    try {
+      await fs.access(newDbPath);
+      return res.status(400).json({ error: "File already exists. Please choose a different name." });
+    } catch {
+      // File doesn't exist, proceed
+    }
+
+    // Switch to new database (this will create it)
+    await switchDatabase(newDbPath);
+
+    // Import graph data to new database
+    const newDb = await require("../src/graph-database").getGraphDb();
+    await graphService.importGraphData(newDb, graphData);
+
+    res.json({ 
+      success: true, 
+      message: "Graph saved to new database file",
+      filePath: newDbPath,
+      filename: filename
+    });
+  } catch (error) {
+    console.error("Error saving as:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+

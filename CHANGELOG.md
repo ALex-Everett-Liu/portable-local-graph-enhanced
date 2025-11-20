@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2025-11-20
+
+### Added
+- Load button to switch between different database files
+- Save As functionality to clone current workspace to a new database file
+- Database file selection dialog showing all available `.db` files in src directory
+- Database switching API endpoints (`GET /databases`, `POST /switch-database`)
+- Save As API endpoint (`POST /save-as`) for creating new database files
+- DatabaseManager class for managing database connections and switching
+- Warning dialog when loading database with unsaved changes
+- Option to switch to newly saved database after Save As operation
+
+### Changed
+- Refactored database module to support multiple database files
+- Database connection now managed through singleton DatabaseManager instance
+- Load operation now clears unsaved changes before switching databases
+
+### Technical Details
+- DatabaseManager class handles connection lifecycle and file switching
+- Database files are stored in `src/` directory
+- Save As creates new database files with full graph data (nodes, edges, view state)
+- File validation prevents overwriting existing databases and ensures `.db` extension
+- Database switching automatically reinitializes schema in new database files
+
 ## [0.1.2] - 2025-11-20
 
 ### Added

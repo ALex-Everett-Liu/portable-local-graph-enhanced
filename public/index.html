@@ -29,6 +29,10 @@
                     <span class="icon">📂</span>
                     <span>Load</span>
                 </button>
+                <button id="save-as-btn" class="tool-btn" title="Save As">
+                    <span class="icon">💾</span>
+                    <span>Save As</span>
+                </button>
                 <button id="clear-btn" class="tool-btn danger" title="Clear All">
                     <span class="icon">🗑️</span>
                 </button>
@@ -111,6 +115,24 @@
                         <div class="dialog-buttons">
                             <button id="load-ok">Load</button>
                             <button id="load-cancel">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="save-as-dialog" class="dialog hidden">
+                    <div class="dialog-content">
+                        <h3>Save As</h3>
+                        <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
+                            Save current workspace to a new database file.
+                        </p>
+                        <label>Database filename:</label>
+                        <input type="text" id="save-as-filename" placeholder="e.g., my-graph.db" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <p style="font-size: 11px; color: #999; margin-top: 4px;">
+                            File will be saved in the src/ directory. Include .db extension.
+                        </p>
+                        <div class="dialog-buttons">
+                            <button id="save-as-ok">Save</button>
+                            <button id="save-as-cancel">Cancel</button>
                         </div>
                     </div>
                 </div>

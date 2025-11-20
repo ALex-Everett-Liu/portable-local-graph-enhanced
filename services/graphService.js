@@ -310,6 +310,30 @@ async function saveViewState(graphDb, viewState) {
   `, [viewScale, viewOffset.x, viewOffset.y, now]);
 }
 
+/**
+ * Export current graph data (for cloning)
+ * @param {Object} graphDb - Database connection
+ * @returns {Promise<Object>} Graph data with nodes, edges, scale, offset
+ */
+async function exportGraphData(graphDb) {
+  const nodes = await graphDb.all("SELECT * FROM graph_nodes");
+  const edges = await graphDb.all("SELECT * FROM graph_edges");
+  
+  // Get view state
+  const metadataRow = await graphDb.get("SELECT * FROM graph_metadata WHERE id = 1");
+  const scale = metadataRow ? metadataRow.scale : 1;
+  const offset = metadataRow 
+    ? { x: metadataRow.offset_x, y: metadataRow.offset_y }
+    : { x: 0, y: 0 };
+
+  return {
+    nodes,
+    edges,
+    scale,
+    offset
+  };
+}
+
 module.exports = {
   getAllGraphData,
   createNode,
@@ -321,5 +345,6 @@ module.exports = {
   clearAllData,
   importGraphData,
   saveViewState,
+  exportGraphData,
 };
 
