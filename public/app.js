@@ -827,10 +827,13 @@ function renderDatabasePage() {
     const databaseList = document.getElementById('database-list');
     const pagination = document.getElementById('database-pagination');
     const paginationInfo = document.getElementById('pagination-info');
+    const paginationInput = document.getElementById('pagination-input');
+    const paginationTotal = document.getElementById('pagination-total');
+    const paginationGo = document.getElementById('pagination-go');
     const prevBtn = document.getElementById('pagination-prev');
     const nextBtn = document.getElementById('pagination-next');
     
-    if (!databaseList || !pagination || !paginationInfo || !prevBtn || !nextBtn) return;
+    if (!databaseList || !pagination || !paginationInfo || !prevBtn || !nextBtn || !paginationInput || !paginationTotal || !paginationGo) return;
     
     const totalPages = Math.ceil(allDatabases.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -884,6 +887,11 @@ function renderDatabasePage() {
         pagination.style.display = 'block';
         paginationInfo.textContent = `Page ${currentPage} of ${totalPages} (${allDatabases.length} total)`;
         
+        // Update page input
+        paginationInput.value = currentPage;
+        paginationInput.max = totalPages;
+        paginationTotal.textContent = `of ${totalPages}`;
+        
         // Update prev button
         prevBtn.disabled = currentPage === 1;
         if (currentPage === 1) {
@@ -919,6 +927,8 @@ function renderDatabasePage() {
 function setupPaginationListeners() {
     const prevBtn = document.getElementById('pagination-prev');
     const nextBtn = document.getElementById('pagination-next');
+    const paginationInput = document.getElementById('pagination-input');
+    const paginationGo = document.getElementById('pagination-go');
     
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
@@ -937,6 +947,48 @@ function setupPaginationListeners() {
                 renderDatabasePage();
             }
         });
+    }
+    
+    // Handle page input - go to page on Enter key or Go button
+    if (paginationInput) {
+        paginationInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                goToPage();
+            }
+        });
+        
+        paginationInput.addEventListener('blur', () => {
+            // Reset to current page if invalid input on blur
+            paginationInput.value = currentPage;
+        });
+    }
+    
+    if (paginationGo) {
+        paginationGo.addEventListener('click', goToPage);
+        
+        // Add hover effect
+        paginationGo.onmouseenter = () => { paginationGo.style.background = '#e9e9e9'; };
+        paginationGo.onmouseleave = () => { paginationGo.style.background = '#f9f9f9'; };
+    }
+}
+
+function goToPage() {
+    const paginationInput = document.getElementById('pagination-input');
+    if (!paginationInput) return;
+    
+    const totalPages = Math.ceil(allDatabases.length / ITEMS_PER_PAGE);
+    const requestedPage = parseInt(paginationInput.value, 10);
+    
+    if (isNaN(requestedPage) || requestedPage < 1 || requestedPage > totalPages) {
+        // Invalid page number - reset to current page
+        paginationInput.value = currentPage;
+        alert(`Please enter a page number between 1 and ${totalPages}`);
+        return;
+    }
+    
+    if (requestedPage !== currentPage) {
+        currentPage = requestedPage;
+        renderDatabasePage();
     }
 }
 
