@@ -24,8 +24,14 @@ class Graph {
     }
 
     resizeCanvas() {
-        this.canvas.width = this.canvas.offsetWidth;
-        this.canvas.height = this.canvas.offsetHeight;
+        const container = this.canvas.parentElement;
+        if (container) {
+            this.canvas.width = container.clientWidth;
+            this.canvas.height = container.clientHeight;
+        } else {
+            this.canvas.width = this.canvas.offsetWidth || 800;
+            this.canvas.height = this.canvas.offsetHeight || 600;
+        }
         this.render();
     }
 
@@ -282,7 +288,16 @@ class Graph {
             this.selectedNode = node;
             this.selectedEdge = edge;
             this.render();
-            window.showContextMenu(e.clientX, e.clientY);
+            
+            // Show dialog directly instead of context menu
+            if (node && window.showNodeDialog) {
+                window.showNodeDialog(node);
+            } else if (edge && window.showEdgeDialog) {
+                window.showEdgeDialog(edge);
+            } else if (window.showContextMenu) {
+                // Fallback to context menu if dialogs aren't available
+                window.showContextMenu(e.clientX, e.clientY);
+            }
         }
     }
 

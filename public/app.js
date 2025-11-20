@@ -17,7 +17,11 @@ let originalState = {
 };
 
 function init() {
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('graph-canvas');
+    if (!canvas) {
+        console.error('Canvas element not found!');
+        return;
+    }
     // Remove automatic saving - track changes instead
     graph = new Graph(canvas, {
         onNodeCreate: trackNodeCreate,
@@ -32,8 +36,8 @@ function init() {
     setupContextMenu();
     setupDialogs();
 
-    // Set initial mode
-    setMode('select');
+    // Set initial mode - match HTML default (node-mode is active)
+    setMode('node');
     
     // Load existing graph data from database
     loadGraphFromDb();
@@ -81,6 +85,10 @@ function setupEventListeners() {
 
 function setupContextMenu() {
     contextMenu = document.getElementById('context-menu');
+    if (!contextMenu) {
+        // Context menu doesn't exist in new HTML - that's okay, we'll use right-click to show dialogs directly
+        return;
+    }
 
     document.querySelectorAll('.context-menu-item').forEach(item => {
         item.addEventListener('click', (e) => {
@@ -92,17 +100,37 @@ function setupContextMenu() {
 }
 
 function setupDialogs() {
-    // Node dialog
-    document.getElementById('node-save').addEventListener('click', saveNodeEdit);
-    document.getElementById('node-cancel').addEventListener('click', () => {
-        document.getElementById('node-dialog').style.display = 'none';
-    });
+    // Node dialog - use ui-functions.js handlers
+    const nodeOk = document.getElementById('node-ok');
+    if (nodeOk) {
+        nodeOk.addEventListener('click', handleNodeOK);
+    }
+    const nodeCancel = document.getElementById('node-cancel');
+    if (nodeCancel) {
+        nodeCancel.addEventListener('click', handleNodeCancel);
+    }
+    const nodeDelete = document.getElementById('node-delete');
+    if (nodeDelete) {
+        nodeDelete.addEventListener('click', handleNodeDelete);
+    }
 
-    // Edge dialog
-    document.getElementById('edge-save').addEventListener('click', saveEdgeEdit);
-    document.getElementById('edge-cancel').addEventListener('click', () => {
-        document.getElementById('edge-dialog').style.display = 'none';
-    });
+    // Edge/Weight dialog - use ui-functions.js handlers
+    const weightOk = document.getElementById('weight-ok');
+    if (weightOk) {
+        weightOk.addEventListener('click', handleWeightOK);
+    }
+    const weightCancel = document.getElementById('weight-cancel');
+    if (weightCancel) {
+        weightCancel.addEventListener('click', handleWeightCancel);
+    }
+    const weightDelete = document.getElementById('weight-delete');
+    if (weightDelete) {
+        weightDelete.addEventListener('click', handleWeightDelete);
+    }
+    const reverseEdgeBtn = document.getElementById('reverse-edge-btn');
+    if (reverseEdgeBtn) {
+        reverseEdgeBtn.addEventListener('click', handleReverseEdgeDirection);
+    }
 }
 
 function setMode(mode) {
@@ -110,12 +138,17 @@ function setMode(mode) {
     window.appMode = mode;
 
     // Update button states
-    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(mode + '-mode').classList.add('active');
+    document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+    const modeBtn = document.getElementById(mode + '-mode');
+    if (modeBtn) {
+        modeBtn.classList.add('active');
+    }
 
     // Update cursor
-    const canvas = document.getElementById('canvas');
-    canvas.className = mode === 'select' ? 'select-mode' : '';
+    const canvas = document.getElementById('graph-canvas');
+    if (canvas) {
+        canvas.style.cursor = mode === 'select' ? 'default' : 'crosshair';
+    }
 
     // Reset edge creation state
     if (graph) {
@@ -130,7 +163,9 @@ function showContextMenu(x, y) {
 }
 
 function hideContextMenu() {
-    contextMenu.style.display = 'none';
+    if (contextMenu) {
+        contextMenu.style.display = 'none';
+    }
 }
 
 // Make showContextMenu available globally
@@ -154,57 +189,18 @@ function handleContextMenuAction(action) {
 
 function showNodeDialog() {
     if (!graph.selectedNode) return;
-
-    const dialog = document.getElementById('node-dialog');
-    const labelInput = document.getElementById('node-label');
-    const colorInput = document.getElementById('node-color');
-
-    labelInput.value = graph.selectedNode.label;
-    colorInput.value = graph.selectedNode.color;
-
-    dialog.style.display = 'block';
+    // Use the ui-functions.js showNodeDialog
+    if (window.showNodeDialog) {
+        window.showNodeDialog(graph.selectedNode);
+    }
 }
 
 function showEdgeDialog() {
     if (!graph.selectedEdge) return;
-
-    const dialog = document.getElementById('edge-dialog');
-    const weightInput = document.getElementById('edge-weight');
-
-    weightInput.value = graph.selectedEdge.weight;
-
-    dialog.style.display = 'block';
-}
-
-function saveNodeEdit() {
-    if (!graph.selectedNode) return;
-
-    const label = document.getElementById('node-label').value;
-    const color = document.getElementById('node-color').value;
-
-    graph.selectedNode.label = label || 'Node';
-    graph.selectedNode.color = color;
-    graph.selectedNode.fullContent = label || 'Node';
-
-    document.getElementById('node-dialog').style.display = 'none';
-    graph.render();
-    
-    // Track as unsaved change instead of saving immediately
-    trackNodeUpdate(graph.selectedNode);
-}
-
-function saveEdgeEdit() {
-    if (!graph.selectedEdge) return;
-
-    const weight = parseFloat(document.getElementById('edge-weight').value);
-
-    graph.selectedEdge.weight = weight;
-
-    document.getElementById('edge-dialog').style.display = 'none';
-    graph.render();
-    
-    // Track as unsaved change instead of saving immediately
-    trackEdgeUpdate(graph.selectedEdge);
+    // Use the ui-functions.js showEdgeDialog
+    if (window.showEdgeDialog) {
+        window.showEdgeDialog(graph.selectedEdge);
+    }
 }
 
 // ========== Database Operations ==========
