@@ -174,9 +174,9 @@ window.showContextMenu = showContextMenu;
 function handleContextMenuAction(action) {
     if (action === 'edit') {
         if (graph.selectedNode) {
-            showNodeDialog();
+            openNodeDialog();
         } else if (graph.selectedEdge) {
-            showEdgeDialog();
+            openEdgeDialog();
         }
     } else if (action === 'delete') {
         if (graph.selectedNode) {
@@ -187,7 +187,7 @@ function handleContextMenuAction(action) {
     }
 }
 
-function showNodeDialog() {
+function openNodeDialog() {
     if (!graph.selectedNode) return;
     // Use the ui-functions.js showNodeDialog
     if (window.showNodeDialog) {
@@ -195,7 +195,7 @@ function showNodeDialog() {
     }
 }
 
-function showEdgeDialog() {
+function openEdgeDialog() {
     if (!graph.selectedEdge) return;
     // Use the ui-functions.js showEdgeDialog
     if (window.showEdgeDialog) {
