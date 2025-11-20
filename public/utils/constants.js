@@ -1,0 +1,25 @@
+/**
+ * Graph visualization constants
+ */
+export const GRAPH_CONSTANTS = {
+    GRID_SIZE: 50,
+    GRID_COLOR: '#e0e0e0',
+    GRID_LINE_WIDTH: 0.5,
+    DEFAULT_FONT_SIZE: 12,
+    DEFAULT_FONT_FAMILY: 'Arial, sans-serif',
+    MAX_LABEL_LENGTH: 20,
+    PULSE_AMPLITUDE: 0.15,
+    PULSE_FREQUENCY: 0.01,
+    SELECTED_NODE_COLOR: '#87CEFA',
+    SELECTED_NODE_BORDER: '#B0C4DE',
+    HIGHLIGHT_NODE_COLOR: '#FFD700',
+    DEFAULT_NODE_BORDER: '#C0C0C0'
+};
+
+export const WEIGHT_MAPPING = {
+    MIN_WEIGHT: 0.1,
+    MAX_WEIGHT: 30,
+    MIN_LINE_WIDTH: 0.5,
+    MAX_LINE_WIDTH: 8
+};
+

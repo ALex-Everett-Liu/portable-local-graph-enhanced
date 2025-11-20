@@ -3,190 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graph App</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
-            overflow: hidden;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        .toolbar {
-            background: #333;
-            color: white;
-            padding: 8px 10px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-shrink: 0;
-            min-height: 40px;
-        }
-
-        .toolbar button {
-            background: #555;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .toolbar button:hover {
-            background: #666;
-        }
-
-        .toolbar button.active {
-            background: #007acc;
-        }
-
-        .toolbar button.has-unsaved {
-            background: #d32f2f;
-            font-weight: bold;
-        }
-
-        .toolbar button.has-unsaved:hover {
-            background: #b71c1c;
-        }
-
-        .main-content {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            min-height: 0;
-        }
-
-        #canvas {
-            background: white;
-            cursor: crosshair;
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        #canvas.select-mode {
-            cursor: default;
-        }
-
-        .context-menu {
-            position: absolute;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-        }
-
-        .context-menu-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .context-menu-item:hover {
-            background: #f0f0f0;
-        }
-
-        .dialog {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            z-index: 2000;
-        }
-
-        .dialog-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            min-width: 300px;
-        }
-
-        .dialog h3 {
-            margin-top: 0;
-        }
-
-        .dialog input, .dialog button {
-            margin: 5px 0;
-            padding: 8px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .dialog-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .dialog-buttons button {
-            flex: 1;
-        }
-    </style>
+    <title>Manual Graph Drawing App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
         <div class="toolbar">
-            <button id="select-mode" class="mode-btn active">Select</button>
-            <button id="node-mode" class="mode-btn">Add Node</button>
-            <button id="edge-mode" class="mode-btn">Add Edge</button>
-            <button id="clear-btn">Clear</button>
-            <button id="save-changes" style="display: none;">Save Changes</button>
-            <button id="discard-changes" style="display: none;">Discard Changes</button>
-        </div>
-
-        <div class="main-content">
-            <canvas id="canvas"></canvas>
-
-            <div id="context-menu" class="context-menu">
-                <div class="context-menu-item" data-action="edit">Edit</div>
-                <div class="context-menu-item" data-action="delete">Delete</div>
+            <div class="toolbar-section">
+                <button id="node-mode" class="tool-btn active" title="Node Mode">
+                    <span class="icon">⚫</span>
+                    <span>Node</span>
+                </button>
+                <button id="edge-mode" class="tool-btn" title="Edge Mode">
+                    <span class="icon">🔗</span>
+                    <span>Edge</span>
+                </button>
+                <button id="select-mode" class="tool-btn" title="Select Mode">
+                    <span class="icon">👆</span>
+                    <span>Select</span>
+                </button>
             </div>
-
-            <div id="node-dialog" class="dialog">
-                <div class="dialog-content">
-                    <h3>Edit Node</h3>
-                    <input type="text" id="node-label" placeholder="Label">
-                    <input type="color" id="node-color" value="#3b82f6">
-                    <div class="dialog-buttons">
-                        <button id="node-save">Save</button>
-                        <button id="node-cancel">Cancel</button>
+            
+            <div class="toolbar-section">
+                <button id="clear-btn" class="tool-btn danger" title="Clear All">
+                    <span class="icon">🗑️</span>
+                </button>
+            </div>
+            
+            <div class="toolbar-section">
+                <button id="save-changes" class="tool-btn" title="Save Changes" style="display: none;">
+                    <span class="icon">💾</span>
+                    <span>Save Changes</span>
+                </button>
+                <button id="discard-changes" class="tool-btn" title="Discard Changes" style="display: none;">
+                    <span class="icon">↶</span>
+                    <span>Discard</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="graph-canvas" width="800" height="600"></canvas>
+                <div id="weight-dialog" class="dialog hidden">
+                    <div class="dialog-content">
+                        <h3>Set Edge Properties</h3>
+                        <label>Weight:</label>
+                        <input type="number" id="weight-input" placeholder="Enter weight" step="0.1" min="0">
+                        <label>Category:</label>
+                        <input type="text" id="edge-category" placeholder="Category (optional)">
+                        <div style="margin: 15px 0; text-align: center;">
+                            <button id="reverse-edge-btn" class="tool-btn" style="background: #007bff; color: white; border: none; border-radius: 4px; padding: 8px 16px; font-size: 12px;">
+                                ↺ Reverse Direction
+                            </button>
+                        </div>
+                        <div class="dialog-buttons">
+                            <button id="weight-ok">OK</button>
+                            <button id="weight-cancel">Cancel</button>
+                            <button id="weight-delete" class="danger">Delete</button>
+                        </div>
                     </div>
                 </div>
+                
+                <div id="node-dialog" class="dialog hidden">
+                    <div class="dialog-content">
+                        <h3>Edit Node</h3>
+                        <input type="text" id="node-label" placeholder="Node label (English)">
+                        <input type="text" id="node-chinese" placeholder="中文标签 (Chinese)">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <input type="color" id="node-color" value="#3b82f6">
+                            <input type="text" id="node-color-hex" placeholder="#3b82f6" style="width: 80px; font-family: monospace;">
+                        </div>
+                        <label>Position:</label>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <label style="font-size: 12px;">X:</label>
+                            <input type="number" id="node-x" placeholder="X coordinate" step="1" style="width: 80px;">
+                            <label style="font-size: 12px;">Y:</label>
+                            <input type="number" id="node-y" placeholder="Y coordinate" step="1" style="width: 80px;">
+                        </div>
+                        <input type="text" id="node-category" placeholder="Category (optional)">
+                        <label>Layers:</label>
+                        <input type="text" id="node-layers" placeholder="Enter layers (comma-separated)">
+                        <label>Size:</label>
+                        <input type="range" id="node-size" min="1" max="100" value="20" step="1">
+                        <span id="size-display">20</span>
+                        <div class="dialog-buttons">
+                            <button id="node-ok">OK</button>
+                            <button id="node-cancel">Cancel</button>
+                            <button id="node-delete" class="danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
 
-            <div id="edge-dialog" class="dialog">
-                <div class="dialog-content">
-                    <h3>Edit Edge</h3>
-                    <label>Weight: <input type="range" id="edge-weight" min="0.1" max="10" step="0.1" value="1"></label>
-                    <div class="dialog-buttons">
-                        <button id="edge-save">Save</button>
-                        <button id="edge-cancel">Cancel</button>
+            <div class="sidebar" id="local-graph-sidebar">
+                <div class="resize-handle" id="local-graph-resize-handle"></div>
+                <div class="sidebar-section">
+                    <h3>Graph Info</h3>
+                    <div id="graph-info">
+                        <p>Nodes: <span id="node-count">0</span></p>
+                        <p>Edges: <span id="edge-count">0</span></p>
+                        <p>Mode: <span id="current-mode">Node</span></p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Selected</h3>
+                    <div id="selection-info">
+                        <p>Nothing selected</p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Instructions</h3>
+                    <div class="instructions">
+                        <p><strong>Node Mode:</strong> Click to create nodes</p>
+                        <p><strong>Edge Mode:</strong> Click two nodes to connect</p>
+                        <p><strong>Select Mode:</strong> Click to select/move nodes</p>
+                        <p><strong>Right-click:</strong> Edit node/edge properties</p>
+                        <p><strong>Drag:</strong> Move nodes or pan canvas</p>
+                        <p><strong>Scroll:</strong> Zoom in/out</p>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h4>Display Options</h4>
+                    <div class="filter-controls">
+                        <div style="margin-bottom: 8px;">
+                            <label style="font-size: 11px; display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" id="show-edge-arrows" style="margin-right: 6px;">
+                                Show Edge Arrows
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Load UI functions -->
+    <script src="ui-functions.js"></script>
+    
+    <!-- Main Application -->
     <script src="graph.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
-

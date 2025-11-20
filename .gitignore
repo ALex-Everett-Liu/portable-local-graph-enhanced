@@ -1,5 +1,6 @@
 node_modules/
 dist/
+temp/
 *.db
 *.log
 .DS_Store
@@ -8,4 +9,3 @@ dist/
 win-unpacked/
 mac/
 linux-unpacked/
-
