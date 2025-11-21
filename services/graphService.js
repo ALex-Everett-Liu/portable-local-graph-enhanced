@@ -33,11 +33,11 @@ async function getAllGraphData(graphDb) {
 /**
  * Create a new node
  * @param {Object} graphDb - Database connection
- * @param {Object} nodeData - Node data (id, x, y, label, color, radius, full_content)
+ * @param {Object} nodeData - Node data (id, x, y, label, chinese_label, color, radius, category, full_content)
  * @returns {Promise<Object>} Created node
  */
 async function createNode(graphDb, nodeData) {
-  const { id, x, y, label, color, radius, full_content } = nodeData;
+  const { id, x, y, label, chinese_label, color, radius, category, full_content } = nodeData;
   
   // Generate UUID v4 if not provided
   const nodeId = id || uuidv4();
@@ -50,9 +50,9 @@ async function createNode(graphDb, nodeData) {
   const nextSequenceId = (maxSequenceResult?.max_seq || 0) + 1;
 
   await graphDb.run(
-    `INSERT INTO graph_nodes (id, x, y, label, color, radius, full_content, sequence_id, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [nodeId, x, y, label, color || "#3b82f6", radius || 20, full_content || label, nextSequenceId, now, now]
+    `INSERT INTO graph_nodes (id, x, y, label, chinese_label, color, radius, category, full_content, sequence_id, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [nodeId, x, y, label, chinese_label || null, color || "#3b82f6", radius || 20, category || null, full_content || label, nextSequenceId, now, now]
   );
 
   const node = await graphDb.get("SELECT * FROM graph_nodes WHERE id = ?", nodeId);
@@ -63,11 +63,11 @@ async function createNode(graphDb, nodeData) {
  * Update a node
  * @param {Object} graphDb - Database connection
  * @param {string} id - Node ID
- * @param {Object} nodeData - Node data to update (x, y, label, color, radius, full_content)
+ * @param {Object} nodeData - Node data to update (x, y, label, chinese_label, color, radius, category, full_content)
  * @returns {Promise<Object>} Updated node
  */
 async function updateNode(graphDb, id, nodeData) {
-  const { x, y, label, color, radius, full_content } = nodeData;
+  const { x, y, label, chinese_label, color, radius, category, full_content } = nodeData;
   const now = Date.now();
 
   const updates = [];
@@ -85,6 +85,10 @@ async function updateNode(graphDb, id, nodeData) {
     updates.push("label = ?");
     values.push(label);
   }
+  if (chinese_label !== undefined) {
+    updates.push("chinese_label = ?");
+    values.push(chinese_label);
+  }
   if (color !== undefined) {
     updates.push("color = ?");
     values.push(color);
@@ -92,6 +96,10 @@ async function updateNode(graphDb, id, nodeData) {
   if (radius !== undefined) {
     updates.push("radius = ?");
     values.push(radius);
+  }
+  if (category !== undefined) {
+    updates.push("category = ?");
+    values.push(category);
   }
   if (full_content !== undefined) {
     updates.push("full_content = ?");
@@ -131,11 +139,11 @@ async function deleteNode(graphDb, id) {
 /**
  * Create a new edge
  * @param {Object} graphDb - Database connection
- * @param {Object} edgeData - Edge data (id, from_node_id, to_node_id, weight)
+ * @param {Object} edgeData - Edge data (id, from_node_id, to_node_id, weight, category)
  * @returns {Promise<Object>} Created edge
  */
 async function createEdge(graphDb, edgeData) {
-  const { id, from_node_id, to_node_id, weight } = edgeData;
+  const { id, from_node_id, to_node_id, weight, category } = edgeData;
   
   // Generate UUID v4 if not provided
   const edgeId = id || uuidv4();
@@ -148,9 +156,9 @@ async function createEdge(graphDb, edgeData) {
   const nextSequenceId = (maxSequenceResult?.max_seq || 0) + 1;
 
   await graphDb.run(
-    `INSERT INTO graph_edges (id, from_node_id, to_node_id, weight, sequence_id, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [edgeId, from_node_id, to_node_id, weight || 1.0, nextSequenceId, now, now]
+    `INSERT INTO graph_edges (id, from_node_id, to_node_id, weight, category, sequence_id, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [edgeId, from_node_id, to_node_id, weight || 1.0, category || null, nextSequenceId, now, now]
   );
 
   const edge = await graphDb.get("SELECT * FROM graph_edges WHERE id = ?", edgeId);
@@ -161,16 +169,32 @@ async function createEdge(graphDb, edgeData) {
  * Update an edge
  * @param {Object} graphDb - Database connection
  * @param {string} id - Edge ID
- * @param {Object} edgeData - Edge data to update (weight)
+ * @param {Object} edgeData - Edge data to update (weight, category)
  * @returns {Promise<Object>} Updated edge
  */
 async function updateEdge(graphDb, id, edgeData) {
-  const { weight } = edgeData;
+  const { weight, category } = edgeData;
   const now = Date.now();
 
+  const updates = [];
+  const values = [];
+
+  if (weight !== undefined) {
+    updates.push("weight = ?");
+    values.push(weight);
+  }
+  if (category !== undefined) {
+    updates.push("category = ?");
+    values.push(category);
+  }
+
+  updates.push("updated_at = ?");
+  values.push(now);
+  values.push(id);
+
   await graphDb.run(
-    "UPDATE graph_edges SET weight = ?, updated_at = ? WHERE id = ?",
-    [weight, now, id]
+    `UPDATE graph_edges SET ${updates.join(", ")} WHERE id = ?`,
+    values
   );
 
   const edge = await graphDb.get("SELECT * FROM graph_edges WHERE id = ?", id);
@@ -232,8 +256,8 @@ async function importGraphData(graphDb, importData) {
   // Insert nodes
   if (nodes && nodes.length > 0) {
     const nodeStmt = await graphDb.prepare(
-      `INSERT INTO graph_nodes (id, x, y, label, color, radius, full_content, sequence_id, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO graph_nodes (id, x, y, label, chinese_label, color, radius, category, full_content, sequence_id, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     );
 
     const now = Date.now();
@@ -248,8 +272,10 @@ async function importGraphData(graphDb, importData) {
         node.x,
         node.y,
         node.label,
+        node.chineseLabel || node.chinese_label || null,
         node.color || "#3b82f6",
         node.radius || 20,
+        node.category || null,
         node.fullContent || node.full_content || node.label,
         nextNodeSequenceId++,
         createdAt,
@@ -262,8 +288,8 @@ async function importGraphData(graphDb, importData) {
   // Insert edges
   if (edges && edges.length > 0) {
     const edgeStmt = await graphDb.prepare(
-      `INSERT INTO graph_edges (id, from_node_id, to_node_id, weight, sequence_id, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO graph_edges (id, from_node_id, to_node_id, weight, category, sequence_id, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     );
 
     const now = Date.now();
@@ -278,6 +304,7 @@ async function importGraphData(graphDb, importData) {
         edge.from || edge.from_node_id,
         edge.to || edge.to_node_id,
         edge.weight || 1.0,
+        edge.category || null,
         nextEdgeSequenceId++,
         createdAt,
         updatedAt

@@ -167,6 +167,39 @@ async function initializeGraphDatabase() {
     );
   }
 
+  // Add chinese_label column to graph_nodes table
+  try {
+    await db.exec(`ALTER TABLE graph_nodes ADD COLUMN chinese_label TEXT;`);
+    console.log("Added chinese_label column to graph_nodes table");
+  } catch (error) {
+    console.log(
+      "chinese_label column already exists in graph_nodes or other error:",
+      error.message,
+    );
+  }
+
+  // Add category column to graph_nodes table
+  try {
+    await db.exec(`ALTER TABLE graph_nodes ADD COLUMN category TEXT;`);
+    console.log("Added category column to graph_nodes table");
+  } catch (error) {
+    console.log(
+      "category column already exists in graph_nodes or other error:",
+      error.message,
+    );
+  }
+
+  // Add category column to graph_edges table
+  try {
+    await db.exec(`ALTER TABLE graph_edges ADD COLUMN category TEXT;`);
+    console.log("Added category column to graph_edges table");
+  } catch (error) {
+    console.log(
+      "category column already exists in graph_edges or other error:",
+      error.message,
+    );
+  }
+
   console.log("Graph plugin database initialized");
   return db;
 }
