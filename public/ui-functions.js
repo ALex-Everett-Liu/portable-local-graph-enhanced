@@ -144,6 +144,8 @@ function handleNodeOK() {
     const node = graph.nodes.find(n => n.id == nodeId);
     if (node) {
         if (window.saveState) window.saveState();
+        
+        // Update node properties
         node.label = label;
         node.chineseLabel = chineseLabel || '';
         node.color = color;
@@ -157,6 +159,11 @@ function handleNodeOK() {
             node.layers = layersInput.split(',').map(l => l.trim()).filter(l => l);
         } else {
             node.layers = [];
+        }
+
+        // Track the change for save button visibility
+        if (window.trackNodeUpdate) {
+            window.trackNodeUpdate(node);
         }
 
         if (graph.render) graph.render();
@@ -219,8 +226,16 @@ function handleWeightOK() {
         const edge = graph.edges.find(e => e.id == edgeId);
         if (edge) {
             if (window.saveState) window.saveState();
+            
+            // Update edge properties
             edge.weight = weight;
             edge.category = category || null;
+            
+            // Track the change for save button visibility
+            if (window.trackEdgeUpdate) {
+                window.trackEdgeUpdate(edge);
+            }
+            
             if (graph.render) graph.render();
             if (window.appState) window.appState.isModified = true;
         }
@@ -245,6 +260,12 @@ function handleReverseEdgeDirection() {
         if (window.saveState) window.saveState();
         // Swap source and target nodes
         [edge.from, edge.to] = [edge.to, edge.from];
+        
+        // Track the change for save button visibility
+        if (window.trackEdgeUpdate) {
+            window.trackEdgeUpdate(edge);
+        }
+        
         if (graph.render) graph.render();
         if (window.appState) window.appState.isModified = true;
         

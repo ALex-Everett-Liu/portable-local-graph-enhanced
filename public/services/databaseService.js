@@ -19,12 +19,17 @@ export async function loadGraphFromDb() {
             
             // Convert database format to graph format
             const convertedData = {
-                nodes: data.nodes.map(node => ({...node})),
+                nodes: data.nodes.map(node => ({
+                    ...node,
+                    chineseLabel: node.chinese_label || node.chineseLabel || '',
+                    category: node.category || null
+                })),
                 edges: data.edges.map(edge => ({
                     id: edge.id,
                     from: edge.from_node_id,
                     to: edge.to_node_id,
-                    weight: edge.weight
+                    weight: edge.weight,
+                    category: edge.category || null
                 })),
                 scale: data.scale || 1,
                 offset: data.offset || { x: 0, y: 0 }
@@ -62,8 +67,10 @@ export async function saveNodeToDb(node) {
                 x: node.x,
                 y: node.y,
                 label: node.label,
+                chinese_label: (node.chineseLabel !== undefined) ? node.chineseLabel : (node.chinese_label || null),
                 color: node.color,
                 radius: node.radius,
+                category: node.category || null,
                 full_content: node.fullContent || node.label
             })
         });
@@ -82,8 +89,10 @@ export async function updateNodeInDb(node) {
                 x: node.x,
                 y: node.y,
                 label: node.label,
+                chinese_label: (node.chineseLabel !== undefined) ? node.chineseLabel : (node.chinese_label || null),
                 color: node.color,
                 radius: node.radius,
+                category: node.category || null,
                 full_content: node.fullContent || node.label
             })
         });
@@ -113,7 +122,8 @@ export async function saveEdgeToDb(edge) {
                 id: edge.id,
                 from_node_id: edge.from,
                 to_node_id: edge.to,
-                weight: edge.weight
+                weight: edge.weight,
+                category: edge.category || null
             })
         });
         if (!response.ok) throw new Error('Failed to save edge');
@@ -128,7 +138,8 @@ export async function updateEdgeInDb(edge) {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                weight: edge.weight
+                weight: edge.weight,
+                category: edge.category || null
             })
         });
         if (!response.ok) throw new Error('Failed to update edge');

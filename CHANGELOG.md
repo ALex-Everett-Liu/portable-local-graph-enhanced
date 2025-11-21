@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.6] - 2025-11-21
+
+### Added
+- `chinese_label` field support for nodes in database schema
+- `category` field support for nodes and edges in database schema
+- Database migration code to add new fields to existing databases
+
+### Fixed
+- Fixed `graph is not defined` errors in `ui-functions.js` by exposing graph instance on window
+- Fixed save changes button not appearing when editing nodes/edges through dialogs
+- Fixed `chinese_label` and `category` fields not being saved to database
+- Fixed change tracking not being triggered when editing nodes/edges via dialogs
+- Fixed edge category field not being restored when discarding changes
+
+### Changed
+- Updated `databaseService.js` to include `chinese_label` and `category` fields in all save/update operations
+- Updated `appState.js` to expose graph instance and change tracking functions on window for non-module scripts
+- Updated `ui-functions.js` to call change tracking functions after editing nodes/edges
+- Updated `saveDiscardUI.js` to properly restore category field when discarding edge changes
+- Updated `graphService.js` to handle `chinese_label` and `category` fields in node/edge operations
+
+### Technical Details
+- Database schema migration adds new columns with proper error handling for existing databases
+- Change tracking functions exposed on window object for compatibility with non-module scripts
+- Field name mapping between frontend (camelCase) and backend (snake_case) properly handled
+- Empty string handling for `chinese_label` field preserves user input correctly
+
 ## [0.1.5] - 2025-11-20
 
 ### Changed

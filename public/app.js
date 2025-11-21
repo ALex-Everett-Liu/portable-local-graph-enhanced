@@ -35,6 +35,14 @@ function init() {
     // Store graph instance in state
     setGraph(graph);
 
+    // Expose change tracking functions on window for non-module scripts (like ui-functions.js)
+    window.trackNodeCreate = trackNodeCreate;
+    window.trackNodeUpdate = trackNodeUpdate;
+    window.trackNodeDelete = trackNodeDelete;
+    window.trackEdgeCreate = trackEdgeCreate;
+    window.trackEdgeUpdate = trackEdgeUpdate;
+    window.trackEdgeDelete = trackEdgeDelete;
+
     // Setup UI components
     setupEventListeners();
     setupContextMenu();

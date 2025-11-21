@@ -186,6 +186,7 @@ export function discardAllChanges() {
                 if (edge) {
                     // Restore edge properties, maintaining node references
                     edge.weight = change.originalData.weight;
+                    edge.category = change.originalData.category || null;
                     // Note: from and to should remain the same (node references)
                 }
             } else if (change.type === 'delete' && change.originalData) {
