@@ -99,7 +99,6 @@ async function initializeGraphDatabase() {
       label TEXT NOT NULL,
       color TEXT DEFAULT '#3b82f6',
       radius REAL DEFAULT 20,
-      full_content TEXT,
       created_at INTEGER,
       updated_at INTEGER
     )

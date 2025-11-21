@@ -71,7 +71,6 @@ export async function saveNodeToDb(node) {
                 color: node.color,
                 radius: node.radius,
                 category: node.category || null,
-                full_content: node.fullContent || node.label
             })
         });
         if (!response.ok) throw new Error('Failed to save node');
@@ -93,7 +92,6 @@ export async function updateNodeInDb(node) {
                 color: node.color,
                 radius: node.radius,
                 category: node.category || null,
-                full_content: node.fullContent || node.label
             })
         });
         if (!response.ok) throw new Error('Failed to update node');

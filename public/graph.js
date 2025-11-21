@@ -59,7 +59,6 @@ class Graph {
             label: label,
             color: color,
             radius: 20,
-            fullContent: label
         };
         this.nodes.push(node);
         this.render();
@@ -285,8 +284,8 @@ class Graph {
         } else {
             // Show tooltip for node under cursor
             const node = this.getNodeAt(pos.x, pos.y);
-            if (node && node.fullContent) {
-                this.tooltip.textContent = node.fullContent;
+            if (node && node.label) {
+                this.tooltip.textContent = node.label;
                 this.tooltip.style.display = 'block';
                 this.tooltip.style.left = e.clientX + 10 + 'px';
                 this.tooltip.style.top = e.clientY + 10 + 'px';
