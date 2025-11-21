@@ -19,10 +19,18 @@ export const originalState = {
 // Setters/getters for controlled access
 export function setGraph(newGraph) {
     graph = newGraph;
+    // Expose graph on window for non-module scripts (like ui-functions.js)
+    window.graph = newGraph;
 }
 
 export function getGraph() {
     return graph;
+}
+
+// Expose getGraph on window for non-module scripts (like ui-functions.js)
+// This needs to be available immediately, not just when graph is set
+if (typeof window !== 'undefined') {
+    window.getGraph = getGraph;
 }
 
 export function setAppMode(mode) {

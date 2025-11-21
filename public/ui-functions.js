@@ -36,6 +36,7 @@ function showNodeDialog(node) {
     const layersInput = document.getElementById('node-layers');
 
     // Clear form fields for new nodes, populate for existing nodes
+    const graph = window.graph || window.getGraph?.();
     const isExistingNode = node.id && graph && graph.nodes && graph.nodes.find(n => n.id === node.id);
     if (isExistingNode) {
         // Existing node - populate with current values
@@ -134,6 +135,12 @@ function handleNodeOK() {
         return;
     }
 
+    const graph = window.graph || window.getGraph?.();
+    if (!graph) {
+        console.error('Graph instance not available');
+        return;
+    }
+    
     const node = graph.nodes.find(n => n.id == nodeId);
     if (node) {
         if (window.saveState) window.saveState();
@@ -179,6 +186,12 @@ function handleNodeCancel() {
 function handleNodeDelete() {
     const dialog = document.getElementById('node-dialog');
     const nodeId = dialog.dataset.nodeId;
+    const graph = window.graph || window.getGraph?.();
+    
+    if (!graph) {
+        console.error('Graph instance not available');
+        return;
+    }
     
     if (window.saveState) window.saveState();
     if (graph.deleteNode) graph.deleteNode(nodeId);
@@ -194,6 +207,13 @@ function handleWeightOK() {
     const edgeId = dialog.dataset.edgeId;
     const weight = parseFloat(document.getElementById('weight-input').value);
     const category = document.getElementById('edge-category').value;
+    const graph = window.graph || window.getGraph?.();
+    
+    if (!graph) {
+        console.error('Graph instance not available');
+        dialog.classList.add('hidden');
+        return;
+    }
     
     if (!isNaN(weight)) {
         const edge = graph.edges.find(e => e.id == edgeId);
@@ -213,6 +233,12 @@ function handleWeightOK() {
 function handleReverseEdgeDirection() {
     const dialog = document.getElementById('weight-dialog');
     const edgeId = dialog.dataset.edgeId;
+    const graph = window.graph || window.getGraph?.();
+    
+    if (!graph) {
+        console.error('Graph instance not available');
+        return;
+    }
     
     const edge = graph.edges.find(e => e.id == edgeId);
     if (edge) {
@@ -242,6 +268,13 @@ function handleWeightCancel() {
 function handleWeightDelete() {
     const dialog = document.getElementById('weight-dialog');
     const edgeId = dialog.dataset.edgeId;
+    const graph = window.graph || window.getGraph?.();
+    
+    if (!graph) {
+        console.error('Graph instance not available');
+        dialog.classList.add('hidden');
+        return;
+    }
     
     if (edgeId) {
         if (window.saveState) window.saveState();
