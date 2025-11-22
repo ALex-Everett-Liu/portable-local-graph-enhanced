@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2025-11-22
+
+### Changed
+- Migrated from UUIDv4 to UUIDv7 for all new node and edge identifiers
+- Updated `uuid` package from v9.0.0 to v10.0.0 (required for UUIDv7 support)
+- Server-side UUID generation now uses UUIDv7 via `uuid.v7()` in `graphService.js`
+- Client-side UUID generation now uses UUIDv7 via local utility in `public/utils/uuid.js`
+
+### Added
+- `public/utils/uuid.js` - Local UUID utility that uses Node.js `require()` to access uuid package from node_modules
+- UUIDv7 generation for better database performance and chronological ordering
+
+### Fixed
+- Fixed CDN dependency issue - now uses local uuid package (works completely offline)
+- UUID generation now works without internet connection (local-first architecture)
+
+### Technical Details
+- UUIDv7 provides time-ordered identifiers, improving SQLite index locality and insert performance
+- UUIDs naturally sort chronologically, making debugging and queries easier
+- Local utility uses Electron's `nodeIntegration: true` to access node_modules directly
+- Server-side fallback generation uses UUIDv7 when client doesn't provide ID
+- All existing UUIDv4 IDs remain valid; only new IDs use UUIDv7 format
+
 ## [0.1.9] - 2025-11-22
 
 ### Added

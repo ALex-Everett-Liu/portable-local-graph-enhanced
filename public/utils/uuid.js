@@ -1,28 +1,30 @@
 /**
  * UUID utility for generating UUIDv7 identifiers
- * Uses uuid package v10+ which supports UUIDv7
+ * Uses local uuid package v10+ from node_modules (works offline)
+ * Electron with nodeIntegration: true allows direct require() access
  */
 
 let uuidv7Function = null;
 
-// Preload UUID v7 module immediately
-import('https://esm.sh/uuid@10.0.0')
-    .then((uuidModule) => {
-        uuidv7Function = uuidModule.v7;
-    })
-    .catch((error) => {
-        console.error('Failed to load UUID v7 from CDN:', error);
-        // Fallback to crypto.randomUUID() (v4)
+// Use Node.js require to access local uuid package (works offline)
+if (typeof require !== 'undefined') {
+    try {
+        const uuid = require('uuid');
+        uuidv7Function = uuid.v7;
+    } catch (error) {
+        console.error('Failed to load uuid package from node_modules:', error);
+        // Fallback to crypto.randomUUID() (v4) if require fails
         uuidv7Function = () => crypto.randomUUID();
-    });
-
-// Synchronous wrapper that uses cached function or falls back
-export function generateUUID() {
-    if (uuidv7Function) {
-        return uuidv7Function();
     }
-    // Fallback while loading (will use v4 temporarily)
-    return crypto.randomUUID();
+} else {
+    // Fallback if require is not available (shouldn't happen in Electron)
+    console.warn('require() not available, falling back to crypto.randomUUID() (v4)');
+    uuidv7Function = () => crypto.randomUUID();
+}
+
+// Export function that generates UUIDv7
+export function generateUUID() {
+    return uuidv7Function();
 }
 
 // Export default
