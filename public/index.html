@@ -1,203 +1,452 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manual Graph Drawing App</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="app-container">
-        <div class="toolbar">
-            <div class="toolbar-section">
-                <button id="node-mode" class="tool-btn active" title="Node Mode">
-                    <span class="icon">⚫</span>
-                    <span>Node</span>
-                </button>
-                <button id="edge-mode" class="tool-btn" title="Edge Mode">
-                    <span class="icon">🔗</span>
-                    <span>Edge</span>
-                </button>
-                <button id="select-mode" class="tool-btn" title="Select Mode">
-                    <span class="icon">👆</span>
-                    <span>Select</span>
-                </button>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Manual Graph Drawing App</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div class="app-container">
+            <div class="toolbar">
+                <div class="toolbar-section">
+                    <button
+                        id="node-mode"
+                        class="tool-btn active"
+                        title="Node Mode"
+                    >
+                        <span class="icon">⚫</span>
+                        <span>Node</span>
+                    </button>
+                    <button id="edge-mode" class="tool-btn" title="Edge Mode">
+                        <span class="icon">🔗</span>
+                        <span>Edge</span>
+                    </button>
+                    <button
+                        id="select-mode"
+                        class="tool-btn"
+                        title="Select Mode"
+                    >
+                        <span class="icon">👆</span>
+                        <span>Select</span>
+                    </button>
+                </div>
+
+                <div class="toolbar-section">
+                    <button
+                        id="load-btn"
+                        class="tool-btn"
+                        title="Load Database"
+                    >
+                        <span class="icon">📂</span>
+                        <span>Load</span>
+                    </button>
+                    <button id="save-as-btn" class="tool-btn" title="Save As">
+                        <span class="icon">💾</span>
+                        <span>Save As</span>
+                    </button>
+                    <button
+                        id="clear-btn"
+                        class="tool-btn danger"
+                        title="Clear All"
+                    >
+                        <span class="icon">🗑️</span>
+                    </button>
+                </div>
+
+                <div class="toolbar-section">
+                    <button
+                        id="save-changes"
+                        class="tool-btn"
+                        title="Save Changes"
+                        style="display: none"
+                    >
+                        <span class="icon">💾</span>
+                        <span>Save Changes</span>
+                    </button>
+                    <button
+                        id="discard-changes"
+                        class="tool-btn"
+                        title="Discard Changes"
+                        style="display: none"
+                    >
+                        <span class="icon">↶</span>
+                        <span>Discard</span>
+                    </button>
+                </div>
             </div>
-            
-            <div class="toolbar-section">
-                <button id="load-btn" class="tool-btn" title="Load Database">
-                    <span class="icon">📂</span>
-                    <span>Load</span>
-                </button>
-                <button id="save-as-btn" class="tool-btn" title="Save As">
-                    <span class="icon">💾</span>
-                    <span>Save As</span>
-                </button>
-                <button id="clear-btn" class="tool-btn danger" title="Clear All">
-                    <span class="icon">🗑️</span>
-                </button>
-            </div>
-            
-            <div class="toolbar-section">
-                <button id="save-changes" class="tool-btn" title="Save Changes" style="display: none;">
-                    <span class="icon">💾</span>
-                    <span>Save Changes</span>
-                </button>
-                <button id="discard-changes" class="tool-btn" title="Discard Changes" style="display: none;">
-                    <span class="icon">↶</span>
-                    <span>Discard</span>
-                </button>
+
+            <div class="main-content">
+                <div class="canvas-container">
+                    <canvas id="graph-canvas" width="800" height="600"></canvas>
+                    <div id="weight-dialog" class="dialog hidden">
+                        <div class="dialog-content">
+                            <h3>Set Edge Properties</h3>
+                            <label>Weight:</label>
+                            <input
+                                type="number"
+                                id="weight-input"
+                                placeholder="Enter weight"
+                                step="0.1"
+                                min="0"
+                            />
+                            <label>Category:</label>
+                            <input
+                                type="text"
+                                id="edge-category"
+                                placeholder="Category (optional)"
+                            />
+                            <div style="margin: 15px 0; text-align: center">
+                                <button
+                                    id="reverse-edge-btn"
+                                    class="tool-btn"
+                                    style="
+                                        background: #007bff;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 4px;
+                                        padding: 8px 16px;
+                                        font-size: 12px;
+                                    "
+                                >
+                                    ↺ Reverse Direction
+                                </button>
+                            </div>
+                            <div class="dialog-buttons">
+                                <button id="weight-ok">OK</button>
+                                <button id="weight-cancel">Cancel</button>
+                                <button id="weight-delete" class="danger">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="node-dialog" class="dialog hidden">
+                        <div class="dialog-content">
+                            <h3>Edit Node</h3>
+                            <input
+                                type="text"
+                                id="node-label"
+                                placeholder="Node label (English)"
+                            />
+                            <input
+                                type="text"
+                                id="node-chinese"
+                                placeholder="中文标签 (Chinese)"
+                            />
+                            <div
+                                style="
+                                    display: flex;
+                                    gap: 8px;
+                                    align-items: center;
+                                "
+                            >
+                                <input
+                                    type="color"
+                                    id="node-color"
+                                    value="#507F80"
+                                />
+                                <input
+                                    type="text"
+                                    id="node-color-hex"
+                                    placeholder="#507F80"
+                                    style="width: 80px; font-family: monospace"
+                                />
+                            </div>
+                            <label>Position:</label>
+                            <div
+                                style="
+                                    display: flex;
+                                    gap: 8px;
+                                    align-items: center;
+                                "
+                            >
+                                <label style="font-size: 12px">X:</label>
+                                <input
+                                    type="number"
+                                    id="node-x"
+                                    placeholder="X coordinate"
+                                    step="1"
+                                    style="width: 80px"
+                                />
+                                <label style="font-size: 12px">Y:</label>
+                                <input
+                                    type="number"
+                                    id="node-y"
+                                    placeholder="Y coordinate"
+                                    step="1"
+                                    style="width: 80px"
+                                />
+                            </div>
+                            <input
+                                type="text"
+                                id="node-category"
+                                placeholder="Category (optional)"
+                            />
+                            <label>Layers:</label>
+                            <input
+                                type="text"
+                                id="node-layers"
+                                placeholder="Enter layers (comma-separated)"
+                            />
+                            <label>Size:</label>
+                            <input
+                                type="range"
+                                id="node-size"
+                                min="1"
+                                max="100"
+                                value="20"
+                                step="1"
+                            />
+                            <span id="size-display">20</span>
+                            <div class="dialog-buttons">
+                                <button id="node-ok">OK</button>
+                                <button id="node-cancel">Cancel</button>
+                                <button id="node-delete" class="danger">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="load-dialog" class="dialog hidden">
+                        <div class="dialog-content">
+                            <h3>Load Database</h3>
+                            <p
+                                style="
+                                    font-size: 12px;
+                                    color: #666;
+                                    margin-bottom: 12px;
+                                "
+                            >
+                                Select a database file to load. Current unsaved
+                                changes will be lost.
+                            </p>
+                            <div
+                                id="database-list"
+                                style="
+                                    max-height: 300px;
+                                    overflow-y: auto;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                    padding: 8px;
+                                "
+                            >
+                                <p style="text-align: center; color: #999">
+                                    Loading databases...
+                                </p>
+                            </div>
+                            <div
+                                id="database-pagination"
+                                style="
+                                    display: none;
+                                    margin-top: 8px;
+                                    text-align: center;
+                                    font-size: 12px;
+                                "
+                            >
+                                <button
+                                    id="pagination-prev"
+                                    style="
+                                        padding: 6px 16px;
+                                        margin: 0 4px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 4px;
+                                        background: #f9f9f9;
+                                        cursor: pointer;
+                                        transition: all 0.2s;
+                                    "
+                                >
+                                    ← Prev
+                                </button>
+                                <span
+                                    id="pagination-info"
+                                    style="
+                                        margin: 0 8px;
+                                        color: #666;
+                                        font-weight: 500;
+                                    "
+                                ></span>
+                                <span style="margin: 0 4px; color: #666"
+                                    >Go to page:</span
+                                >
+                                <input
+                                    type="number"
+                                    id="pagination-input"
+                                    min="1"
+                                    value="1"
+                                    style="
+                                        width: 50px;
+                                        padding: 4px;
+                                        margin: 0 4px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 4px;
+                                        text-align: center;
+                                        font-size: 12px;
+                                    "
+                                />
+                                <span
+                                    id="pagination-total"
+                                    style="margin: 0 4px; color: #666"
+                                ></span>
+                                <button
+                                    id="pagination-go"
+                                    style="
+                                        padding: 6px 12px;
+                                        margin: 0 4px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 4px;
+                                        background: #f9f9f9;
+                                        cursor: pointer;
+                                        transition: all 0.2s;
+                                    "
+                                >
+                                    Go
+                                </button>
+                                <button
+                                    id="pagination-next"
+                                    style="
+                                        padding: 6px 16px;
+                                        margin: 0 4px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 4px;
+                                        background: #f9f9f9;
+                                        cursor: pointer;
+                                        transition: all 0.2s;
+                                    "
+                                >
+                                    Next →
+                                </button>
+                            </div>
+                            <div class="dialog-buttons">
+                                <button id="load-ok">Load</button>
+                                <button id="load-cancel">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="save-as-dialog" class="dialog hidden">
+                        <div class="dialog-content">
+                            <h3>Save As</h3>
+                            <p
+                                style="
+                                    font-size: 12px;
+                                    color: #666;
+                                    margin-bottom: 12px;
+                                "
+                            >
+                                Save current workspace to a new database file.
+                            </p>
+                            <label>Database filename:</label>
+                            <input
+                                type="text"
+                                id="save-as-filename"
+                                placeholder="e.g., my-graph.db"
+                                style="
+                                    width: 100%;
+                                    padding: 8px;
+                                    margin-bottom: 8px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                "
+                            />
+                            <p
+                                style="
+                                    font-size: 11px;
+                                    color: #999;
+                                    margin-top: 4px;
+                                "
+                            >
+                                File will be saved in the data/ directory.
+                                Include .db extension.
+                            </p>
+                            <div class="dialog-buttons">
+                                <button id="save-as-ok">Save</button>
+                                <button id="save-as-cancel">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar" id="local-graph-sidebar">
+                    <div
+                        class="resize-handle"
+                        id="local-graph-resize-handle"
+                    ></div>
+                    <div class="sidebar-section">
+                        <h3>Graph Info</h3>
+                        <div id="graph-info">
+                            <p>Nodes: <span id="node-count">0</span></p>
+                            <p>Edges: <span id="edge-count">0</span></p>
+                            <p>Mode: <span id="current-mode">Node</span></p>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Selected</h3>
+                        <div id="selection-info">
+                            <p>Nothing selected</p>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Instructions</h3>
+                        <div class="instructions">
+                            <p>
+                                <strong>Node Mode:</strong> Click to create
+                                nodes
+                            </p>
+                            <p>
+                                <strong>Edge Mode:</strong> Click two nodes to
+                                connect
+                            </p>
+                            <p>
+                                <strong>Select Mode:</strong> Click to
+                                select/move nodes
+                            </p>
+                            <p>
+                                <strong>Right-click:</strong> Edit node/edge
+                                properties
+                            </p>
+                            <p>
+                                <strong>Drag:</strong> Move nodes or pan canvas
+                            </p>
+                            <p><strong>Scroll:</strong> Zoom in/out</p>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h4>Display Options</h4>
+                        <div class="filter-controls">
+                            <div style="margin-bottom: 8px">
+                                <label
+                                    style="
+                                        font-size: 11px;
+                                        display: flex;
+                                        align-items: center;
+                                        cursor: pointer;
+                                    "
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id="show-edge-arrows"
+                                        style="margin-right: 6px"
+                                    />
+                                    Show Edge Arrows
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div class="main-content">
-            <div class="canvas-container">
-                <canvas id="graph-canvas" width="800" height="600"></canvas>
-                <div id="weight-dialog" class="dialog hidden">
-                    <div class="dialog-content">
-                        <h3>Set Edge Properties</h3>
-                        <label>Weight:</label>
-                        <input type="number" id="weight-input" placeholder="Enter weight" step="0.1" min="0">
-                        <label>Category:</label>
-                        <input type="text" id="edge-category" placeholder="Category (optional)">
-                        <div style="margin: 15px 0; text-align: center;">
-                            <button id="reverse-edge-btn" class="tool-btn" style="background: #007bff; color: white; border: none; border-radius: 4px; padding: 8px 16px; font-size: 12px;">
-                                ↺ Reverse Direction
-                            </button>
-                        </div>
-                        <div class="dialog-buttons">
-                            <button id="weight-ok">OK</button>
-                            <button id="weight-cancel">Cancel</button>
-                            <button id="weight-delete" class="danger">Delete</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="node-dialog" class="dialog hidden">
-                    <div class="dialog-content">
-                        <h3>Edit Node</h3>
-                        <input type="text" id="node-label" placeholder="Node label (English)">
-                        <input type="text" id="node-chinese" placeholder="中文标签 (Chinese)">
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <input type="color" id="node-color" value="#3b82f6">
-                            <input type="text" id="node-color-hex" placeholder="#3b82f6" style="width: 80px; font-family: monospace;">
-                        </div>
-                        <label>Position:</label>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <label style="font-size: 12px;">X:</label>
-                            <input type="number" id="node-x" placeholder="X coordinate" step="1" style="width: 80px;">
-                            <label style="font-size: 12px;">Y:</label>
-                            <input type="number" id="node-y" placeholder="Y coordinate" step="1" style="width: 80px;">
-                        </div>
-                        <input type="text" id="node-category" placeholder="Category (optional)">
-                        <label>Layers:</label>
-                        <input type="text" id="node-layers" placeholder="Enter layers (comma-separated)">
-                        <label>Size:</label>
-                        <input type="range" id="node-size" min="1" max="100" value="20" step="1">
-                        <span id="size-display">20</span>
-                        <div class="dialog-buttons">
-                            <button id="node-ok">OK</button>
-                            <button id="node-cancel">Cancel</button>
-                            <button id="node-delete" class="danger">Delete</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="load-dialog" class="dialog hidden">
-                    <div class="dialog-content">
-                        <h3>Load Database</h3>
-                        <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
-                            Select a database file to load. Current unsaved changes will be lost.
-                        </p>
-                        <div id="database-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 8px;">
-                            <p style="text-align: center; color: #999;">Loading databases...</p>
-                        </div>
-                        <div id="database-pagination" style="display: none; margin-top: 8px; text-align: center; font-size: 12px;">
-                            <button id="pagination-prev" style="padding: 6px 16px; margin: 0 4px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; cursor: pointer; transition: all 0.2s;">← Prev</button>
-                            <span id="pagination-info" style="margin: 0 8px; color: #666; font-weight: 500;"></span>
-                            <span style="margin: 0 4px; color: #666;">Go to page:</span>
-                            <input type="number" id="pagination-input" min="1" value="1" style="width: 50px; padding: 4px; margin: 0 4px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 12px;">
-                            <span id="pagination-total" style="margin: 0 4px; color: #666;"></span>
-                            <button id="pagination-go" style="padding: 6px 12px; margin: 0 4px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; cursor: pointer; transition: all 0.2s;">Go</button>
-                            <button id="pagination-next" style="padding: 6px 16px; margin: 0 4px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; cursor: pointer; transition: all 0.2s;">Next →</button>
-                        </div>
-                        <div class="dialog-buttons">
-                            <button id="load-ok">Load</button>
-                            <button id="load-cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="save-as-dialog" class="dialog hidden">
-                    <div class="dialog-content">
-                        <h3>Save As</h3>
-                        <p style="font-size: 12px; color: #666; margin-bottom: 12px;">
-                            Save current workspace to a new database file.
-                        </p>
-                        <label>Database filename:</label>
-                        <input type="text" id="save-as-filename" placeholder="e.g., my-graph.db" style="width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <p style="font-size: 11px; color: #999; margin-top: 4px;">
-                            File will be saved in the data/ directory. Include .db extension.
-                        </p>
-                        <div class="dialog-buttons">
-                            <button id="save-as-ok">Save</button>
-                            <button id="save-as-cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
 
-            <div class="sidebar" id="local-graph-sidebar">
-                <div class="resize-handle" id="local-graph-resize-handle"></div>
-                <div class="sidebar-section">
-                    <h3>Graph Info</h3>
-                    <div id="graph-info">
-                        <p>Nodes: <span id="node-count">0</span></p>
-                        <p>Edges: <span id="edge-count">0</span></p>
-                        <p>Mode: <span id="current-mode">Node</span></p>
-                    </div>
-                </div>
-                
-                <div class="sidebar-section">
-                    <h3>Selected</h3>
-                    <div id="selection-info">
-                        <p>Nothing selected</p>
-                    </div>
-                </div>
-                
-                <div class="sidebar-section">
-                    <h3>Instructions</h3>
-                    <div class="instructions">
-                        <p><strong>Node Mode:</strong> Click to create nodes</p>
-                        <p><strong>Edge Mode:</strong> Click two nodes to connect</p>
-                        <p><strong>Select Mode:</strong> Click to select/move nodes</p>
-                        <p><strong>Right-click:</strong> Edit node/edge properties</p>
-                        <p><strong>Drag:</strong> Move nodes or pan canvas</p>
-                        <p><strong>Scroll:</strong> Zoom in/out</p>
-                    </div>
-                </div>
+        <!-- Load UI functions -->
+        <script src="ui-functions.js"></script>
 
-                <div class="sidebar-section">
-                    <h4>Display Options</h4>
-                    <div class="filter-controls">
-                        <div style="margin-bottom: 8px;">
-                            <label style="font-size: 11px; display: flex; align-items: center; cursor: pointer;">
-                                <input type="checkbox" id="show-edge-arrows" style="margin-right: 6px;">
-                                Show Edge Arrows
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Load UI functions -->
-    <script src="ui-functions.js"></script>
-    
-    <!-- Main Application -->
-    <script type="module" src="graph.js"></script>
-    <script type="module" src="app.js"></script>
-</body>
+        <!-- Main Application -->
+        <script type="module" src="graph.js"></script>
+        <script type="module" src="app.js"></script>
+    </body>
 </html>

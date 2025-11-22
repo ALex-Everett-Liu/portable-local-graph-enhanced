@@ -16,13 +16,13 @@ export function getEdgeLineWidth(weight) {
   // Higher weight = thinner line (more distant/expensive)
   // Lower weight = thicker line (closer/cheaper)
 
-  const clampedWeight = Math.max(0.1, Math.min(30, weight));
+  const clampedWeight = Math.max(WEIGHT_MAPPING.MIN_WEIGHT, Math.min(WEIGHT_MAPPING.MAX_WEIGHT, weight));
 
   // Inverted logarithmic mapping
   // Small weights (close) = thick lines
   // Large weights (distant) = thin lines
-  const logWeight = Math.log(clampedWeight + 0.1) + 2.3;
-  const normalized = Math.max(0, Math.min(1, (logWeight - 1.5) / 3.5));
+  const logWeight = WEIGHT_MAPPING.LOG_BASE(clampedWeight + 0.1) + WEIGHT_MAPPING.LOG_OFFSET;
+  const normalized = Math.max(0, Math.min(1, (logWeight - WEIGHT_MAPPING.MIN_LOG_WEIGHT) / (WEIGHT_MAPPING.MAX_LOG_WEIGHT - WEIGHT_MAPPING.MIN_LOG_WEIGHT)));
 
   // Invert the mapping: 1 - normalized
   const invertedNormalized = 1 - normalized;

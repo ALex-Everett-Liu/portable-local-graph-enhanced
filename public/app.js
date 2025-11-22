@@ -1,5 +1,6 @@
 // Main application orchestrator
 import { Graph } from './graph.js';
+import { GRAPH_CONSTANTS } from './utils/constants.js';
 import { setGraph } from './state/appState.js';
 import { setupEventListeners, setupDialogs } from './ui/eventListeners.js';
 import { setupContextMenu } from './ui/contextMenu.js';
@@ -44,6 +45,9 @@ function init() {
     window.trackEdgeCreate = trackEdgeCreate;
     window.trackEdgeUpdate = trackEdgeUpdate;
     window.trackEdgeDelete = trackEdgeDelete;
+    
+    // Expose constants on window for non-module scripts
+    window.GRAPH_CONSTANTS = GRAPH_CONSTANTS;
 
     // Setup UI components
     setupEventListeners();

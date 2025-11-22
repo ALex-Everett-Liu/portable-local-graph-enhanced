@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2025-11-22
+
+### Added
+- Comprehensive constants system matching legacy code structure
+- Missing constants: visual defaults, ranges, text settings, animation, zoom limits, interaction, centrality calculations
+- `WEIGHT_MAPPING` structure with logarithmic mapping constants (`MIN_LOG_WEIGHT`, `MAX_LOG_WEIGHT`, `LOG_OFFSET`, `LOG_BASE`, `INVERT_MAPPING`)
+- Constants exposed on `window` object for non-module scripts
+- Documentation in `docs/CONSTANTS_UPDATE_SUMMARY.md`
+
+### Changed
+- Expanded `public/utils/constants.js` from 24 to 72 lines to match legacy
+- Updated default node color from `#6737E8` to `#507F80`
+- Updated grid settings: `GRID_SIZE` 50 → 30, `GRID_COLOR` '#e0e0e0' → '#F0F0F0', `GRID_LINE_WIDTH` 0.5 → 1
+- Updated font settings: `DEFAULT_FONT_SIZE` 12 → 14, `DEFAULT_FONT_FAMILY` 'Arial, sans-serif' → 'Arial'
+- Updated animation: `PULSE_AMPLITUDE` 0.15 → 0.2, `PULSE_FREQUENCY` 0.01 → 0.005
+- Replaced all hardcoded values with constants throughout codebase
+- Updated `graph.js` to use `GRAPH_CONSTANTS.DEFAULT_NODE_RADIUS`, `DEFAULT_NODE_COLOR`, `MIN_SCALE`, `MAX_SCALE`
+- Updated `styles.js` to use `WEIGHT_MAPPING` constants for weight calculations
+- Updated `graph-renderer.js` to use `TEXT_BACKGROUND_COLOR` and `TEXT_COLOR` constants
+- Updated `ui-functions.js` to use constants via `window.GRAPH_CONSTANTS`
+- Updated `index.html` default color values to match constants
+
+### Fixed
+- Eliminated hardcoded magic numbers scattered across codebase
+- Inconsistent default values between files (e.g., node color, radius)
+- Missing constants for features that existed but weren't configurable
+
+### Technical Details
+- All constants centralized in `public/utils/constants.js`
+- Constants properly exported and imported in ES modules
+- Constants exposed on window for compatibility with non-module scripts (`ui-functions.js`)
+- Legacy compatibility maintained in `WEIGHT_MAPPING` structure
+- Improved maintainability: change constants once, affects entire codebase
+
 ## [0.1.8] - 2025-11-22
 
 ### Fixed

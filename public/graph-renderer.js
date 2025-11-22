@@ -362,7 +362,7 @@ export class GraphRenderer {
         
         // Add background if text is larger than node
         if (needsTextBackground(textDimensions.width, radius)) {
-            this.ctx.fillStyle = 'rgba(105, 105, 105, 0.7)';
+            this.ctx.fillStyle = GRAPH_CONSTANTS.TEXT_BACKGROUND_COLOR;
             const padding = 4 / scale;
             this.ctx.fillRect(
                 node.x - textDimensions.width / 2 - padding,
@@ -373,7 +373,7 @@ export class GraphRenderer {
         }
         
         // Draw text
-        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillStyle = GRAPH_CONSTANTS.TEXT_COLOR;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         this.ctx.fillText(displayLabel, node.x, node.y);

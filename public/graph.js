@@ -1,6 +1,7 @@
 import { GraphRenderer } from './graph-renderer.js';
 import { getScaledRadius } from './styles.js';
 import { screenToWorld } from './utils/geometry.js';
+import { GRAPH_CONSTANTS } from './utils/constants.js';
 
 class Graph {
     constructor(canvas, callbacks = {}) {
@@ -62,14 +63,14 @@ class Graph {
         document.body.appendChild(this.tooltip);
     }
 
-    addNode(x, y, label = 'Node', color = '#3b82f6') {
+    addNode(x, y, label = 'Node', color = GRAPH_CONSTANTS.DEFAULT_NODE_COLOR) {
         const node = {
             id: crypto.randomUUID(),
             x: x,
             y: y,
             label: label,
             color: color,
-            radius: 20,
+            radius: GRAPH_CONSTANTS.DEFAULT_NODE_RADIUS,
         };
         this.nodes.push(node);
         this.render();
@@ -286,7 +287,7 @@ class Graph {
         e.preventDefault();
         const delta = e.deltaY > 0 ? 0.9 : 1.1;
         this.scale *= delta;
-        this.scale = Math.max(0.1, Math.min(5, this.scale));
+        this.scale = Math.max(GRAPH_CONSTANTS.MIN_SCALE, Math.min(GRAPH_CONSTANTS.MAX_SCALE, this.scale));
         this.render();
     }
 
