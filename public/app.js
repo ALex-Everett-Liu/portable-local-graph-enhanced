@@ -1,4 +1,5 @@
 // Main application orchestrator
+import { Graph } from './graph.js';
 import { setGraph } from './state/appState.js';
 import { setupEventListeners, setupDialogs } from './ui/eventListeners.js';
 import { setupContextMenu } from './ui/contextMenu.js';

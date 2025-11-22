@@ -1,3 +1,5 @@
+import { GraphRenderer } from './graph-renderer.js';
+
 class Graph {
     constructor(canvas, callbacks = {}) {
         this.canvas = canvas;
@@ -15,6 +17,9 @@ class Graph {
         
         // Callbacks for database persistence
         this.callbacks = callbacks;
+
+        // Initialize GraphRenderer
+        this.renderer = new GraphRenderer(canvas);
 
         this.setupCanvas();
         this.bindEvents();
@@ -159,28 +164,25 @@ class Graph {
     }
 
     render() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // Apply transformations for scale and offset
-        this.ctx.save();
-        this.ctx.translate(this.offset.x, this.offset.y);
-        this.ctx.scale(this.scale, this.scale);
-
-        // Draw edges
-        this.edges.forEach(edge => {
-            const fromNode = this.nodes.find(n => n.id === edge.from);
-            const toNode = this.nodes.find(n => n.id === edge.to);
-            if (fromNode && toNode) {
-                this.drawEdge(fromNode, toNode, edge);
-            }
-        });
-
-        // Draw nodes
-        this.nodes.forEach(node => {
-            this.drawNode(node);
-        });
-
-        this.ctx.restore();
+        const viewState = {
+            scale: this.scale,
+            offset: this.offset
+        };
+        
+        const selectionState = {
+            selectedNode: this.selectedNode,
+            selectedEdge: this.selectedEdge,
+            highlightedNodes: []
+        };
+        
+        const filterState = {
+            layerFilterEnabled: false,
+            activeLayers: new Set(),
+            layerFilterMode: 'include'
+        };
+        
+        // Use GraphRenderer for all rendering
+        this.renderer.render(this.nodes, this.edges, viewState, selectionState, filterState);
     }
 
     drawNode(node) {
@@ -370,4 +372,7 @@ class Graph {
         // It's not used when importing from file, which should trigger database import
     }
 }
+
+// Export Graph class for use in modules
+export { Graph };
 
