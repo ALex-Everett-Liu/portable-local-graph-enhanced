@@ -335,17 +335,13 @@ export class GraphRenderer {
      * @param {boolean} isSelected - Whether node is selected
      */
     renderStandardNode(node, radius, scale, isSelected) {
-        // Use helper functions for consistent styling
-        const nodeColor = getNodeColor(node, isSelected, false);
-        const borderColor = getNodeBorderColor(node, isSelected, false);
-        
         this.ctx.beginPath();
         this.ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = nodeColor;
+        this.ctx.fillStyle = isSelected ? '#87CEFA' : node.color;
         this.ctx.fill();
         
         if (this.options.showNodeBorders) {
-            this.ctx.strokeStyle = borderColor;
+            this.ctx.strokeStyle = isSelected ? '#B0C4DE' : '#C0C0C0';
             this.ctx.lineWidth = getScaledLineWidth(isSelected ? 3 : 2, scale);
             this.ctx.stroke();
         }
@@ -532,3 +528,4 @@ export class GraphRenderer {
         this.ctx.restore();
     }
 }
+
