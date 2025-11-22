@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7] - 2025-11-21
+
+### Added
+- Resizable sidebar functionality - users can drag the left edge of the sidebar to adjust its width
+- Sidebar width persistence - sidebar width is saved to localStorage and restored on page load
+- `ui/sidebarResizer.js` module for managing sidebar resize functionality
+
+### Fixed
+- Fixed canvas distortion (compression/stretching) when resizing sidebar by triggering canvas resize
+- Canvas now properly updates its dimensions when sidebar width changes
+
+### Changed
+- Updated `app.js` to initialize sidebar resizer on application startup
+- Sidebar resize handle now provides visual feedback during drag operations
+
+### Technical Details
+- Resize handle positioned on left edge of sidebar with hover/active states
+- Throttled canvas resize calls (~60fps) for smooth performance during drag
+- Window resize handler ensures sidebar doesn't exceed 60% of viewport width
+- Canvas resize triggered via Graph's `resizeCanvas()` method to maintain proper aspect ratio
+
 ## [0.1.6] - 2025-11-21
 
 ### Added

@@ -6,6 +6,37 @@
  * with persistence to localStorage.
  */
 
+import { getGraph } from '../state/appState.js';
+
+/**
+ * Throttle function to limit how often resize is called
+ */
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+/**
+ * Trigger canvas resize to fix distortion when sidebar changes
+ */
+const triggerCanvasResize = throttle(() => {
+    // Use requestAnimationFrame to ensure DOM has updated
+    requestAnimationFrame(() => {
+        const graph = getGraph();
+        if (graph && typeof graph.resizeCanvas === 'function') {
+            graph.resizeCanvas();
+        }
+    });
+}, 16); // ~60fps throttle
+
 /**
  * Initialize the resizable sidebar functionality
  * @param {string} sidebarId - ID of the sidebar element (default: 'local-graph-sidebar')
@@ -34,6 +65,9 @@ export function initSidebarResizer(sidebarId = 'local-graph-sidebar', resizeHand
         // Ensure saved width is within valid bounds
         if (width >= minWidth && width <= maxWidth) {
             sidebar.style.width = width + 'px';
+            // Trigger canvas resize after loading saved width
+            // Use setTimeout to ensure graph is initialized
+            setTimeout(() => triggerCanvasResize(), 100);
         }
     }
     
@@ -58,6 +92,9 @@ export function initSidebarResizer(sidebarId = 'local-graph-sidebar', resizeHand
         // Constrain width between min and max
         const constrainedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
         sidebar.style.width = constrainedWidth + 'px';
+        
+        // Trigger canvas resize to prevent distortion
+        triggerCanvasResize();
     });
     
     // Mouse up to stop resizing
@@ -68,6 +105,9 @@ export function initSidebarResizer(sidebarId = 'local-graph-sidebar', resizeHand
             
             // Save width to localStorage
             localStorage.setItem('sidebarWidth', sidebar.offsetWidth.toString());
+            
+            // Final canvas resize to ensure correct dimensions
+            triggerCanvasResize();
         }
     });
     
@@ -80,6 +120,10 @@ export function initSidebarResizer(sidebarId = 'local-graph-sidebar', resizeHand
             sidebar.style.width = maxWidth + 'px';
             localStorage.setItem('sidebarWidth', maxWidth.toString());
         }
+        
+        // Canvas resize is already handled by Graph's window resize listener
+        // but we trigger it here too in case sidebar width changed
+        triggerCanvasResize();
     });
 }
 
