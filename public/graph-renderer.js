@@ -9,8 +9,6 @@ import {
 } from './utils/geometry.js';
 import {
     getEdgeLineWidth,
-    getEdgeColor,
-    getEdgeLabelBackgroundColor,
     getScaledRadius,
     getScaledLineWidth,
     getScaledTextSize,
@@ -142,12 +140,11 @@ export class GraphRenderer {
      * @param {boolean} isSelected - Whether edge is selected
      */
     renderEdge(from, to, edge, scale, isSelected) {
-        // Use weight-based color calculation
-        const edgeColor = getEdgeColor(edge.weight, isSelected);
-        const baseLineWidth = isSelected ? 3 : getEdgeLineWidth(edge.weight);
-        
-        this.ctx.strokeStyle = edgeColor;
-        this.ctx.lineWidth = getScaledLineWidth(baseLineWidth, scale);
+        this.ctx.strokeStyle = isSelected ? '#F4A460' : '#EFF0E9';
+        this.ctx.lineWidth = getScaledLineWidth(
+            isSelected ? 3 : getEdgeLineWidth(edge.weight), 
+            scale
+        );
         
         this.ctx.beginPath();
         this.ctx.moveTo(from.x, from.y);
@@ -157,7 +154,7 @@ export class GraphRenderer {
         // Draw arrow if enabled in app state
         const showArrows = window.appState && window.appState.showEdgeArrows === true;
         if (showArrows) {
-            this.renderEdgeArrow(from, to, scale, edgeColor);
+            this.renderEdgeArrow(from, to, scale);
         }
         
         // Always draw weight label
@@ -169,9 +166,8 @@ export class GraphRenderer {
      * @param {Object} from - From node
      * @param {Object} to - To node
      * @param {number} scale - Current zoom scale
-     * @param {string} edgeColor - Color of the edge
      */
-    renderEdgeArrow(from, to, scale, edgeColor = '#ff0000') {
+    renderEdgeArrow(from, to, scale) {
         // Calculate direction vector
         const dx = to.x - from.x;
         const dy = to.y - from.y;
@@ -179,16 +175,13 @@ export class GraphRenderer {
         
         if (length === 0) return;
         
-        // Calculate arrow position (near the end of the line, accounting for node radius)
-        const fromRadius = getScaledRadius(from.radius || 10, scale);
-        const toRadius = getScaledRadius(to.radius || 10, scale);
-        const arrowDistance = (toRadius + 15 / scale); // Distance from target node center
+        // Calculate arrow position (near the end of the line)
+        const arrowDistance = 15 / scale; // Distance from target node
         const arrowX = to.x - (dx / length) * arrowDistance;
         const arrowY = to.y - (dy / length) * arrowDistance;
         
-        // Calculate arrow size based on scale and edge line width
-        const baseArrowSize = 8;
-        const arrowSize = Math.max(4, baseArrowSize / scale);
+        // Calculate arrow size based on scale
+        const arrowSize = 8 / scale;
         const arrowAngle = Math.PI / 6; // 30 degrees
         
         // Calculate arrow points
@@ -198,19 +191,14 @@ export class GraphRenderer {
         const x2 = arrowX - arrowSize * Math.cos(angle + arrowAngle);
         const y2 = arrowY - arrowSize * Math.sin(angle + arrowAngle);
         
-        // Draw arrow with edge color (darker shade for visibility)
-        this.ctx.fillStyle = edgeColor;
+        // Draw arrow
+        this.ctx.fillStyle = '#ff0000';
         this.ctx.beginPath();
         this.ctx.moveTo(arrowX, arrowY);
         this.ctx.lineTo(x1, y1);
         this.ctx.lineTo(x2, y2);
         this.ctx.closePath();
         this.ctx.fill();
-        
-        // Add subtle border for better visibility
-        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-        this.ctx.lineWidth = getScaledLineWidth(0.5, scale);
-        this.ctx.stroke();
     }
 
     /**
@@ -224,65 +212,11 @@ export class GraphRenderer {
         const midX = (from.x + to.x) / 2;
         const midY = (from.y + to.y) / 2;
         
-        const labelText = edge.weight.toFixed(1);
-        const fontSize = getScaledTextSize(11, scale);
-        this.ctx.font = getFontString(11, scale);
-        
-        // Measure text for background
-        const textMetrics = this.ctx.measureText(labelText);
-        const textWidth = textMetrics.width;
-        const textHeight = fontSize;
-        
-        // Calculate label position (offset perpendicular to edge)
-        const dx = to.x - from.x;
-        const dy = to.y - from.y;
-        const edgeLength = Math.sqrt(dx * dx + dy * dy);
-        
-        if (edgeLength === 0) return;
-        
-        // Perpendicular offset for label positioning
-        const offsetDistance = 12 / scale;
-        const perpX = -dy / edgeLength * offsetDistance;
-        const perpY = dx / edgeLength * offsetDistance;
-        
-        const labelX = midX + perpX;
-        const labelY = midY + perpY;
-        
-        // Draw background with rounded corners effect
-        const padding = 4 / scale;
-        const bgColor = getEdgeLabelBackgroundColor(edge.weight);
-        
-        this.ctx.fillStyle = bgColor;
-        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-        this.ctx.lineWidth = getScaledLineWidth(0.5, scale);
-        
-        // Draw rounded rectangle background
-        const cornerRadius = 3 / scale;
-        const bgX = labelX - textWidth / 2 - padding;
-        const bgY = labelY - textHeight / 2 - padding;
-        const bgWidth = textWidth + padding * 2;
-        const bgHeight = textHeight + padding * 2;
-        
-        // Draw rounded rectangle manually for compatibility
-        this.ctx.beginPath();
-        this.ctx.moveTo(bgX + cornerRadius, bgY);
-        this.ctx.lineTo(bgX + bgWidth - cornerRadius, bgY);
-        this.ctx.quadraticCurveTo(bgX + bgWidth, bgY, bgX + bgWidth, bgY + cornerRadius);
-        this.ctx.lineTo(bgX + bgWidth, bgY + bgHeight - cornerRadius);
-        this.ctx.quadraticCurveTo(bgX + bgWidth, bgY + bgHeight, bgX + bgWidth - cornerRadius, bgY + bgHeight);
-        this.ctx.lineTo(bgX + cornerRadius, bgY + bgHeight);
-        this.ctx.quadraticCurveTo(bgX, bgY + bgHeight, bgX, bgY + bgHeight - cornerRadius);
-        this.ctx.lineTo(bgX, bgY + cornerRadius);
-        this.ctx.quadraticCurveTo(bgX, bgY, bgX + cornerRadius, bgY);
-        this.ctx.closePath();
-        this.ctx.fill();
-        this.ctx.stroke();
-        
-        // Draw text
-        this.ctx.fillStyle = '#333333';
+        this.ctx.fillStyle = '#000000';
+        this.ctx.font = getFontString(12, scale);
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(labelText, labelX, labelY);
+        this.ctx.fillText(edge.weight.toString(), midX, midY - 10 / scale);
     }
 
     /**
@@ -485,5 +419,116 @@ export class GraphRenderer {
     getOptions() {
         return { ...this.options };
     }
-}
 
+    /**
+     * Render a specific region (for partial updates)
+     * @param {Array} nodes - Nodes to render
+     * @param {Array} edges - Edges to render
+     * @param {Object} viewState - View state
+     * @param {Object} region - Region to render {x, y, width, height}
+     */
+    renderRegion(nodes, edges, viewState, region) {
+        this.ctx.save();
+        this.ctx.clearRect(region.x, region.y, region.width, region.height);
+        
+        // Clip to region
+        this.ctx.beginPath();
+        this.ctx.rect(region.x, region.y, region.width, region.height);
+        this.ctx.clip();
+        
+        // Render normally within region
+        this.render(nodes, edges, viewState);
+        
+        this.ctx.restore();
+    }
+
+    /**
+     * Take a snapshot of the current canvas
+     * @returns {ImageData} Canvas image data
+     */
+    snapshot() {
+        return this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
+     * Restore canvas from snapshot
+     * @param {ImageData} imageData - Image data to restore
+     */
+    restore(imageData) {
+        this.ctx.putImageData(imageData, 0, 0);
+    }
+
+    /**
+     * Export canvas as data URL
+     * @param {string} type - Image type (default 'image/png')
+     * @param {number} quality - Image quality (0-1, for JPEG)
+     * @returns {string} Data URL
+     */
+    toDataURL(type = 'image/png', quality = 1.0) {
+        return this.canvas.toDataURL(type, quality);
+    }
+
+    /**
+     * Export canvas as blob
+     * @param {Function} callback - Callback function with blob
+     * @param {string} type - Image type (default 'image/png')
+     * @param {number} quality - Image quality (0-1, for JPEG)
+     */
+    toBlob(callback, type = 'image/png', quality = 1.0) {
+        this.canvas.toBlob(callback, type, quality);
+    }
+
+    /**
+     * Get canvas context for direct drawing
+     * @returns {CanvasRenderingContext2D} Canvas context
+     */
+    getContext() {
+        return this.ctx;
+    }
+
+    /**
+     * Get canvas element
+     * @returns {HTMLCanvasElement} Canvas element
+     */
+    getCanvas() {
+        return this.canvas;
+    }
+
+    /**
+     * Set canvas background color
+     * @param {string} color - Background color
+     */
+    setBackgroundColor(color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
+     * Clear canvas with specific color
+     * @param {string} color - Clear color
+     */
+    clearWithColor(color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
+     * Render debug information
+     * @param {Object} debugInfo - Debug information to display
+     */
+    renderDebugInfo(debugInfo) {
+        this.ctx.save();
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.fillRect(10, 10, 200, 100);
+        
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '12px monospace';
+        Object.entries(debugInfo).forEach(([key, value], index) => {
+            this.ctx.fillText(`${key}: ${value}`, 15, 25 + index * 15);
+        });
+        
+        this.ctx.restore();
+    }
+}
