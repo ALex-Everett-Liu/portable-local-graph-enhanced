@@ -9,6 +9,8 @@ import {
 } from './utils/geometry.js';
 import {
     getEdgeLineWidth,
+    getEdgeColor,
+    getEdgeLabelBackgroundColor,
     getScaledRadius,
     getScaledLineWidth,
     getScaledTextSize,
@@ -140,11 +142,12 @@ export class GraphRenderer {
      * @param {boolean} isSelected - Whether edge is selected
      */
     renderEdge(from, to, edge, scale, isSelected) {
-        this.ctx.strokeStyle = isSelected ? '#F4A460' : '#EFF0E9';
-        this.ctx.lineWidth = getScaledLineWidth(
-            isSelected ? 3 : getEdgeLineWidth(edge.weight), 
-            scale
-        );
+        // Use weight-based color calculation
+        const edgeColor = getEdgeColor(edge.weight, isSelected);
+        const baseLineWidth = isSelected ? 3 : getEdgeLineWidth(edge.weight);
+        
+        this.ctx.strokeStyle = edgeColor;
+        this.ctx.lineWidth = getScaledLineWidth(baseLineWidth, scale);
         
         this.ctx.beginPath();
         this.ctx.moveTo(from.x, from.y);
@@ -154,7 +157,7 @@ export class GraphRenderer {
         // Draw arrow if enabled in app state
         const showArrows = window.appState && window.appState.showEdgeArrows === true;
         if (showArrows) {
-            this.renderEdgeArrow(from, to, scale);
+            this.renderEdgeArrow(from, to, scale, edgeColor);
         }
         
         // Always draw weight label
@@ -166,8 +169,9 @@ export class GraphRenderer {
      * @param {Object} from - From node
      * @param {Object} to - To node
      * @param {number} scale - Current zoom scale
+     * @param {string} edgeColor - Color of the edge
      */
-    renderEdgeArrow(from, to, scale) {
+    renderEdgeArrow(from, to, scale, edgeColor = '#ff0000') {
         // Calculate direction vector
         const dx = to.x - from.x;
         const dy = to.y - from.y;
@@ -175,13 +179,16 @@ export class GraphRenderer {
         
         if (length === 0) return;
         
-        // Calculate arrow position (near the end of the line)
-        const arrowDistance = 15 / scale; // Distance from target node
+        // Calculate arrow position (near the end of the line, accounting for node radius)
+        const fromRadius = getScaledRadius(from.radius || 10, scale);
+        const toRadius = getScaledRadius(to.radius || 10, scale);
+        const arrowDistance = (toRadius + 15 / scale); // Distance from target node center
         const arrowX = to.x - (dx / length) * arrowDistance;
         const arrowY = to.y - (dy / length) * arrowDistance;
         
-        // Calculate arrow size based on scale
-        const arrowSize = 8 / scale;
+        // Calculate arrow size based on scale and edge line width
+        const baseArrowSize = 8;
+        const arrowSize = Math.max(4, baseArrowSize / scale);
         const arrowAngle = Math.PI / 6; // 30 degrees
         
         // Calculate arrow points
@@ -191,14 +198,19 @@ export class GraphRenderer {
         const x2 = arrowX - arrowSize * Math.cos(angle + arrowAngle);
         const y2 = arrowY - arrowSize * Math.sin(angle + arrowAngle);
         
-        // Draw arrow
-        this.ctx.fillStyle = '#ff0000';
+        // Draw arrow with edge color (darker shade for visibility)
+        this.ctx.fillStyle = edgeColor;
         this.ctx.beginPath();
         this.ctx.moveTo(arrowX, arrowY);
         this.ctx.lineTo(x1, y1);
         this.ctx.lineTo(x2, y2);
         this.ctx.closePath();
         this.ctx.fill();
+        
+        // Add subtle border for better visibility
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+        this.ctx.lineWidth = getScaledLineWidth(0.5, scale);
+        this.ctx.stroke();
     }
 
     /**
@@ -212,11 +224,65 @@ export class GraphRenderer {
         const midX = (from.x + to.x) / 2;
         const midY = (from.y + to.y) / 2;
         
-        this.ctx.fillStyle = '#000000';
-        this.ctx.font = getFontString(12, scale);
+        const labelText = edge.weight.toFixed(1);
+        const fontSize = getScaledTextSize(11, scale);
+        this.ctx.font = getFontString(11, scale);
+        
+        // Measure text for background
+        const textMetrics = this.ctx.measureText(labelText);
+        const textWidth = textMetrics.width;
+        const textHeight = fontSize;
+        
+        // Calculate label position (offset perpendicular to edge)
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const edgeLength = Math.sqrt(dx * dx + dy * dy);
+        
+        if (edgeLength === 0) return;
+        
+        // Perpendicular offset for label positioning
+        const offsetDistance = 12 / scale;
+        const perpX = -dy / edgeLength * offsetDistance;
+        const perpY = dx / edgeLength * offsetDistance;
+        
+        const labelX = midX + perpX;
+        const labelY = midY + perpY;
+        
+        // Draw background with rounded corners effect
+        const padding = 4 / scale;
+        const bgColor = getEdgeLabelBackgroundColor(edge.weight);
+        
+        this.ctx.fillStyle = bgColor;
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+        this.ctx.lineWidth = getScaledLineWidth(0.5, scale);
+        
+        // Draw rounded rectangle background
+        const cornerRadius = 3 / scale;
+        const bgX = labelX - textWidth / 2 - padding;
+        const bgY = labelY - textHeight / 2 - padding;
+        const bgWidth = textWidth + padding * 2;
+        const bgHeight = textHeight + padding * 2;
+        
+        // Draw rounded rectangle manually for compatibility
+        this.ctx.beginPath();
+        this.ctx.moveTo(bgX + cornerRadius, bgY);
+        this.ctx.lineTo(bgX + bgWidth - cornerRadius, bgY);
+        this.ctx.quadraticCurveTo(bgX + bgWidth, bgY, bgX + bgWidth, bgY + cornerRadius);
+        this.ctx.lineTo(bgX + bgWidth, bgY + bgHeight - cornerRadius);
+        this.ctx.quadraticCurveTo(bgX + bgWidth, bgY + bgHeight, bgX + bgWidth - cornerRadius, bgY + bgHeight);
+        this.ctx.lineTo(bgX + cornerRadius, bgY + bgHeight);
+        this.ctx.quadraticCurveTo(bgX, bgY + bgHeight, bgX, bgY + bgHeight - cornerRadius);
+        this.ctx.lineTo(bgX, bgY + cornerRadius);
+        this.ctx.quadraticCurveTo(bgX, bgY, bgX + cornerRadius, bgY);
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.stroke();
+        
+        // Draw text
+        this.ctx.fillStyle = '#333333';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(edge.weight.toString(), midX, midY - 10 / scale);
+        this.ctx.fillText(labelText, labelX, labelY);
     }
 
     /**
@@ -335,13 +401,17 @@ export class GraphRenderer {
      * @param {boolean} isSelected - Whether node is selected
      */
     renderStandardNode(node, radius, scale, isSelected) {
+        // Use helper functions for consistent styling
+        const nodeColor = getNodeColor(node, isSelected, false);
+        const borderColor = getNodeBorderColor(node, isSelected, false);
+        
         this.ctx.beginPath();
         this.ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = isSelected ? '#87CEFA' : node.color;
+        this.ctx.fillStyle = nodeColor;
         this.ctx.fill();
         
         if (this.options.showNodeBorders) {
-            this.ctx.strokeStyle = isSelected ? '#B0C4DE' : '#C0C0C0';
+            this.ctx.strokeStyle = borderColor;
             this.ctx.lineWidth = getScaledLineWidth(isSelected ? 3 : 2, scale);
             this.ctx.stroke();
         }
