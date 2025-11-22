@@ -6,6 +6,7 @@ import { loadGraphFromDb } from './services/databaseService.js';
 import { setupViewStateSaving } from './managers/viewStateManager.js';
 import { setMode } from './managers/modeManager.js';
 import { updateSaveButtonVisibility } from './ui/saveDiscardUI.js';
+import { initSidebarResizer } from './ui/sidebarResizer.js';
 import {
     trackNodeCreate,
     trackNodeUpdate,
@@ -47,6 +48,7 @@ function init() {
     setupEventListeners();
     setupContextMenu();
     setupDialogs();
+    initSidebarResizer();
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');
