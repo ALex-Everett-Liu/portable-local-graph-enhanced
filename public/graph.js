@@ -2,6 +2,7 @@ import { GraphRenderer } from './graph-renderer.js';
 import { getScaledRadius } from './styles.js';
 import { screenToWorld } from './utils/geometry.js';
 import { GRAPH_CONSTANTS } from './utils/constants.js';
+import { generateUUID } from './utils/uuid.js';
 
 class Graph {
     constructor(canvas, callbacks = {}) {
@@ -65,7 +66,7 @@ class Graph {
 
     addNode(x, y, label = 'Node', color = GRAPH_CONSTANTS.DEFAULT_NODE_COLOR) {
         const node = {
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             x: x,
             y: y,
             label: label,
@@ -85,7 +86,7 @@ class Graph {
 
     addEdge(fromNode, toNode, weight = 1) {
         const edge = {
-            id: crypto.randomUUID(),
+            id: generateUUID(),
             from: fromNode.id,
             to: toNode.id,
             weight: weight

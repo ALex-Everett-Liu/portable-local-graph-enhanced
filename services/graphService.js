@@ -1,5 +1,5 @@
 // graphService.js - Business logic for Graph Plugin operations
-const { v4: uuidv4 } = require("uuid");
+const { v7: uuidv7 } = require("uuid");
 
 /**
  * Get all graph data
@@ -39,8 +39,8 @@ async function getAllGraphData(graphDb) {
 async function createNode(graphDb, nodeData) {
   const { id, x, y, label, chinese_label, color, radius, category } = nodeData;
   
-  // Generate UUID v4 if not provided
-  const nodeId = id || uuidv4();
+  // Generate UUID v7 if not provided
+  const nodeId = id || uuidv7();
   const now = Date.now();
 
   // Get the next sequence_id by finding the maximum existing sequence_id
@@ -141,8 +141,8 @@ async function deleteNode(graphDb, id) {
 async function createEdge(graphDb, edgeData) {
   const { id, from_node_id, to_node_id, weight, category } = edgeData;
   
-  // Generate UUID v4 if not provided
-  const edgeId = id || uuidv4();
+  // Generate UUID v7 if not provided
+  const edgeId = id || uuidv7();
   const now = Date.now();
 
   // Get the next sequence_id by finding the maximum existing sequence_id
@@ -258,8 +258,8 @@ async function importGraphData(graphDb, importData) {
 
     const now = Date.now();
     for (const node of nodes) {
-      // Generate UUID v4 if not provided
-      const nodeId = node.id || uuidv4();
+      // Generate UUID v7 if not provided
+      const nodeId = node.id || uuidv7();
       // Use existing timestamps if provided, otherwise use current time
       const createdAt = node.created_at || now;
       const updatedAt = node.updated_at || now;
@@ -289,8 +289,8 @@ async function importGraphData(graphDb, importData) {
 
     const now = Date.now();
     for (const edge of edges) {
-      // Generate UUID v4 if not provided
-      const edgeId = edge.id || uuidv4();
+      // Generate UUID v7 if not provided
+      const edgeId = edge.id || uuidv7();
       // Use existing timestamps if provided, otherwise use current time
       const createdAt = edge.created_at || now;
       const updatedAt = edge.updated_at || now;
