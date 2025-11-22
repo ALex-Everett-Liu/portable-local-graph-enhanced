@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] - 2025-11-22
+
+### Fixed
+- **CRITICAL:** Fixed GraphRenderer integration failure - GraphRenderer class existed but was never actually used
+- Fixed edge colors not rendering correctly (was using `#666` instead of `#EFF0E9`)
+- Fixed edge line widths not following weight-based calculations from `styles.js`
+- Fixed node styling inconsistencies by properly using GraphRenderer
+- Fixed missing grid rendering, labels, and highlighting features
+
+### Changed
+- Converted `graph.js` to ES module (`type="module"`) to enable proper imports
+- Removed obsolete `drawNode()` and `drawEdge()` methods from Graph class
+- Removed unused `this.ctx` from Graph class (GraphRenderer handles all rendering)
+- Updated `graph.js` to fully delegate ALL rendering to GraphRenderer
+- Updated `app.js` to import Graph class as ES module
+- Updated `index.html` to load `graph.js` as module
+
+### Added
+- Proper GraphRenderer integration with complete state passing
+- `renderer.resize()` call on canvas resize for proper renderer updates
+- Coordinate transformation using `screenToWorld()` from geometry utilities
+- Scaled radius hit detection using `getScaledRadius()` from styles utilities
+- Comprehensive debugging documentation in `docs/DEBUGGING_LESSON_RENDERER_INTEGRATION.md`
+
+### Technical Details
+- GraphRenderer now handles 100% of visual rendering (edges, nodes, grid, labels, arrows)
+- All style calculations from `styles.js` are now properly utilized
+- Proper separation of concerns: Graph manages data/events, GraphRenderer handles visuals
+- Module system properly configured for ES6 imports/exports
+- Removed all dead code that was bypassing the renderer system
+
 ## [0.1.7] - 2025-11-22
 
 ### Added

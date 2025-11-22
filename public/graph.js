@@ -1,9 +1,10 @@
 import { GraphRenderer } from './graph-renderer.js';
+import { getScaledRadius } from './styles.js';
+import { screenToWorld } from './utils/geometry.js';
 
 class Graph {
     constructor(canvas, callbacks = {}) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
         this.nodes = [];
         this.edges = [];
         this.selectedNode = null;
@@ -18,7 +19,7 @@ class Graph {
         // Callbacks for database persistence
         this.callbacks = callbacks;
 
-        // Initialize GraphRenderer
+        // Initialize GraphRenderer - handles ALL rendering
         this.renderer = new GraphRenderer(canvas);
 
         this.setupCanvas();
@@ -32,13 +33,18 @@ class Graph {
 
     resizeCanvas() {
         const container = this.canvas.parentElement;
+        let width, height;
         if (container) {
-            this.canvas.width = container.clientWidth;
-            this.canvas.height = container.clientHeight;
+            width = container.clientWidth;
+            height = container.clientHeight;
         } else {
-            this.canvas.width = this.canvas.offsetWidth || 800;
-            this.canvas.height = this.canvas.offsetHeight || 600;
+            width = this.canvas.offsetWidth || 800;
+            height = this.canvas.offsetHeight || 600;
         }
+        this.canvas.width = width;
+        this.canvas.height = height;
+        // Notify renderer of resize
+        this.renderer.resize(width, height);
         this.render();
     }
 
@@ -96,17 +102,20 @@ class Graph {
 
     getMousePos(e) {
         const rect = this.canvas.getBoundingClientRect();
-        return {
-            x: (e.clientX - rect.left - this.offset.x) / this.scale,
-            y: (e.clientY - rect.top - this.offset.y) / this.scale
-        };
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+        // Use geometry utility for proper coordinate transformation
+        const worldPos = screenToWorld(screenX, screenY, this.offset.x, this.offset.y, this.scale);
+        return worldPos;
     }
 
     getNodeAt(x, y) {
+        // Use scaled radius for accurate hit detection
         return this.nodes.find(node => {
             const dx = x - node.x;
             const dy = y - node.y;
-            return Math.sqrt(dx * dx + dy * dy) <= node.radius;
+            const radius = getScaledRadius(node.radius, this.scale);
+            return Math.sqrt(dx * dx + dy * dy) <= radius;
         });
     }
 
@@ -185,41 +194,6 @@ class Graph {
         this.renderer.render(this.nodes, this.edges, viewState, selectionState, filterState);
     }
 
-    drawNode(node) {
-        this.ctx.beginPath();
-        this.ctx.arc(node.x, node.y, node.radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = node.color;
-        this.ctx.fill();
-        this.ctx.strokeStyle = this.selectedNode === node ? '#000' : '#fff';
-        this.ctx.lineWidth = this.selectedNode === node ? 3 : 2;
-        this.ctx.stroke();
-
-        // Draw label
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = '12px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText(node.label, node.x, node.y + node.radius + 15);
-    }
-
-    drawEdge(fromNode, toNode, edge) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(fromNode.x, fromNode.y);
-        this.ctx.lineTo(toNode.x, toNode.y);
-
-        // Line width based on weight (inverted - higher weight = thinner line)
-        const lineWidth = Math.max(0.5, 8 - (edge.weight * 0.7));
-        this.ctx.lineWidth = lineWidth;
-        this.ctx.strokeStyle = this.selectedEdge === edge ? '#ff0000' : '#666';
-        this.ctx.stroke();
-
-        // Draw weight label
-        const midX = (fromNode.x + toNode.x) / 2;
-        const midY = (fromNode.y + toNode.y) / 2;
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = '10px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText(edge.weight.toFixed(1), midX, midY - 5);
-    }
 
     handleMouseDown(e) {
         if (e.button !== 0) return; // Only handle left mouse button
