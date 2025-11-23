@@ -73,6 +73,24 @@ export function initializeSearchDialog() {
         paginationNext.addEventListener('click', goToNextPage);
     }
 
+    // Use event delegation for search result items (more reliable)
+    const searchResultsList = document.getElementById('search-results-list');
+    if (searchResultsList) {
+        searchResultsList.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent event bubbling
+            const item = e.target.closest('.search-result-item');
+            if (item) {
+                const absoluteIndex = parseInt(item.getAttribute('data-absolute-index'));
+                if (!isNaN(absoluteIndex)) {
+                    console.log('Search result clicked, absoluteIndex:', absoluteIndex);
+                    selectDialogSearchResult(absoluteIndex);
+                } else {
+                    console.warn('Invalid absoluteIndex:', item.getAttribute('data-absolute-index'));
+                }
+            }
+        });
+    }
+
     // Close dialog with Escape key
     document.addEventListener('keydown', (e) => {
         const searchDialog = document.getElementById('node-search-dialog');
@@ -231,27 +249,26 @@ function updateDialogSearchResults() {
             <div class="search-result-item"
                  data-node-id="${node.id}"
                  data-absolute-index="${absoluteIndex}"
-                 style="padding: 8px; margin: 2px 0; border-radius: 4px; cursor: pointer;
+                 style="padding: 8px; margin: 2px 0; border-radius: 4px; cursor: pointer; user-select: none;
                         background: ${isSelected ? '#e3f2fd' : (isHighlighted ? '#f5f5f5' : 'white')};
                         border: 1px solid ${isSelected ? '#2196f3' : '#eee'};"
-                 onmouseenter="highlightDialogSearchResult(${absoluteIndex})">
-                <div style="font-weight: bold; font-size: 13px;">${escapeHtml(node.label || 'Unnamed Node')}</div>
-                <div style="font-size: 11px; color: #666;">
+                 onmouseenter="highlightDialogSearchResult(${absoluteIndex})"
+                 onmousedown="event.preventDefault(); selectDialogSearchResultByIndex(${absoluteIndex}); return false;"
+                 onclick="event.preventDefault(); event.stopPropagation(); selectDialogSearchResultByIndex(${absoluteIndex}); return false;">
+                <div style="font-weight: bold; font-size: 13px; pointer-events: none;">${escapeHtml(node.label || 'Unnamed Node')}</div>
+                <div style="font-size: 11px; color: #666; pointer-events: none;">
                     ID: ${node.id} | Position: (${Math.round(node.x)}, ${Math.round(node.y)})
                 </div>
-                ${node.category ? `<div style="font-size: 10px; color: #888; margin-top: 2px;">Category: ${escapeHtml(node.category)}</div>` : ''}
-                ${node.chineseLabel ? `<div style="font-size: 11px; color: #666; margin-top: 2px;">中文: ${escapeHtml(node.chineseLabel)}</div>` : ''}
+                ${node.category ? `<div style="font-size: 10px; color: #888; margin-top: 2px; pointer-events: none;">Category: ${escapeHtml(node.category)}</div>` : ''}
+                ${node.chineseLabel ? `<div style="font-size: 11px; color: #666; margin-top: 2px; pointer-events: none;">中文: ${escapeHtml(node.chineseLabel)}</div>` : ''}
             </div>
         `;
     });
 
     searchResultsList.innerHTML = html;
 
-    // Add click handlers
-    searchResultsList.querySelectorAll('.search-result-item').forEach((item) => {
-        const absoluteIndex = parseInt(item.getAttribute('data-absolute-index'));
-        item.addEventListener('click', () => selectDialogSearchResult(absoluteIndex));
-    });
+    // Click handlers are now handled via event delegation in initializeSearchDialog()
+    // No need to add individual handlers here
 
     // Update dropdown (limit to first 20 for dropdown)
     if (searchDropdown) {
@@ -338,8 +355,12 @@ function handleDialogSearchKeydown(e) {
 
 /**
  * Highlight a search result (exposed for inline handlers)
+ * Note: This only updates highlighting, doesn't rebuild HTML to avoid interfering with clicks
  */
 window.highlightDialogSearchResult = function(absoluteIndex) {
+    // Only update highlighting if it's different
+    if (searchDialogState.highlightedIndex === absoluteIndex) return;
+    
     searchDialogState.highlightedIndex = absoluteIndex;
     
     // Navigate to the page containing this result if needed
@@ -347,9 +368,36 @@ window.highlightDialogSearchResult = function(absoluteIndex) {
     if (targetPage !== searchDialogState.currentPage) {
         searchDialogState.currentPage = targetPage;
         updatePaginationControls();
+        // Only rebuild if we need to change pages
+        updateDialogSearchResults();
+    } else {
+        // Just update the visual highlighting without rebuilding HTML
+        const searchResultsList = document.getElementById('search-results-list');
+        if (searchResultsList) {
+            searchResultsList.querySelectorAll('.search-result-item').forEach((item, idx) => {
+                const itemIndex = parseInt(item.getAttribute('data-absolute-index'));
+                const isHighlighted = itemIndex === absoluteIndex;
+                const isSelected = searchDialogState.selectedNode && 
+                    searchDialogState.selectedNode.id === item.getAttribute('data-node-id');
+                
+                if (isHighlighted) {
+                    item.style.background = isSelected ? '#e3f2fd' : '#f5f5f5';
+                    item.style.borderColor = isSelected ? '#2196f3' : '#eee';
+                } else if (!isSelected) {
+                    item.style.background = 'white';
+                    item.style.borderColor = '#eee';
+                }
+            });
+        }
     }
-    
-    updateDialogSearchResults();
+};
+
+/**
+ * Select search result by index (exposed for inline onclick handlers)
+ */
+window.selectDialogSearchResultByIndex = function(absoluteIndex) {
+    console.log('selectDialogSearchResultByIndex called with:', absoluteIndex);
+    selectDialogSearchResult(absoluteIndex);
 };
 
 /**
@@ -581,14 +629,32 @@ function goToNextPage() {
  * Select the current node
  */
 function selectDialogNode() {
-    if (!searchDialogState.selectedNode) return;
+    if (!searchDialogState.selectedNode) {
+        console.warn('No node selected in search dialog');
+        return;
+    }
 
     const graph = getGraph();
-    if (!graph) return;
+    if (!graph) {
+        console.error('Graph not available');
+        return;
+    }
+
+    // Find the node in the graph by ID to ensure we have the correct reference
+    const nodeId = searchDialogState.selectedNode.id;
+    const node = graph.nodes.find(n => n.id === nodeId);
+    if (!node) {
+        console.error('Node not found in graph:', nodeId);
+        alert(`Node not found: ${nodeId}`);
+        return;
+    }
+
+    // Clear previous selections
+    graph.selectedNode = null;
+    graph.selectedEdge = null;
 
     // Select the node in the graph
-    graph.selectedNode = searchDialogState.selectedNode;
-    graph.selectedEdge = null;
+    graph.selectedNode = node;
     
     if (graph.render) {
         graph.render();
@@ -597,7 +663,7 @@ function selectDialogNode() {
     closeSearchDialog();
     
     if (window.showNotification) {
-        window.showNotification(`Selected node: ${searchDialogState.selectedNode.label || 'Unnamed Node'}`);
+        window.showNotification(`Selected node: ${node.label || 'Unnamed Node'}`);
     }
 }
 
@@ -605,23 +671,42 @@ function selectDialogNode() {
  * Navigate to selected node
  */
 function navigateToSelectedNode() {
-    if (!searchDialogState.selectedNode) return;
+    if (!searchDialogState.selectedNode) {
+        console.warn('No node selected in search dialog');
+        return;
+    }
 
     const graph = getGraph();
-    if (!graph) return;
+    if (!graph) {
+        console.error('Graph not available');
+        return;
+    }
 
-    const node = searchDialogState.selectedNode;
+    // Find the node in the graph by ID to ensure we have the correct reference
+    const nodeId = searchDialogState.selectedNode.id;
+    const node = graph.nodes.find(n => n.id === nodeId);
+    if (!node) {
+        console.error('Node not found in graph:', nodeId);
+        alert(`Node not found: ${nodeId}`);
+        return;
+    }
+
+    // Clear previous selections
+    graph.selectedNode = null;
+    graph.selectedEdge = null;
 
     // Center the view on the node
     const canvas = graph.canvas;
-    if (canvas) {
-        graph.offset.x = -node.x * graph.scale + canvas.width / 2;
-        graph.offset.y = -node.y * graph.scale + canvas.height / 2;
+    if (!canvas) {
+        console.error('Canvas not available');
+        return;
     }
+    
+    graph.offset.x = -node.x * graph.scale + canvas.width / 2;
+    graph.offset.y = -node.y * graph.scale + canvas.height / 2;
 
     // Select the node
     graph.selectedNode = node;
-    graph.selectedEdge = null;
 
     if (graph.render) {
         graph.render();

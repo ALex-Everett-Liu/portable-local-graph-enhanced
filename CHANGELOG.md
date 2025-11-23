@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-11-23
+
+### Added
+- Pagination support for search dialog results (20 items per page)
+- Page number input field for direct navigation to any page
+- Previous/Next buttons for sequential pagination navigation
+- Go button as alternative to Enter key for page navigation
+- Development guide (`docs/DEVELOPMENT_GUIDE.md`) with UI/UX guidelines
+- Pagination design principle: all pagination controls must include page number input
+
+### Changed
+- Search dialog now handles thousands of results efficiently with pagination
+- Updated search dialog pagination to match load dialog pattern (complete implementation)
+- Search count display now shows range and page info (e.g., "Showing 1-20 of 150 nodes (Page 1/8)")
+
+### Fixed
+- Fixed search dialog result items not being clickable (optimized hover handler to avoid rebuilding HTML)
+- Fixed click handlers being lost due to HTML rebuild on every hover event
+- Fixed child element clicks not registering on parent container
+
+### Technical Details
+- Pagination uses `RESULTS_PER_PAGE = 20` constant for consistent page size
+- Event delegation used for reliable click handling on dynamically generated items
+- Hover handler optimized to only rebuild HTML when changing pages, not on every hover
+- Multiple click handlers (event delegation + inline onclick + onmousedown) for redundancy
+- Child elements use `pointer-events: none` to ensure clicks register on parent
+- Comprehensive debugging documentation in `docs/DEBUGGING_LESSON_SEARCH_DIALOG_CLICKS.md`
+
 ## [0.2.0] - 2025-11-23
 
 ### Added
