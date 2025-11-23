@@ -525,6 +525,11 @@ npm run build
 - State management can be enhanced
 - Rendering engine can be optimized further
 
+## Related Documentation
+
+- **[Development Guide](DEVELOPMENT_GUIDE.md)** - UI/UX guidelines, code style, and development best practices
+- **[Refactoring Guide](REFACTORING.md)** - Refactoring patterns and migration strategies
+
 ---
 
 **Last Updated:** 2025-11-22

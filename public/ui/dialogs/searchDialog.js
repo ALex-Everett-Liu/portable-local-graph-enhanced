@@ -46,16 +46,15 @@ export function initializeSearchDialog() {
         cancelBtn.addEventListener('click', closeSearchDialog);
     }
 
-    // Pagination buttons
-    const prevBtn = document.getElementById('dialog-pagination-prev');
-    const nextBtn = document.getElementById('dialog-pagination-next');
-
-    if (prevBtn) {
-        prevBtn.addEventListener('click', goToPreviousPage);
-    }
-
-    if (nextBtn) {
-        nextBtn.addEventListener('click', goToNextPage);
+    // Pagination input
+    const paginationInput = document.getElementById('dialog-pagination-input');
+    if (paginationInput) {
+        paginationInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handlePaginationInput();
+            }
+        });
     }
 
     // Close dialog with Escape key
@@ -442,57 +441,58 @@ function updatePaginationControls() {
 
     paginationContainer.style.display = 'flex';
 
-    const prevBtn = document.getElementById('dialog-pagination-prev');
-    const nextBtn = document.getElementById('dialog-pagination-next');
     const pageInfo = document.getElementById('dialog-pagination-info');
+    const pageInput = document.getElementById('dialog-pagination-input');
 
-    if (prevBtn) {
-        prevBtn.disabled = currentPage === 1;
-    }
-    if (nextBtn) {
-        nextBtn.disabled = currentPage >= totalPages;
-    }
     if (pageInfo) {
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
     }
-}
-
-/**
- * Go to previous page
- */
-function goToPreviousPage() {
-    if (searchDialogState.currentPage > 1) {
-        searchDialogState.currentPage--;
-        searchDialogState.highlightedIndex = -1;
-        updateDialogSearchResults();
-        updatePaginationControls();
-        updateDialogSearchCount(searchDialogState.totalResults);
-        
-        // Scroll results to top
-        const searchResultsList = document.getElementById('search-results-list');
-        if (searchResultsList) {
-            searchResultsList.scrollTop = 0;
-        }
+    
+    if (pageInput) {
+        pageInput.value = currentPage;
+        pageInput.max = totalPages;
+        pageInput.setAttribute('max', totalPages);
     }
 }
 
 /**
- * Go to next page
+ * Handle pagination input - navigate to specified page
  */
-function goToNextPage() {
+function handlePaginationInput() {
+    const pageInput = document.getElementById('dialog-pagination-input');
+    if (!pageInput) return;
+
+    const inputValue = parseInt(pageInput.value);
     const totalPages = Math.ceil(searchDialogState.totalResults / RESULTS_PER_PAGE);
-    if (searchDialogState.currentPage < totalPages) {
-        searchDialogState.currentPage++;
-        searchDialogState.highlightedIndex = -1;
-        updateDialogSearchResults();
-        updatePaginationControls();
-        updateDialogSearchCount(searchDialogState.totalResults);
-        
-        // Scroll results to top
-        const searchResultsList = document.getElementById('search-results-list');
-        if (searchResultsList) {
-            searchResultsList.scrollTop = 0;
-        }
+
+    // Validate input
+    if (isNaN(inputValue) || inputValue < 1) {
+        pageInput.value = searchDialogState.currentPage;
+        return;
+    }
+
+    if (inputValue > totalPages) {
+        pageInput.value = totalPages;
+        searchDialogState.currentPage = totalPages;
+    } else {
+        searchDialogState.currentPage = inputValue;
+    }
+
+    searchDialogState.highlightedIndex = -1;
+    updateDialogSearchResults();
+    updatePaginationControls();
+    updateDialogSearchCount(searchDialogState.totalResults);
+
+    // Scroll results to top
+    const searchResultsList = document.getElementById('search-results-list');
+    if (searchResultsList) {
+        searchResultsList.scrollTop = 0;
+    }
+
+    // Focus back on search input for better UX
+    const searchInput = document.getElementById('dialog-node-search');
+    if (searchInput) {
+        searchInput.focus();
     }
 }
 
