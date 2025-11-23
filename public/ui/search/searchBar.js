@@ -5,9 +5,21 @@ import { getGraph } from '../../state/appState.js';
  * Setup search components for inline search bar
  */
 export function setupSearchComponents() {
+    console.log('=== Setting up search components ===');
     const nodeSearchInput = document.getElementById('node-search');
     const searchResults = document.getElementById('search-results');
     const clearSearchBtn = document.getElementById('clear-search-btn');
+    const searchContainer = document.querySelector('.search-container');
+    
+    console.log('Node search input found:', !!nodeSearchInput);
+    console.log('Search results found:', !!searchResults);
+    console.log('Clear search button found:', !!clearSearchBtn);
+    console.log('Search container found:', !!searchContainer);
+    
+    if (searchResults) {
+        console.log('Search results element:', searchResults);
+        console.log('Search results parent:', searchResults.parentElement);
+    }
 
     // Node search functionality
     if (nodeSearchInput && searchResults) {
@@ -19,23 +31,94 @@ export function setupSearchComponents() {
                 clearSearchBtn.style.display = value.trim() ? 'inline-block' : 'none';
             }
         });
+        
         nodeSearchInput.addEventListener('keydown', (e) => handleSearchKeydown(e, searchResults, 'search'));
+        
+        // Show dropdown when input gains focus (if there's text)
+        nodeSearchInput.addEventListener('focus', (e) => {
+            if (e.target.value.trim()) {
+                const graph = getGraph();
+                if (graph && graph.nodes) {
+                    handleNodeSearch(e.target.value, searchResults, 'search');
+                }
+            }
+        });
     }
 
     // Clear search
     if (clearSearchBtn) {
-        clearSearchBtn.addEventListener('click', clearNodeSearch);
+        clearSearchBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering document click
+            clearNodeSearch();
+        });
         clearSearchBtn.style.display = 'none'; // Initially hidden
     }
 
-    // Close dropdowns when clicking outside
+    // Prevent clicks on search results from reaching canvas
     if (searchResults) {
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-container')) {
-                searchResults.classList.add('hidden');
-            }
+        searchResults.addEventListener('mousedown', (e) => {
+            console.log('Search results container mousedown');
+            e.stopPropagation();
+        });
+        searchResults.addEventListener('click', (e) => {
+            console.log('Search results container click');
+            e.stopPropagation();
         });
     }
+    
+    // Close dropdowns when clicking outside the search container
+    // Use a single handler that checks all related elements
+    const handleDocumentClick = (e) => {
+        console.log('=== Document Click Handler ===');
+        console.log('Click target:', e.target);
+        console.log('Click target tagName:', e.target.tagName);
+        console.log('Click target className:', e.target.className);
+        console.log('Click target id:', e.target.id);
+        
+        // Get all search-related elements
+        const searchInput = document.getElementById('node-search');
+        const results = document.getElementById('search-results');
+        const clearBtn = document.getElementById('clear-search-btn');
+        const container = document.querySelector('.search-container');
+        
+        console.log('Search input found:', !!searchInput);
+        console.log('Results found:', !!results);
+        console.log('Clear button found:', !!clearBtn);
+        console.log('Container found:', !!container);
+        
+        if (results) {
+            console.log('Results is hidden:', results.classList.contains('hidden'));
+        }
+        
+        // Check if the click target is any of our search elements or their children
+        const clickedOnInput = searchInput && (searchInput === e.target || searchInput.contains(e.target));
+        const clickedOnResults = results && (results === e.target || results.contains(e.target));
+        const clickedOnClearBtn = clearBtn && (clearBtn === e.target || clearBtn.contains(e.target));
+        const clickedOnContainer = container && (container === e.target || container.contains(e.target));
+        
+        const isSearchElement = clickedOnInput || clickedOnResults || clickedOnClearBtn || clickedOnContainer;
+        
+        console.log('Clicked on input:', clickedOnInput);
+        console.log('Clicked on results:', clickedOnResults);
+        console.log('Clicked on clear button:', clickedOnClearBtn);
+        console.log('Clicked on container:', clickedOnContainer);
+        console.log('Is search element:', isSearchElement);
+        
+        // If click is outside all search elements, hide the dropdown
+        if (!isSearchElement && results && !results.classList.contains('hidden')) {
+            console.log('Hiding dropdown - click was outside search elements');
+            results.classList.add('hidden');
+        } else if (isSearchElement) {
+            console.log('Keeping dropdown visible - click was inside search elements');
+        } else {
+            console.log('Dropdown already hidden or results not found');
+        }
+        console.log('=== End Document Click Handler ===\n');
+    };
+    
+    // Add click listener - use capture phase to catch events early
+    document.addEventListener('click', handleDocumentClick, true);
+    console.log('Document click listener added for search dropdown (capture phase)');
 }
 
 /**
@@ -92,11 +175,34 @@ function renderSearchResults(results, container, type, query) {
                 ${chineseMatch ? `<div class="node-chinese">${chineseMatch}</div>` : ''}
             `;
 
-            resultDiv.addEventListener('click', () => {
+            resultDiv.addEventListener('click', (e) => {
+                console.log('Search result clicked:', node.id, node.label);
+                e.preventDefault();
+                e.stopPropagation(); // Prevent document click handler from firing
+                e.stopImmediatePropagation(); // Stop all other handlers
                 if (type === 'search') {
                     selectAndCenterNode(node.id);
                 }
                 container.classList.add('hidden');
+                // Clear the input and hide clear button
+                const nodeSearchInput = document.getElementById('node-search');
+                if (nodeSearchInput) {
+                    nodeSearchInput.value = '';
+                    const clearSearchBtn = document.getElementById('clear-search-btn');
+                    if (clearSearchBtn) {
+                        clearSearchBtn.style.display = 'none';
+                    }
+                }
+                return false; // Additional prevention
+            });
+            
+            // Also prevent mousedown from propagating
+            resultDiv.addEventListener('mousedown', (e) => {
+                console.log('Search result mousedown:', node.id);
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return false;
             });
 
             container.appendChild(resultDiv);
