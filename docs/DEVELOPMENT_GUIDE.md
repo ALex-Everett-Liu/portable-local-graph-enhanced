@@ -27,14 +27,21 @@ This guide contains development principles, UI/UX guidelines, and best practices
    - However, they should NOT be the only navigation method
    - The page number input is the primary navigation method
 
-3. **Page Information Display**
+3. **Go Button (Optional)**
+   - A "Go" button next to the input is acceptable as an alternative to pressing Enter
+   - Provides visual feedback and accessibility option
+   - Should trigger the same navigation as Enter key
+
+4. **Page Information Display**
    - Always show current page and total pages (e.g., "Page 1 of 5")
    - Display should be clear and visible
+   - May include additional context like total items (e.g., "Page 1 of 5 (50 total)")
 
-#### Example Implementation
+#### Example Implementations
 
+**Simple Implementation** (like searchDialog.js):
 ```html
-<div id="pagination-controls">
+<div id="pagination-controls" style="display: flex; justify-content: center; gap: 8px;">
     <span id="page-info">Page 1 of 5</span>
     <input 
         type="number" 
@@ -42,20 +49,63 @@ This guide contains development principles, UI/UX guidelines, and best practices
         min="1" 
         max="5"
         placeholder="Page"
+        style="width: 60px; padding: 4px 8px;"
     />
 </div>
 ```
 
+**Complete Implementation** (like loadDialog.js):
+```html
+<div id="pagination-controls">
+    <button id="pagination-prev">← Prev</button>
+    <span id="pagination-info">Page 1 of 5</span>
+    <span>Go to page:</span>
+    <input 
+        type="number" 
+        id="pagination-input" 
+        min="1" 
+        max="5"
+        value="1"
+    />
+    <span id="pagination-total">of 5</span>
+    <button id="pagination-go">Go</button>
+    <button id="pagination-next">Next →</button>
+</div>
+```
+
+**JavaScript Pattern:**
 ```javascript
 // Handle Enter key to navigate
 pageInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-        const pageNum = parseInt(pageInput.value);
-        if (pageNum >= 1 && pageNum <= totalPages) {
-            navigateToPage(pageNum);
-        }
+        handlePaginationInput();
     }
 });
+
+// Optional: Handle Go button click
+goButton.addEventListener('click', handlePaginationInput);
+
+function handlePaginationInput() {
+    const pageNum = parseInt(pageInput.value);
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // Validate input
+    if (isNaN(pageNum) || pageNum < 1) {
+        pageInput.value = currentPage;
+        return;
+    }
+    
+    if (pageNum > totalPages) {
+        pageInput.value = totalPages;
+        currentPage = totalPages;
+    } else {
+        currentPage = pageNum;
+    }
+    
+    // Update display and navigate
+    renderPage();
+    updatePaginationControls();
+}
 ```
 
 #### Rationale
@@ -65,12 +115,28 @@ pageInput.addEventListener('keydown', (e) => {
 - **Accessibility:** Direct navigation is more accessible than multiple button clicks
 - **Consistency:** This pattern should be applied consistently across all paginated interfaces
 
-#### Current Implementation
+#### Current Implementations
 
 This principle is implemented in:
-- `public/ui/dialogs/searchDialog.js` - Search results pagination
 
-When adding new pagination features, follow this pattern.
+1. **`public/ui/dialogs/searchDialog.js`** - Search results pagination
+   - Simple implementation: Page info + page input
+   - Enter key navigation
+   - No Previous/Next buttons (minimalist approach)
+
+2. **`public/ui/dialogs/loadDialog.js`** - Database list pagination
+   - Complete implementation: Page info + page input + Go button + Previous/Next buttons
+   - Enter key OR Go button navigation
+   - Includes "Go to page:" label for clarity
+   - Provides multiple navigation methods for better UX
+
+**Implementation Variations:**
+
+Both implementations are valid. Choose based on context:
+- **Simple pagination** (searchDialog.js): When space is limited or navigation is secondary
+- **Complete pagination** (loadDialog.js): When pagination is a primary feature or for better accessibility
+
+When adding new pagination features, follow one of these patterns.
 
 ---
 
@@ -120,6 +186,20 @@ public/
 2. **Business Logic:** Add to `public/managers/` or `public/services/`
 3. **State Management:** Update `public/state/appState.js` if needed
 4. **Documentation:** Update relevant docs in `docs/`
+
+---
+
+## Additional Notes
+
+### Pagination Implementation Details
+
+The `loadDialog.js` implementation includes additional features that can be considered:
+- **Input validation on blur**: Resets invalid input to current page
+- **Visual feedback**: Button states change based on current page position
+- **Accessibility**: Multiple navigation methods (keyboard Enter, button click, Previous/Next)
+- **User guidance**: "Go to page:" label helps clarify the input purpose
+
+These enhancements improve usability but are not strictly required by the core principle.
 
 ---
 
