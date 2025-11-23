@@ -3,6 +3,7 @@ import { showLoadDialog, setupPaginationListeners, handleLoadOK, handleLoadCance
 import { showSaveAsDialog, handleSaveAsOK, handleSaveAsCancel } from './dialogs/saveAsDialog.js';
 import { saveAllChanges, discardAllChanges, clearGraph } from './saveDiscardUI.js';
 import { hideContextMenu } from './contextMenu.js';
+import { showSearchDialog } from './dialogs/searchDialog.js';
 
 export function setupEventListeners() {
     // Mode buttons
@@ -18,6 +19,12 @@ export function setupEventListeners() {
 
     // Action buttons
     document.getElementById('clear-btn').addEventListener('click', clearGraph);
+
+    // Search dialog button
+    const searchDialogBtn = document.getElementById('search-dialog-btn');
+    if (searchDialogBtn) {
+        searchDialogBtn.addEventListener('click', () => showSearchDialog());
+    }
 
     // Save/Discard buttons
     const saveChangesButton = document.getElementById('save-changes');

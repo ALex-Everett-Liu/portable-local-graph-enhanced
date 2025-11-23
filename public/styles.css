@@ -590,3 +590,85 @@ body.local-graph-resizing .resize-handle {
     border-left: 4px solid #ffc107;
 }
 
+/* Search components styles */
+.search-container {
+    position: relative;
+}
+
+.search-result {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.search-result:hover,
+.search-result.active {
+    background-color: #f5f5f5;
+}
+
+.search-result:last-child {
+    border-bottom: none;
+}
+
+.search-result .node-label {
+    font-weight: 500;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.search-result .node-chinese {
+    font-size: 11px;
+    color: #666;
+}
+
+/* Search dialog styles */
+#node-search-dialog .dialog-content {
+    max-width: 500px;
+}
+
+#search-results-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    transition: all 0.2s;
+}
+
+.search-result-item:hover {
+    transform: translateX(2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#selected-node-info {
+    background: #f0f0f0;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+#selected-node-details div {
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+#selected-node-details strong {
+    color: #495057;
+    margin-right: 8px;
+}
+
+/* Search count styles */
+#search-count {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+}
+
+/* Clear search button - visibility controlled by JavaScript */
+#clear-search-btn {
+    display: none;
+    padding: 6px 10px;
+    min-width: auto;
+}
+

@@ -74,6 +74,56 @@
                         <span>Discard</span>
                     </button>
                 </div>
+
+                <div class="toolbar-section search-container">
+                    <div style="position: relative; display: flex; align-items: center; gap: 4px;">
+                        <input
+                            type="text"
+                            id="node-search"
+                            placeholder="Search nodes..."
+                            style="
+                                padding: 6px 12px;
+                                border: 1px solid #ddd;
+                                border-radius: 4px;
+                                font-size: 13px;
+                                width: 200px;
+                            "
+                        />
+                        <button
+                            id="clear-search-btn"
+                            class="tool-btn"
+                            title="Clear Search"
+                            style="padding: 6px 10px; display: none;"
+                        >
+                            ✕
+                        </button>
+                        <button
+                            id="search-dialog-btn"
+                            class="tool-btn"
+                            title="Open Search Dialog"
+                        >
+                            <span class="icon">🔍</span>
+                        </button>
+                    </div>
+                    <div
+                        id="search-results"
+                        class="hidden"
+                        style="
+                            position: absolute;
+                            top: 100%;
+                            left: 0;
+                            background: white;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            max-height: 300px;
+                            overflow-y: auto;
+                            z-index: 1000;
+                            margin-top: 4px;
+                            min-width: 200px;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                        "
+                    ></div>
+                </div>
             </div>
 
             <div class="main-content">
@@ -367,6 +417,69 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="node-search-dialog" class="dialog hidden">
+                        <div class="dialog-content" style="max-width: 500px;">
+                            <h3>Search Nodes</h3>
+                            <div style="margin-bottom: 12px;">
+                                <input
+                                    type="text"
+                                    id="dialog-node-search"
+                                    placeholder="Type to search nodes..."
+                                    style="
+                                        width: 100%;
+                                        padding: 8px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 4px;
+                                        font-size: 13px;
+                                    "
+                                />
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                                    <span id="dialog-search-count" style="font-size: 12px; color: #666;">Start typing to search...</span>
+                                    <button
+                                        id="dialog-clear-search-btn"
+                                        class="tool-btn"
+                                        style="padding: 4px 8px; font-size: 12px;"
+                                    >
+                                        Clear
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                id="search-results-list"
+                                style="
+                                    max-height: 300px;
+                                    overflow-y: auto;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                    padding: 8px;
+                                    margin-bottom: 12px;
+                                    background: #f9f9f9;
+                                "
+                            >
+                                <p style="text-align: center; color: #666; font-size: 12px; margin: 20px 0;">Start typing to search for nodes...</p>
+                            </div>
+                            <div
+                                id="selected-node-info"
+                                style="
+                                    display: none;
+                                    padding: 12px;
+                                    background: #f0f0f0;
+                                    border-radius: 4px;
+                                    margin-bottom: 12px;
+                                    font-size: 12px;
+                                "
+                            >
+                                <h4 style="margin-bottom: 8px; font-size: 13px;">Selected Node:</h4>
+                                <div id="selected-node-details"></div>
+                            </div>
+                            <div class="dialog-buttons">
+                                <button id="dialog-select-node-btn" disabled>Select</button>
+                                <button id="dialog-search-navigate" disabled>Navigate</button>
+                                <button id="dialog-search-cancel">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="sidebar" id="local-graph-sidebar">
@@ -380,6 +493,7 @@
                             <p>Nodes: <span id="node-count">0</span></p>
                             <p>Edges: <span id="edge-count">0</span></p>
                             <p>Mode: <span id="current-mode">Node</span></p>
+                            <p id="search-count" style="font-size: 12px; color: #666; margin-top: 8px;">0 nodes</p>
                         </div>
                     </div>
 

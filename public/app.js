@@ -17,6 +17,8 @@ import {
     trackEdgeUpdate,
     trackEdgeDelete
 } from './managers/changeTracker.js';
+import { setupSearchComponents } from './ui/search/searchBar.js';
+import { initializeSearchDialog, showSearchDialog } from './ui/dialogs/searchDialog.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -54,6 +56,13 @@ function init() {
     setupContextMenu();
     setupDialogs();
     initSidebarResizer();
+    
+    // Setup search components
+    setupSearchComponents();
+    initializeSearchDialog();
+    
+    // Expose search dialog function globally
+    window.showSearchDialog = showSearchDialog;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');

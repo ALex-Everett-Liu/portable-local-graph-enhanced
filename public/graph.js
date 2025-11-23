@@ -17,6 +17,7 @@ class Graph {
         this.offset = { x: 0, y: 0 };
         this.isPanning = false;
         this.lastPanPoint = { x: 0, y: 0 };
+        this.highlightedNodes = []; // For search highlighting
         
         // Callbacks for database persistence
         this.callbacks = callbacks;
@@ -183,7 +184,7 @@ class Graph {
         const selectionState = {
             selectedNode: this.selectedNode,
             selectedEdge: this.selectedEdge,
-            highlightedNodes: []
+            highlightedNodes: this.highlightedNodes || []
         };
         
         const filterState = {
