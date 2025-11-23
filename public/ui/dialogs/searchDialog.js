@@ -46,8 +46,12 @@ export function initializeSearchDialog() {
         cancelBtn.addEventListener('click', closeSearchDialog);
     }
 
-    // Pagination input
+    // Pagination controls
     const paginationInput = document.getElementById('dialog-pagination-input');
+    const paginationGo = document.getElementById('dialog-pagination-go');
+    const paginationPrev = document.getElementById('dialog-pagination-prev');
+    const paginationNext = document.getElementById('dialog-pagination-next');
+
     if (paginationInput) {
         paginationInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -55,6 +59,18 @@ export function initializeSearchDialog() {
                 handlePaginationInput();
             }
         });
+    }
+
+    if (paginationGo) {
+        paginationGo.addEventListener('click', handlePaginationInput);
+    }
+
+    if (paginationPrev) {
+        paginationPrev.addEventListener('click', goToPreviousPage);
+    }
+
+    if (paginationNext) {
+        paginationNext.addEventListener('click', goToNextPage);
     }
 
     // Close dialog with Escape key
@@ -443,6 +459,8 @@ function updatePaginationControls() {
 
     const pageInfo = document.getElementById('dialog-pagination-info');
     const pageInput = document.getElementById('dialog-pagination-input');
+    const prevBtn = document.getElementById('dialog-pagination-prev');
+    const nextBtn = document.getElementById('dialog-pagination-next');
 
     if (pageInfo) {
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
@@ -452,6 +470,30 @@ function updatePaginationControls() {
         pageInput.value = currentPage;
         pageInput.max = totalPages;
         pageInput.setAttribute('max', totalPages);
+    }
+
+    // Update Previous button
+    if (prevBtn) {
+        prevBtn.disabled = currentPage === 1;
+        if (currentPage === 1) {
+            prevBtn.style.opacity = '0.5';
+            prevBtn.style.cursor = 'not-allowed';
+        } else {
+            prevBtn.style.opacity = '1';
+            prevBtn.style.cursor = 'pointer';
+        }
+    }
+
+    // Update Next button
+    if (nextBtn) {
+        nextBtn.disabled = currentPage >= totalPages;
+        if (currentPage >= totalPages) {
+            nextBtn.style.opacity = '0.5';
+            nextBtn.style.cursor = 'not-allowed';
+        } else {
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+        }
     }
 }
 
@@ -493,6 +535,45 @@ function handlePaginationInput() {
     const searchInput = document.getElementById('dialog-node-search');
     if (searchInput) {
         searchInput.focus();
+    }
+}
+
+/**
+ * Go to previous page
+ */
+function goToPreviousPage() {
+    if (searchDialogState.currentPage > 1) {
+        searchDialogState.currentPage--;
+        searchDialogState.highlightedIndex = -1;
+        updateDialogSearchResults();
+        updatePaginationControls();
+        updateDialogSearchCount(searchDialogState.totalResults);
+        
+        // Scroll results to top
+        const searchResultsList = document.getElementById('search-results-list');
+        if (searchResultsList) {
+            searchResultsList.scrollTop = 0;
+        }
+    }
+}
+
+/**
+ * Go to next page
+ */
+function goToNextPage() {
+    const totalPages = Math.ceil(searchDialogState.totalResults / RESULTS_PER_PAGE);
+    if (searchDialogState.currentPage < totalPages) {
+        searchDialogState.currentPage++;
+        searchDialogState.highlightedIndex = -1;
+        updateDialogSearchResults();
+        updatePaginationControls();
+        updateDialogSearchCount(searchDialogState.totalResults);
+        
+        // Scroll results to top
+        const searchResultsList = document.getElementById('search-results-list');
+        if (searchResultsList) {
+            searchResultsList.scrollTop = 0;
+        }
     }
 }
 

@@ -460,10 +460,19 @@
                                     border-radius: 4px;
                                 "
                             >
+                                <button
+                                    id="dialog-pagination-prev"
+                                    class="tool-btn"
+                                    style="padding: 6px 12px; font-size: 12px;"
+                                    disabled
+                                >
+                                    ← Prev
+                                </button>
                                 <span
                                     id="dialog-pagination-info"
                                     style="font-size: 12px; color: #666; font-weight: 500;"
                                 ></span>
+                                <span style="font-size: 12px; color: #666;">Go to page:</span>
                                 <input
                                     type="number"
                                     id="dialog-pagination-input"
@@ -478,6 +487,21 @@
                                     "
                                     placeholder="Page"
                                 />
+                                <button
+                                    id="dialog-pagination-go"
+                                    class="tool-btn"
+                                    style="padding: 6px 12px; font-size: 12px;"
+                                >
+                                    Go
+                                </button>
+                                <button
+                                    id="dialog-pagination-next"
+                                    class="tool-btn"
+                                    style="padding: 6px 12px; font-size: 12px;"
+                                    disabled
+                                >
+                                    Next →
+                                </button>
                             </div>
                             <div
                                 id="selected-node-info"
