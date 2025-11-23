@@ -1,12 +1,17 @@
 // Node Search Dialog Module
 import { getGraph } from '../../state/appState.js';
 
+// Pagination configuration
+const RESULTS_PER_PAGE = 20;
+
 // Search dialog state
 let searchDialogState = {
     selectedNode: null,
-    searchResults: [],
+    searchResults: [], // All matching results
     searchTerm: '',
-    highlightedIndex: -1
+    highlightedIndex: -1,
+    currentPage: 1,
+    totalResults: 0
 };
 
 /**
@@ -41,6 +46,18 @@ export function initializeSearchDialog() {
         cancelBtn.addEventListener('click', closeSearchDialog);
     }
 
+    // Pagination buttons
+    const prevBtn = document.getElementById('dialog-pagination-prev');
+    const nextBtn = document.getElementById('dialog-pagination-next');
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', goToPreviousPage);
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', goToNextPage);
+    }
+
     // Close dialog with Escape key
     document.addEventListener('keydown', (e) => {
         const searchDialog = document.getElementById('node-search-dialog');
@@ -65,7 +82,9 @@ export function showSearchDialog() {
         selectedNode: null,
         searchResults: [],
         searchTerm: '',
-        highlightedIndex: -1
+        highlightedIndex: -1,
+        currentPage: 1,
+        totalResults: 0
     };
 
     // Clear previous search
@@ -81,6 +100,8 @@ export function showSearchDialog() {
     }
     if (selectedNodeInfo) selectedNodeInfo.style.display = 'none';
 
+    // Reset pagination
+    updatePaginationControls();
     updateDialogButtons();
 
     // Show dialog
@@ -128,46 +149,77 @@ function performDialogSearch(searchTerm) {
         return;
     }
 
-    const results = graph.nodes.filter(node => {
+    // Get all matching results (no limit)
+    const allResults = graph.nodes.filter(node => {
         const label = (node.label || '').toLowerCase();
         const chineseLabel = (node.chineseLabel || '').toLowerCase();
         const searchLower = searchTerm.toLowerCase();
         return label.includes(searchLower) || chineseLabel.includes(searchLower);
-    }).slice(0, 20); // Limit to 20 results for performance
+    });
 
-    searchDialogState.searchResults = results;
-    updateDialogSearchResults(results);
-    updateDialogSearchCount(results.length);
+    // Store all results and reset to first page
+    searchDialogState.searchResults = allResults;
+    searchDialogState.totalResults = allResults.length;
+    searchDialogState.currentPage = 1;
+    searchDialogState.highlightedIndex = -1;
+
+    // Update display with paginated results
+    updateDialogSearchResults();
+    updateDialogSearchCount(allResults.length);
+    updatePaginationControls();
+}
+
+/**
+ * Get paginated results for current page
+ */
+function getPaginatedResults() {
+    const startIndex = (searchDialogState.currentPage - 1) * RESULTS_PER_PAGE;
+    const endIndex = startIndex + RESULTS_PER_PAGE;
+    return searchDialogState.searchResults.slice(startIndex, endIndex);
+}
+
+/**
+ * Get absolute index in all results from page-relative index
+ */
+function getAbsoluteIndex(pageRelativeIndex) {
+    return (searchDialogState.currentPage - 1) * RESULTS_PER_PAGE + pageRelativeIndex;
 }
 
 /**
  * Update search results display
  */
-function updateDialogSearchResults(results) {
+function updateDialogSearchResults() {
     const searchResultsList = document.getElementById('search-results-list');
     const searchDropdown = document.getElementById('dialog-search-results');
 
     if (!searchResultsList) return;
 
-    if (results.length === 0) {
+    const allResults = searchDialogState.searchResults;
+    
+    if (allResults.length === 0) {
         searchResultsList.innerHTML = '<p style="text-align: center; color: #666; font-size: 12px; margin: 20px 0;">No nodes found matching your search.</p>';
         if (searchDropdown) searchDropdown.classList.add('hidden');
         return;
     }
 
+    // Get paginated results for current page
+    const paginatedResults = getPaginatedResults();
+
     // Build results list
     let html = '';
-    results.forEach((node, index) => {
+    paginatedResults.forEach((node, pageIndex) => {
+        const absoluteIndex = getAbsoluteIndex(pageIndex);
         const isSelected = searchDialogState.selectedNode && searchDialogState.selectedNode.id === node.id;
-        const isHighlighted = searchDialogState.highlightedIndex === index;
+        const isHighlighted = searchDialogState.highlightedIndex === absoluteIndex;
 
         html += `
             <div class="search-result-item"
                  data-node-id="${node.id}"
+                 data-absolute-index="${absoluteIndex}"
                  style="padding: 8px; margin: 2px 0; border-radius: 4px; cursor: pointer;
                         background: ${isSelected ? '#e3f2fd' : (isHighlighted ? '#f5f5f5' : 'white')};
                         border: 1px solid ${isSelected ? '#2196f3' : '#eee'};"
-                 onmouseenter="highlightDialogSearchResult(${index})">
+                 onmouseenter="highlightDialogSearchResult(${absoluteIndex})">
                 <div style="font-weight: bold; font-size: 13px;">${escapeHtml(node.label || 'Unnamed Node')}</div>
                 <div style="font-size: 11px; color: #666;">
                     ID: ${node.id} | Position: (${Math.round(node.x)}, ${Math.round(node.y)})
@@ -181,13 +233,15 @@ function updateDialogSearchResults(results) {
     searchResultsList.innerHTML = html;
 
     // Add click handlers
-    searchResultsList.querySelectorAll('.search-result-item').forEach((item, index) => {
-        item.addEventListener('click', () => selectDialogSearchResult(index));
+    searchResultsList.querySelectorAll('.search-result-item').forEach((item) => {
+        const absoluteIndex = parseInt(item.getAttribute('data-absolute-index'));
+        item.addEventListener('click', () => selectDialogSearchResult(absoluteIndex));
     });
 
-    // Update dropdown
+    // Update dropdown (limit to first 20 for dropdown)
     if (searchDropdown) {
-        searchDropdown.innerHTML = results.map(node => `
+        const dropdownResults = allResults.slice(0, 20);
+        searchDropdown.innerHTML = dropdownResults.map(node => `
             <div class="search-dropdown-item" data-node-id="${node.id}" style="padding: 4px 8px; cursor: pointer;">
                 ${escapeHtml(node.label || 'Unnamed Node')}
             </div>
@@ -202,7 +256,16 @@ function updateDialogSearchResults(results) {
 function updateDialogSearchCount(count) {
     const countElement = document.getElementById('dialog-search-count');
     if (countElement) {
-        countElement.textContent = count === 0 ? 'No results' : `${count} node${count !== 1 ? 's' : ''} found`;
+        const totalPages = Math.ceil(count / RESULTS_PER_PAGE);
+        if (count === 0) {
+            countElement.textContent = 'No results';
+        } else if (totalPages > 1) {
+            const startIndex = (searchDialogState.currentPage - 1) * RESULTS_PER_PAGE + 1;
+            const endIndex = Math.min(searchDialogState.currentPage * RESULTS_PER_PAGE, count);
+            countElement.textContent = `Showing ${startIndex}-${endIndex} of ${count} node${count !== 1 ? 's' : ''} (Page ${searchDialogState.currentPage}/${totalPages})`;
+        } else {
+            countElement.textContent = `${count} node${count !== 1 ? 's' : ''} found`;
+        }
     }
 }
 
@@ -213,16 +276,39 @@ function handleDialogSearchKeydown(e) {
     const results = searchDialogState.searchResults;
     if (results.length === 0) return;
 
+    const paginatedResults = getPaginatedResults();
+    const startIndex = (searchDialogState.currentPage - 1) * RESULTS_PER_PAGE;
+    const endIndex = startIndex + paginatedResults.length - 1;
+
     switch (e.key) {
         case 'ArrowDown':
             e.preventDefault();
-            searchDialogState.highlightedIndex = Math.min(searchDialogState.highlightedIndex + 1, results.length - 1);
-            updateDialogSearchResults(results);
+            if (searchDialogState.highlightedIndex < endIndex) {
+                // Move down within current page
+                searchDialogState.highlightedIndex = Math.min(searchDialogState.highlightedIndex + 1, endIndex);
+                updateDialogSearchResults();
+            } else if (searchDialogState.currentPage < Math.ceil(results.length / RESULTS_PER_PAGE)) {
+                // Move to next page
+                searchDialogState.currentPage++;
+                searchDialogState.highlightedIndex = startIndex + RESULTS_PER_PAGE;
+                updateDialogSearchResults();
+                updatePaginationControls();
+            }
             break;
         case 'ArrowUp':
             e.preventDefault();
-            searchDialogState.highlightedIndex = Math.max(searchDialogState.highlightedIndex - 1, 0);
-            updateDialogSearchResults(results);
+            if (searchDialogState.highlightedIndex > startIndex) {
+                // Move up within current page
+                searchDialogState.highlightedIndex = Math.max(searchDialogState.highlightedIndex - 1, startIndex);
+                updateDialogSearchResults();
+            } else if (searchDialogState.currentPage > 1) {
+                // Move to previous page
+                searchDialogState.currentPage--;
+                const newStartIndex = (searchDialogState.currentPage - 1) * RESULTS_PER_PAGE;
+                searchDialogState.highlightedIndex = newStartIndex + RESULTS_PER_PAGE - 1;
+                updateDialogSearchResults();
+                updatePaginationControls();
+            }
             break;
         case 'Enter':
             e.preventDefault();
@@ -238,23 +324,38 @@ function handleDialogSearchKeydown(e) {
 /**
  * Highlight a search result (exposed for inline handlers)
  */
-window.highlightDialogSearchResult = function(index) {
-    searchDialogState.highlightedIndex = index;
-    updateDialogSearchResults(searchDialogState.searchResults);
+window.highlightDialogSearchResult = function(absoluteIndex) {
+    searchDialogState.highlightedIndex = absoluteIndex;
+    
+    // Navigate to the page containing this result if needed
+    const targetPage = Math.floor(absoluteIndex / RESULTS_PER_PAGE) + 1;
+    if (targetPage !== searchDialogState.currentPage) {
+        searchDialogState.currentPage = targetPage;
+        updatePaginationControls();
+    }
+    
+    updateDialogSearchResults();
 };
 
 /**
  * Select a search result
  */
-function selectDialogSearchResult(index) {
+function selectDialogSearchResult(absoluteIndex) {
     const results = searchDialogState.searchResults;
-    if (index < 0 || index >= results.length) return;
+    if (absoluteIndex < 0 || absoluteIndex >= results.length) return;
 
-    searchDialogState.selectedNode = results[index];
-    searchDialogState.highlightedIndex = index;
+    searchDialogState.selectedNode = results[absoluteIndex];
+    searchDialogState.highlightedIndex = absoluteIndex;
 
-    updateDialogSearchResults(results);
-    updateSelectedNodeInfo(results[index]);
+    // Navigate to the page containing this result if needed
+    const targetPage = Math.floor(absoluteIndex / RESULTS_PER_PAGE) + 1;
+    if (targetPage !== searchDialogState.currentPage) {
+        searchDialogState.currentPage = targetPage;
+        updatePaginationControls();
+    }
+
+    updateDialogSearchResults();
+    updateSelectedNodeInfo(results[absoluteIndex]);
     updateDialogButtons();
 }
 
@@ -293,8 +394,11 @@ function clearDialogSearch() {
     searchDialogState.searchResults = [];
     searchDialogState.selectedNode = null;
     searchDialogState.highlightedIndex = -1;
+    searchDialogState.currentPage = 1;
+    searchDialogState.totalResults = 0;
 
     clearDialogSearchResults();
+    updatePaginationControls();
     updateDialogButtons();
 }
 
@@ -317,6 +421,79 @@ function clearDialogSearchResults() {
     }
 
     updateDialogSearchCount(0);
+    updatePaginationControls();
+}
+
+/**
+ * Update pagination controls
+ */
+function updatePaginationControls() {
+    const paginationContainer = document.getElementById('dialog-pagination');
+    if (!paginationContainer) return;
+
+    const totalResults = searchDialogState.totalResults;
+    const totalPages = Math.ceil(totalResults / RESULTS_PER_PAGE);
+    const currentPage = searchDialogState.currentPage;
+
+    if (totalPages <= 1) {
+        paginationContainer.style.display = 'none';
+        return;
+    }
+
+    paginationContainer.style.display = 'flex';
+
+    const prevBtn = document.getElementById('dialog-pagination-prev');
+    const nextBtn = document.getElementById('dialog-pagination-next');
+    const pageInfo = document.getElementById('dialog-pagination-info');
+
+    if (prevBtn) {
+        prevBtn.disabled = currentPage === 1;
+    }
+    if (nextBtn) {
+        nextBtn.disabled = currentPage >= totalPages;
+    }
+    if (pageInfo) {
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    }
+}
+
+/**
+ * Go to previous page
+ */
+function goToPreviousPage() {
+    if (searchDialogState.currentPage > 1) {
+        searchDialogState.currentPage--;
+        searchDialogState.highlightedIndex = -1;
+        updateDialogSearchResults();
+        updatePaginationControls();
+        updateDialogSearchCount(searchDialogState.totalResults);
+        
+        // Scroll results to top
+        const searchResultsList = document.getElementById('search-results-list');
+        if (searchResultsList) {
+            searchResultsList.scrollTop = 0;
+        }
+    }
+}
+
+/**
+ * Go to next page
+ */
+function goToNextPage() {
+    const totalPages = Math.ceil(searchDialogState.totalResults / RESULTS_PER_PAGE);
+    if (searchDialogState.currentPage < totalPages) {
+        searchDialogState.currentPage++;
+        searchDialogState.highlightedIndex = -1;
+        updateDialogSearchResults();
+        updatePaginationControls();
+        updateDialogSearchCount(searchDialogState.totalResults);
+        
+        // Scroll results to top
+        const searchResultsList = document.getElementById('search-results-list');
+        if (searchResultsList) {
+            searchResultsList.scrollTop = 0;
+        }
+    }
 }
 
 /**
