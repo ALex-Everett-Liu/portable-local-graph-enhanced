@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2025-11-23
+
+### Added
+- Node search functionality with inline search bar in toolbar
+- Search dialog for advanced node search and navigation
+- Real-time node filtering as user types
+- Keyboard navigation support (arrow keys, Enter, Escape) in search results
+- Visual highlighting of search results on the graph canvas
+- Search count display showing number of matching nodes
+- Support for searching by both English and Chinese labels
+- `public/ui/search/searchBar.js` - Inline search bar module
+- `public/ui/dialogs/searchDialog.js` - Search dialog module
+
+### Changed
+- Updated toolbar to include search input and search dialog button
+- Updated sidebar to display search count in graph info section
+- Simplified search dropdown implementation to match legacy code patterns
+
+### Fixed
+- Fixed search dropdown not closing when clicking outside (simplified to use DOM containment)
+- Removed overcomplicated event handling in favor of simple `.contains()` check
+- Fixed HTML structure to properly nest dropdown inside `.search-container`
+
+### Technical Details
+- Search uses simple DOM containment (`container.contains(e.target)`) for click-outside detection
+- Dropdown positioned absolutely relative to `.search-container` parent
+- Search results limited to 20 items for performance
+- Graph highlighting integrated with existing `highlightedNodes` system
+- Comprehensive debugging documentation in `docs/DEBUGGING_LESSON_SEARCH_DROPDOWN.md`
+
 ## [0.1.10] - 2025-11-22
 
 ### Changed

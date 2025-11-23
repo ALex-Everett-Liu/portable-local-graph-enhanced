@@ -75,55 +75,42 @@
                     </button>
                 </div>
 
-                <div class="toolbar-section search-container">
-                    <div style="position: relative; display: flex; align-items: center; gap: 4px;">
-                        <input
-                            type="text"
-                            id="node-search"
-                            placeholder="Search nodes..."
-                            style="
-                                padding: 6px 12px;
-                                border: 1px solid #ddd;
-                                border-radius: 4px;
-                                font-size: 13px;
-                                width: 200px;
-                            "
-                        />
-                        <button
-                            id="clear-search-btn"
-                            class="tool-btn"
-                            title="Clear Search"
-                            style="padding: 6px 10px; display: none;"
-                        >
-                            ✕
-                        </button>
-                        <button
-                            id="search-dialog-btn"
-                            class="tool-btn"
-                            title="Open Search Dialog"
-                        >
-                            <span class="icon">🔍</span>
-                        </button>
+                <div class="toolbar-section">
+                    <div class="search-container" style="position: relative;">
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input
+                                type="text"
+                                id="node-search"
+                                placeholder="Search nodes..."
+                                style="
+                                    padding: 6px 12px;
+                                    border: 1px solid #ddd;
+                                    border-radius: 4px;
+                                    font-size: 13px;
+                                    width: 200px;
+                                "
+                            />
+                            <button
+                                id="clear-search-btn"
+                                class="tool-btn"
+                                title="Clear Search"
+                                style="padding: 6px 10px; display: none;"
+                            >
+                                ✕
+                            </button>
+                            <button
+                                id="search-dialog-btn"
+                                class="tool-btn"
+                                title="Open Search Dialog"
+                            >
+                                <span class="icon">🔍</span>
+                            </button>
+                        </div>
+                        <div
+                            id="search-results"
+                            class="search-dropdown hidden"
+                        ></div>
                     </div>
-                    <div
-                        id="search-results"
-                        class="hidden"
-                        style="
-                            position: absolute;
-                            top: 100%;
-                            left: 0;
-                            background: white;
-                            border: 1px solid #ddd;
-                            border-radius: 4px;
-                            max-height: 300px;
-                            overflow-y: auto;
-                            z-index: 10001;
-                            margin-top: 4px;
-                            min-width: 200px;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                            pointer-events: auto;
-                        "
-                    ></div>
                 </div>
             </div>
 

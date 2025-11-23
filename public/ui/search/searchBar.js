@@ -8,42 +8,21 @@ import { getGraph } from '../../state/appState.js';
 let dropdownManuallyClosed = false;
 
 export function setupSearchComponents() {
-    console.log('=== Setting up search components ===');
     const nodeSearchInput = document.getElementById('node-search');
     const searchResults = document.getElementById('search-results');
     const clearSearchBtn = document.getElementById('clear-search-btn');
-    const searchContainer = document.querySelector('.search-container');
-    
-    console.log('Node search input found:', !!nodeSearchInput);
-    console.log('Search results found:', !!searchResults);
-    console.log('Clear search button found:', !!clearSearchBtn);
-    console.log('Search container found:', !!searchContainer);
-    
-    if (searchResults) {
-        console.log('Search results element:', searchResults);
-        console.log('Search results parent:', searchResults.parentElement);
-    }
-    
+
     // Node search functionality
     if (nodeSearchInput && searchResults) {
         nodeSearchInput.addEventListener('input', (e) => {
             const value = e.target.value;
-            console.log('Input event, value:', value, 'dropdownManuallyClosed:', dropdownManuallyClosed);
-            
-            // If dropdown was manually closed and input hasn't changed, don't show it
-            if (dropdownManuallyClosed && !value.trim()) {
-                searchResults.classList.add('hidden');
-                clearNodeHighlighting();
-            } else if (value.trim()) {
-                // User is typing - show dropdown
+            if (value.trim()) {
                 dropdownManuallyClosed = false; // Reset flag when user types
                 handleNodeSearch(value, searchResults, 'search');
             } else {
-                // Empty input - hide dropdown
                 searchResults.classList.add('hidden');
                 clearNodeHighlighting();
             }
-            
             // Show/hide clear button
             if (clearSearchBtn) {
                 clearSearchBtn.style.display = value.trim() ? 'inline-block' : 'none';
@@ -73,93 +52,30 @@ export function setupSearchComponents() {
         clearSearchBtn.style.display = 'none'; // Initially hidden
     }
 
-    // Prevent clicks on search results from reaching canvas
-    if (searchResults) {
-        searchResults.addEventListener('mousedown', (e) => {
-            console.log('Search results container mousedown');
-            e.stopPropagation();
-        });
-        searchResults.addEventListener('click', (e) => {
-            console.log('Search results container click');
-            e.stopPropagation();
-        });
-    }
-    
-    // Close dropdowns when clicking outside the search container
-    // Use a single handler that checks all related elements
-    const handleDocumentClick = (e) => {
-        console.log('=== Document Click Handler ===');
-        console.log('Click target:', e.target);
-        console.log('Click target tagName:', e.target.tagName);
-        console.log('Click target className:', e.target.className);
-        console.log('Click target id:', e.target.id);
-        
-        // Get all search-related elements
-        const searchInput = document.getElementById('node-search');
-        const results = document.getElementById('search-results');
-        const clearBtn = document.getElementById('clear-search-btn');
+    // Simple click-outside handler - just check if click is outside search-container
+    // Since dropdown is inside search-container, clicking on it is still "inside"
+    document.addEventListener('click', (e) => {
         const container = document.querySelector('.search-container');
-        
-        console.log('Search input found:', !!searchInput);
-        console.log('Results found:', !!results);
-        console.log('Clear button found:', !!clearBtn);
-        console.log('Container found:', !!container);
-        
-        if (results) {
-            console.log('Results is hidden:', results.classList.contains('hidden'));
-        }
-        
-        // Check if the click target is any of our search elements or their children
-        // Be specific - only check the actual search elements, not the entire container
-        const clickedOnInput = searchInput && (searchInput === e.target || searchInput.contains(e.target));
-        const clickedOnResults = results && (results === e.target || results.contains(e.target));
-        const clickedOnClearBtn = clearBtn && (clearBtn === e.target || clearBtn.contains(e.target));
-        const clickedOnSearchDialogBtn = document.getElementById('search-dialog-btn') && 
-            (document.getElementById('search-dialog-btn') === e.target || document.getElementById('search-dialog-btn').contains(e.target));
-        
-        // Only consider it a search element if clicking on input, results, or buttons
-        // NOT the entire container (which includes other toolbar elements)
-        const isSearchElement = clickedOnInput || clickedOnResults || clickedOnClearBtn || clickedOnSearchDialogBtn;
-        
-        console.log('Clicked on input:', clickedOnInput);
-        console.log('Clicked on results:', clickedOnResults);
-        console.log('Clicked on clear button:', clickedOnClearBtn);
-        console.log('Clicked on search dialog button:', clickedOnSearchDialogBtn);
-        console.log('Is search element:', isSearchElement);
-        
-        // If click is outside all search elements, hide the dropdown
-        if (!isSearchElement && results && !results.classList.contains('hidden')) {
-            console.log('Hiding dropdown - click was outside search elements');
-            results.classList.add('hidden');
-            dropdownManuallyClosed = true; // Mark as manually closed
-            // Also clear highlighting when clicking outside
-            clearNodeHighlighting();
-            // Reset search count
-            const graph = getGraph();
-            if (graph && graph.nodes) {
-                updateSearchCount(0, graph.nodes.length);
+        if (container && searchResults && !container.contains(e.target)) {
+            // Click is outside the search container - hide dropdown
+            if (!searchResults.classList.contains('hidden')) {
+                searchResults.classList.add('hidden');
+                dropdownManuallyClosed = true;
+                clearNodeHighlighting();
+                const graph = getGraph();
+                if (graph && graph.nodes) {
+                    updateSearchCount(0, graph.nodes.length);
+                }
             }
-        } else if (isSearchElement) {
-            console.log('Keeping dropdown visible - click was inside search elements');
-            dropdownManuallyClosed = false; // Reset flag if clicking inside
-        } else {
-            console.log('Dropdown already hidden or results not found');
         }
-        console.log('=== End Document Click Handler ===\n');
-    };
-    
-    // Add click listener - use capture phase to catch events early
-    document.addEventListener('click', handleDocumentClick, true);
-    console.log('Document click listener added for search dropdown (capture phase)');
+    });
 }
 
 /**
  * Handle node search input
  */
 function handleNodeSearch(query, container, type) {
-    console.log('handleNodeSearch called with query:', query);
     if (!query.trim()) {
-        console.log('Query is empty, hiding container');
         container.classList.add('hidden');
         if (type === 'search') clearNodeHighlighting();
         return;
@@ -167,7 +83,6 @@ function handleNodeSearch(query, container, type) {
 
     const graph = getGraph();
     if (!graph || !graph.nodes) {
-        console.log('Graph not available');
         return;
     }
 
@@ -179,7 +94,6 @@ function handleNodeSearch(query, container, type) {
         (node.chineseLabel && node.chineseLabel.toLowerCase().includes(searchTerm))
     ).slice(0, 20); // Limit to 20 results for performance
 
-    console.log('Found results:', results.length);
     renderSearchResults(results, container, type, query);
 
     if (type === 'search') {
@@ -211,11 +125,7 @@ function renderSearchResults(results, container, type, query) {
                 ${chineseMatch ? `<div class="node-chinese">${chineseMatch}</div>` : ''}
             `;
 
-            resultDiv.addEventListener('click', (e) => {
-                console.log('Search result clicked:', node.id, node.label);
-                e.preventDefault();
-                e.stopPropagation(); // Prevent document click handler from firing
-                e.stopImmediatePropagation(); // Stop all other handlers
+            resultDiv.addEventListener('click', () => {
                 if (type === 'search') {
                     selectAndCenterNode(node.id);
                 }
@@ -229,16 +139,6 @@ function renderSearchResults(results, container, type, query) {
                         clearSearchBtn.style.display = 'none';
                     }
                 }
-                return false; // Additional prevention
-            });
-            
-            // Also prevent mousedown from propagating
-            resultDiv.addEventListener('mousedown', (e) => {
-                console.log('Search result mousedown:', node.id);
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                return false;
             });
 
             container.appendChild(resultDiv);
