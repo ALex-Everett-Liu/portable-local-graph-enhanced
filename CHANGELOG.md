@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `filter_state` database table for storing layer filter configuration per database file
 - API endpoints for saving/loading filter state (`POST /filter-state`, `GET /filter-state`)
 - Automatic filter state restoration when loading a database
+- Pagination support for layer management dialog (15 items per page)
+- Page number input field for direct navigation to any page in layer dialog
+- Previous/Next buttons and Go button for layer dialog pagination
 
 ### Changed
 - Updated `getAllGraphData()` to include filter state in response
