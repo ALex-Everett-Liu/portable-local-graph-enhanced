@@ -361,6 +361,54 @@ async function saveViewState(graphDb, viewState) {
 }
 
 /**
+ * Save layer filter state to database
+ * @param {Object} graphDb - Database connection
+ * @param {Object} filterState - Filter state {layerFilterEnabled, activeLayers, layerFilterMode}
+ * @returns {Promise<void>}
+ */
+async function saveFilterState(graphDb, filterState) {
+  const { layerFilterEnabled, activeLayers, layerFilterMode } = filterState;
+  const now = Date.now();
+  
+  // Convert activeLayers Set/Array to JSON string
+  const activeLayersArray = Array.isArray(activeLayers) 
+    ? activeLayers 
+    : (activeLayers instanceof Set ? Array.from(activeLayers) : []);
+  const activeLayersJson = JSON.stringify(activeLayersArray);
+
+  await graphDb.run(
+    `INSERT OR REPLACE INTO filter_state (
+      id, layer_filter_enabled, layer_filter_active_layers, layer_filter_mode, updated_at
+    ) VALUES (1, ?, ?, ?, ?)
+    `, [layerFilterEnabled ? 1 : 0, activeLayersJson, layerFilterMode || 'include', now]
+  );
+}
+
+/**
+ * Load layer filter state from database
+ * @param {Object} graphDb - Database connection
+ * @returns {Promise<Object|null>} Filter state or null if not found
+ */
+async function loadFilterState(graphDb) {
+  const filterStateRow = await graphDb.get("SELECT * FROM filter_state WHERE id = 1");
+  
+  if (!filterStateRow) {
+    return null;
+  }
+
+  try {
+    return {
+      layerFilterEnabled: Boolean(filterStateRow.layer_filter_enabled),
+      activeLayers: JSON.parse(filterStateRow.layer_filter_active_layers || '[]'),
+      layerFilterMode: filterStateRow.layer_filter_mode || 'include'
+    };
+  } catch (error) {
+    console.warn('Error parsing filter state:', error);
+    return null;
+  }
+}
+
+/**
  * Export current graph data (for cloning)
  * @param {Object} graphDb - Database connection
  * @returns {Promise<Object>} Graph data with nodes, edges, scale, offset

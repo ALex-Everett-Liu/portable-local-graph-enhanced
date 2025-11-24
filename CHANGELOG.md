@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2025-11-24
+
+### Added
+- Layer filter state persistence per database - active layers and filter mode are now saved and restored
+- `filter_state` database table for storing layer filter configuration per database file
+- API endpoints for saving/loading filter state (`POST /filter-state`, `GET /filter-state`)
+- Automatic filter state restoration when loading a database
+
+### Changed
+- Updated `getAllGraphData()` to include filter state in response
+- Updated layer dialog to save filter state when applying layer filters
+- Updated sidebar mode radio buttons to save filter state when changed
+
+### Fixed
+- Fixed edges still rendering when connected nodes are filtered out by layer filter
+- Fixed layer filter state not persisting across database switches
+- Fixed layer filter state being lost when closing and reopening a database file
+
+### Technical Details
+- Filter state stored in `filter_state` table with single-row constraint (id = 1)
+- Filter state includes: `layer_filter_enabled`, `layer_filter_active_layers` (JSON array), `layer_filter_mode`
+- Edges are now filtered based on visible nodes - only edges connecting visible nodes are rendered
+- Filter state automatically applied when database is loaded
+- Compatible with legacy `filter_state` table format from `sqlite-manager.js`
+
 ## [0.2.2] - 2025-11-24
 
 ### Added
