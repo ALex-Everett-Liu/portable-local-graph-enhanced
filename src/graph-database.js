@@ -199,6 +199,17 @@ async function initializeGraphDatabase() {
     );
   }
 
+  // Add layers column to graph_nodes table
+  try {
+    await db.exec(`ALTER TABLE graph_nodes ADD COLUMN layers TEXT;`);
+    console.log("Added layers column to graph_nodes table");
+  } catch (error) {
+    console.log(
+      "layers column already exists in graph_nodes or other error:",
+      error.message,
+    );
+  }
+
   console.log("Graph plugin database initialized");
   return db;
 }

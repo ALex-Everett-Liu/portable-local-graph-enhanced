@@ -22,7 +22,11 @@ export async function loadGraphFromDb() {
                 nodes: data.nodes.map(node => ({
                     ...node,
                     chineseLabel: node.chinese_label || node.chineseLabel || '',
-                    category: node.category || null
+                    category: node.category || null,
+                    // Parse layers from comma-separated string back to array (matching legacy format)
+                    layers: node.layers 
+                        ? node.layers.split(",").map(l => l.trim()).filter(l => l)
+                        : []
                 })),
                 edges: data.edges.map(edge => ({
                     id: edge.id,
@@ -71,6 +75,7 @@ export async function saveNodeToDb(node) {
                 color: node.color,
                 radius: node.radius,
                 category: node.category || null,
+                layers: node.layers || null,
             })
         });
         if (!response.ok) throw new Error('Failed to save node');
@@ -92,6 +97,7 @@ export async function updateNodeInDb(node) {
                 color: node.color,
                 radius: node.radius,
                 category: node.category || null,
+                layers: node.layers || null,
             })
         });
         if (!response.ok) throw new Error('Failed to update node');
