@@ -201,6 +201,11 @@ function handleNodeOK() {
 
     if (graph.render) graph.render();
     if (window.appState) window.appState.isModified = true;
+    
+    // Update layer summary if layers were changed
+    if (typeof window.updateLayerSummary === 'function') {
+      window.updateLayerSummary();
+    }
   }
 
   dialog.classList.add("hidden");
@@ -237,6 +242,11 @@ function handleNodeDelete() {
   if (graph.deleteNode) graph.deleteNode(nodeId);
   if (window.updateGraphInfo) window.updateGraphInfo();
   if (window.appState) window.appState.isModified = true;
+  
+  // Update layer summary when node is deleted
+  if (typeof window.updateLayerSummary === 'function') {
+    window.updateLayerSummary();
+  }
 
   dialog.classList.add("hidden");
 }

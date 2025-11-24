@@ -19,6 +19,8 @@ import {
 } from './managers/changeTracker.js';
 import { setupSearchComponents } from './ui/search/searchBar.js';
 import { initializeSearchDialog, showSearchDialog } from './ui/dialogs/searchDialog.js';
+import { initializeLayerManagement } from './managers/layerManager.js';
+import { initializeLayerDialog } from './ui/dialogs/layerDialog.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -39,6 +41,9 @@ function init() {
     
     // Store graph instance in state
     setGraph(graph);
+    
+    // Expose graph instance on window for layer management and other non-module scripts
+    window.graph = graph;
 
     // Expose change tracking functions on window for non-module scripts (like ui-functions.js)
     window.trackNodeCreate = trackNodeCreate;
@@ -60,6 +65,10 @@ function init() {
     // Setup search components
     setupSearchComponents();
     initializeSearchDialog();
+    
+    // Setup layer management
+    initializeLayerManagement();
+    initializeLayerDialog();
     
     // Expose search dialog function globally
     window.showSearchDialog = showSearchDialog;

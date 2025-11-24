@@ -19,6 +19,10 @@ class Graph {
         this.lastPanPoint = { x: 0, y: 0 };
         this.highlightedNodes = []; // For search highlighting
         
+        // Layer management state
+        this.activeLayers = new Set();
+        this.layerFilterMode = 'include'; // 'include' or 'exclude'
+        
         // Callbacks for database persistence
         this.callbacks = callbacks;
 
@@ -188,9 +192,9 @@ class Graph {
         };
         
         const filterState = {
-            layerFilterEnabled: false,
-            activeLayers: new Set(),
-            layerFilterMode: 'include'
+            layerFilterEnabled: this.activeLayers.size > 0,
+            activeLayers: this.activeLayers,
+            layerFilterMode: this.layerFilterMode
         };
         
         // Use GraphRenderer for all rendering
@@ -347,6 +351,109 @@ class Graph {
         
         // skipCallbacks is used when loading from database to avoid circular saves
         // It's not used when importing from file, which should trigger database import
+    }
+
+    // Layer management methods
+    getAllLayers() {
+        const layerSet = new Set();
+        this.nodes.forEach(node => {
+            if (node.layers && Array.isArray(node.layers)) {
+                node.layers.forEach(layer => {
+                    if (layer && layer.trim()) {
+                        layerSet.add(layer.trim());
+                    }
+                });
+            }
+        });
+        return Array.from(layerSet).sort();
+    }
+
+    setActiveLayers(layers) {
+        this.activeLayers = new Set(Array.isArray(layers) ? layers : []);
+        this.render();
+    }
+
+    setLayerFilterMode(mode) {
+        if (mode === 'include' || mode === 'exclude') {
+            this.layerFilterMode = mode;
+            this.render();
+        }
+    }
+
+    getLayerFilterMode() {
+        return this.layerFilterMode;
+    }
+
+    clearLayerFilter() {
+        this.activeLayers.clear();
+        this.render();
+        return { success: true };
+    }
+
+    renameLayer(oldName, newName) {
+        if (!oldName || !newName) {
+            return { success: false, message: 'Layer names cannot be empty' };
+        }
+        
+        if (oldName === newName) {
+            return { success: false, message: 'Old and new layer names are identical' };
+        }
+        
+        if (newName.includes(',')) {
+            return { success: false, message: 'Layer name cannot contain commas' };
+        }
+        
+        const trimmedNewName = newName.trim();
+        if (!trimmedNewName) {
+            return { success: false, message: 'Layer name cannot be empty' };
+        }
+        
+        // Check if new name already exists
+        const allLayers = this.getAllLayers();
+        if (allLayers.includes(trimmedNewName) && trimmedNewName !== oldName) {
+            return { success: false, message: `Layer "${trimmedNewName}" already exists` };
+        }
+        
+        // Rename layers in all nodes
+        let renamedCount = 0;
+        this.nodes.forEach(node => {
+            if (node.layers && Array.isArray(node.layers)) {
+                const index = node.layers.indexOf(oldName);
+                if (index !== -1) {
+                    node.layers[index] = trimmedNewName;
+                    renamedCount++;
+                    
+                    // Update node in database if callback exists
+                    if (this.callbacks.onNodeUpdate) {
+                        this.callbacks.onNodeUpdate(node);
+                    }
+                }
+            }
+        });
+        
+        // Update active layers if old name was active
+        if (this.activeLayers.has(oldName)) {
+            this.activeLayers.delete(oldName);
+            this.activeLayers.add(trimmedNewName);
+        }
+        
+        this.render();
+        
+        return { 
+            success: true, 
+            message: `Renamed layer "${oldName}" to "${trimmedNewName}" in ${renamedCount} node(s)` 
+        };
+    }
+
+    getLayerUsage(layerName) {
+        const nodes = this.nodes.filter(node => {
+            return node.layers && Array.isArray(node.layers) && node.layers.includes(layerName);
+        });
+        
+        return {
+            count: nodes.length,
+            nodes: nodes
+        };
     }
 }
 

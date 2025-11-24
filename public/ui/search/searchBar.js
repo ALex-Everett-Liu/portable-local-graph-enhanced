@@ -342,6 +342,11 @@ function updateGraphInfo() {
     }
 }
 
+// Expose updateGraphInfo on window for use by other modules
+if (typeof window !== 'undefined') {
+    window.updateGraphInfo = updateGraphInfo;
+}
+
 /**
  * Escape HTML to prevent XSS
  */
