@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.2] - 2025-01-XX
+
+### Added
+- Layer persistence to database - node layers are now saved and restored from database
+- Database migration for `layers` column in `graph_nodes` table
+- Layer management functionality with dialog interface
+- Layer filtering with include/exclude modes
+- Layer renaming functionality across all nodes
+- Layer view saving/loading (localStorage) for quick access to layer configurations
+- Layer summary display in sidebar showing layer count and filter status
+
+### Changed
+- Updated `graphService.js` to handle layers in create/update/import operations
+- Updated `databaseService.js` to send/receive layers in all node operations
+- Layers stored as comma-separated string in database (matching legacy format)
+- Layers parsed from comma-separated string to array on load
+
+### Fixed
+- Fixed layers not persisting across page refreshes
+- Fixed layers being lost when switching databases
+- Fixed layers not being saved when nodes are created/updated
+
+### Technical Details
+- Layer storage format: `["layer1", "layer2"]` → `"layer1,layer2"` (comma-separated)
+- Layer parsing: `"layer1,layer2"` → `["layer1", "layer2"]` (on load)
+- Database schema migration adds `layers TEXT` column to existing databases
+- Layer management UI integrated with existing graph instance
+- Compatible with legacy database format from `sqlite-manager.js`
+
 ## [0.2.1] - 2025-11-23
 
 ### Added
