@@ -46,6 +46,12 @@ router.post("/import", graphController.importGraphData);
 // Save view state (scale and offset)
 router.post("/view-state", graphController.saveViewState);
 
+// Save filter state (layer filters)
+router.post("/filter-state", graphController.saveFilterState);
+
+// Load filter state (layer filters)
+router.get("/filter-state", graphController.loadFilterState);
+
 // List available database files
 router.get("/databases", graphController.listDatabases);
 

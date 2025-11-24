@@ -52,6 +52,26 @@ export async function loadGraphFromDb() {
             graph.importData(convertedData, true); // true = skip callbacks to avoid tracking
             console.log(`Loaded ${data.metadata.totalNodes} nodes and ${data.metadata.totalEdges} edges from database`);
             
+            // Load and apply filter state if available
+            if (data.filterState && data.filterState.layerFilterEnabled) {
+                graph.setLayerFilterMode(data.filterState.layerFilterMode);
+                graph.setActiveLayers(data.filterState.activeLayers);
+                
+                // Update sidebar radio buttons
+                const sidebarRadio = document.querySelector(`input[name="layer-filter-mode"][value="${data.filterState.layerFilterMode}"]`);
+                if (sidebarRadio) sidebarRadio.checked = true;
+                
+                // Update layer summary
+                if (typeof window.updateLayerSummary === 'function') {
+                    window.updateLayerSummary();
+                }
+                
+                console.log(`Restored filter state: ${data.filterState.layerFilterMode} mode with ${data.filterState.activeLayers.length} active layer(s)`);
+            } else {
+                // Clear filter state if not found or disabled
+                graph.clearLayerFilter();
+            }
+            
             // Clear unsaved changes when loading fresh data
             unsavedChanges.nodes.clear();
             unsavedChanges.edges.clear();
@@ -191,6 +211,28 @@ export async function saveViewStateToDb() {
         if (!response.ok) throw new Error('Failed to save view state');
     } catch (error) {
         console.error('Error saving view state to database:', error);
+    }
+}
+
+export async function saveFilterStateToDb() {
+    const graph = getGraph();
+    if (!graph) return;
+    
+    try {
+        const filterState = {
+            layerFilterEnabled: graph.activeLayers && graph.activeLayers.size > 0,
+            activeLayers: graph.activeLayers ? Array.from(graph.activeLayers) : [],
+            layerFilterMode: graph.getLayerFilterMode() || 'include'
+        };
+        
+        const response = await fetch(`${API_BASE}/filter-state`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(filterState)
+        });
+        if (!response.ok) throw new Error('Failed to save filter state');
+    } catch (error) {
+        console.error('Error saving filter state to database:', error);
     }
 }
 

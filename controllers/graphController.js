@@ -150,6 +150,34 @@ exports.saveViewState = async (req, res) => {
 };
 
 /**
+ * Save filter state (layer filters)
+ * POST /api/plugins/graph/filter-state
+ */
+exports.saveFilterState = async (req, res) => {
+  try {
+    await graphService.saveFilterState(req.graphDb, req.body);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error saving filter state:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Load filter state (layer filters)
+ * GET /api/plugins/graph/filter-state
+ */
+exports.loadFilterState = async (req, res) => {
+  try {
+    const filterState = await graphService.loadFilterState(req.graphDb);
+    res.json({ filterState });
+  } catch (error) {
+    console.error("Error loading filter state:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
  * List available database files
  * GET /api/plugins/graph/databases
  */

@@ -68,7 +68,11 @@ export class GraphRenderer {
             this.renderGrid(viewState);
         }
         
-        this.renderEdges(edges, nodes, viewState, selectedEdge);
+        // Filter nodes first to get visible nodes
+        const filteredNodes = this.filterNodes(nodes, filterState);
+        
+        // Only render edges where both connected nodes are visible
+        this.renderEdges(edges, filteredNodes, viewState, selectedEdge);
         this.renderNodes(nodes, viewState, selectionState, filterState);
         
         this.ctx.restore();

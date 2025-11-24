@@ -393,6 +393,11 @@ function applyLayerDialogSelection() {
     const sidebarRadio = document.querySelector(`input[name="layer-filter-mode"][value="${mode}"]`);
     if (sidebarRadio) sidebarRadio.checked = true;
 
+    // Save filter state to database
+    if (typeof window.saveFilterStateToDb === 'function') {
+        window.saveFilterStateToDb();
+    }
+
     // Close dialog
     closeLayerDialog();
 

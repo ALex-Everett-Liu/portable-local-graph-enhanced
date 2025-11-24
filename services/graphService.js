@@ -17,11 +17,27 @@ async function getAllGraphData(graphDb) {
     ? { x: metadataRow.offset_x, y: metadataRow.offset_y }
     : { x: 0, y: 0 };
 
+  // Load filter state
+  const filterStateRow = await graphDb.get("SELECT * FROM filter_state WHERE id = 1");
+  let filterState = null;
+  if (filterStateRow) {
+    try {
+      filterState = {
+        layerFilterEnabled: Boolean(filterStateRow.layer_filter_enabled),
+        activeLayers: JSON.parse(filterStateRow.layer_filter_active_layers || '[]'),
+        layerFilterMode: filterStateRow.layer_filter_mode || 'include'
+      };
+    } catch (error) {
+      console.warn('Error parsing filter state:', error);
+    }
+  }
+
   return {
     nodes,
     edges,
     scale,
     offset,
+    filterState,
     metadata: {
       totalNodes: nodes.length,
       totalEdges: edges.length,
@@ -379,6 +395,8 @@ module.exports = {
   clearAllData,
   importGraphData,
   saveViewState,
+  saveFilterState,
+  loadFilterState,
   exportGraphData,
 };
 

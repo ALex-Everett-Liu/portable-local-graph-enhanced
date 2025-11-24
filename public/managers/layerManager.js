@@ -29,6 +29,11 @@ export function initializeLayerManagement() {
                 window.graph.setLayerFilterMode(this.value);
                 updateLayerSummary();
                 
+                // Save filter state to database when mode changes
+                if (typeof window.saveFilterStateToDb === 'function') {
+                    window.saveFilterStateToDb();
+                }
+                
                 // Apply current filter with new mode
                 if (window.graph.activeLayers && window.graph.activeLayers.size > 0) {
                     const modeText = this.value === 'include' ? 'Showing' : 'Excluding';

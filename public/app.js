@@ -21,6 +21,7 @@ import { setupSearchComponents } from './ui/search/searchBar.js';
 import { initializeSearchDialog, showSearchDialog } from './ui/dialogs/searchDialog.js';
 import { initializeLayerManagement } from './managers/layerManager.js';
 import { initializeLayerDialog } from './ui/dialogs/layerDialog.js';
+import { saveFilterStateToDb } from './services/databaseService.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -72,6 +73,9 @@ function init() {
     
     // Expose search dialog function globally
     window.showSearchDialog = showSearchDialog;
+    
+    // Expose filter state save function globally
+    window.saveFilterStateToDb = saveFilterStateToDb;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');

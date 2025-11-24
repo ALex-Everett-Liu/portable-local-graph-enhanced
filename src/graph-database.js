@@ -210,6 +210,17 @@ async function initializeGraphDatabase() {
     );
   }
 
+  // Create filter_state table for storing layer filter state
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS filter_state (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      layer_filter_enabled INTEGER DEFAULT 0,
+      layer_filter_active_layers TEXT DEFAULT '[]',
+      layer_filter_mode TEXT DEFAULT 'include',
+      updated_at INTEGER
+    )
+  `);
+
   console.log("Graph plugin database initialized");
   return db;
 }
