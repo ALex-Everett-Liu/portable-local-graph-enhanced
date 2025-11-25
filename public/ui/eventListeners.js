@@ -4,6 +4,7 @@ import { showSaveAsDialog, handleSaveAsOK, handleSaveAsCancel } from './dialogs/
 import { saveAllChanges, discardAllChanges, clearGraph } from './saveDiscardUI.js';
 import { hideContextMenu } from './contextMenu.js';
 import { showSearchDialog } from './dialogs/searchDialog.js';
+import { showEdgeSearchDialog } from './dialogs/edgeSearchDialog.js';
 
 export function setupEventListeners() {
     // Mode buttons
@@ -24,6 +25,12 @@ export function setupEventListeners() {
     const searchDialogBtn = document.getElementById('search-dialog-btn');
     if (searchDialogBtn) {
         searchDialogBtn.addEventListener('click', () => showSearchDialog());
+    }
+
+    // Create Edge via Search button
+    const createEdgeSearchBtn = document.getElementById('create-edge-search-btn');
+    if (createEdgeSearchBtn) {
+        createEdgeSearchBtn.addEventListener('click', () => showEdgeSearchDialog());
     }
 
     // Save/Discard buttons

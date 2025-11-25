@@ -19,6 +19,7 @@ import {
 } from './managers/changeTracker.js';
 import { setupSearchComponents, updateGraphInfo } from './ui/search/searchBar.js';
 import { initializeSearchDialog, showSearchDialog } from './ui/dialogs/searchDialog.js';
+import { initializeEdgeSearchDialog } from './ui/dialogs/edgeSearchDialog.js';
 import { initializeLayerManagement } from './managers/layerManager.js';
 import { initializeLayerDialog } from './ui/dialogs/layerDialog.js';
 import { saveFilterStateToDb } from './services/databaseService.js';
@@ -67,6 +68,7 @@ function init() {
     // Setup search components
     setupSearchComponents();
     initializeSearchDialog();
+    initializeEdgeSearchDialog();
     
     // Setup layer management
     initializeLayerManagement();

@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.7] - 2025-01-25
+
+### Added
+- "Create Edge via Search" feature - connect distant nodes without manual navigation or zooming
+- Edge search dialog with two search inputs (Source Node and Target Node)
+- Node search functionality in edge dialog - search by English or Chinese labels
+- Dropdown search results with keyboard navigation (Arrow keys, Enter, Escape)
+- Weight input field for edge creation (default: 1)
+- Category input field for edge creation (optional)
+- Visual feedback showing selected source and target nodes
+- Validation preventing self-loops and duplicate edges
+- Bidirectional edge detection to prevent creating duplicate connections
+- Success notifications when edges are created
+- `public/ui/dialogs/edgeSearchDialog.js` - Edge search dialog module
+- Sidebar button "Create Edge" for quick access to edge creation dialog
+
+### Changed
+- Updated sidebar to include "Create Edge" section with button and description
+- Edge creation now supports category assignment during creation
+
+### Technical Details
+- Search results limited to 20 items per dropdown for performance
+- Keyboard navigation supports ArrowDown/ArrowUp for result navigation, Enter for selection, Escape to close dropdowns
+- Edge validation checks for existing edges in both directions (from→to and to→from)
+- Change tracking integrated - edge creation properly tracked for save/discard functionality
+- Dialog follows existing code patterns and integrates with current architecture
+- Category support added after edge creation via `graph.addEdge()` method
+
 ## [0.2.6] - 2025-01-25
 
 ### Added
