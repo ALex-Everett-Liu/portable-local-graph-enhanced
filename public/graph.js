@@ -23,6 +23,14 @@ class Graph {
         this.activeLayers = new Set();
         this.layerFilterMode = 'include'; // 'include' or 'exclude'
         
+        // Overlap cycling state for smart selection
+        this.overlapCandidates = [];
+        this.overlapIndex = 0;
+        this.lastClickPos = null;
+        this.lastClickTime = 0;
+        this.clickTimeThreshold = 500; // ms
+        this.clickPositionThreshold = 5; // pixels
+        
         // Callbacks for database persistence
         this.callbacks = callbacks;
 
@@ -117,24 +125,85 @@ class Graph {
     }
 
     getNodeAt(x, y) {
-        // Use scaled radius for accurate hit detection
-        return this.nodes.find(node => {
+        // Select closest node (distance-based priority)
+        let closestNode = null;
+        let minDistance = Infinity;
+        const hitRadiusPadding = 3; // Extra pixels for easier clicking
+        
+        // Check nodes in reverse order (topmost first, since nodes render last)
+        for (let i = this.nodes.length - 1; i >= 0; i--) {
+            const node = this.nodes[i];
             const dx = x - node.x;
             const dy = y - node.y;
-            const radius = getScaledRadius(node.radius, this.scale);
-            return Math.sqrt(dx * dx + dy * dy) <= radius;
-        });
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const hitRadius = getScaledRadius(node.radius, this.scale) + hitRadiusPadding;
+            
+            if (distance <= hitRadius && distance < minDistance) {
+                minDistance = distance;
+                closestNode = node;
+            }
+        }
+        
+        return closestNode;
+    }
+
+    /**
+     * Get all nodes at the given position (for overlap detection)
+     * @param {number} x - World X coordinate
+     * @param {number} y - World Y coordinate
+     * @returns {Array} Array of nodes sorted by distance (closest first)
+     */
+    getNodesAt(x, y) {
+        const candidates = [];
+        const hitRadiusPadding = 3;
+        
+        for (const node of this.nodes) {
+            const dx = x - node.x;
+            const dy = y - node.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const hitRadius = getScaledRadius(node.radius, this.scale) + hitRadiusPadding;
+            
+            if (distance <= hitRadius) {
+                candidates.push({ node, distance });
+            }
+        }
+        
+        // Sort by distance (closest first)
+        candidates.sort((a, b) => a.distance - b.distance);
+        return candidates.map(c => c.node);
     }
 
     getEdgeAt(x, y) {
+        const threshold = 8; // pixels for edge hit detection
         for (let edge of this.edges) {
             const fromNode = this.nodes.find(n => n.id === edge.from);
             const toNode = this.nodes.find(n => n.id === edge.to);
-            if (this.isPointOnLine(x, y, fromNode.x, fromNode.y, toNode.x, toNode.y, 5)) {
+            if (fromNode && toNode && this.isPointOnLine(x, y, fromNode.x, fromNode.y, toNode.x, toNode.y, threshold)) {
                 return edge;
             }
         }
         return null;
+    }
+
+    /**
+     * Get all edges at the given position (for overlap detection)
+     * @param {number} x - World X coordinate
+     * @param {number} y - World Y coordinate
+     * @returns {Array} Array of edges at the position
+     */
+    getEdgesAt(x, y) {
+        const candidates = [];
+        const threshold = 8; // pixels for edge hit detection
+        
+        for (let edge of this.edges) {
+            const fromNode = this.nodes.find(n => n.id === edge.from);
+            const toNode = this.nodes.find(n => n.id === edge.to);
+            if (fromNode && toNode && this.isPointOnLine(x, y, fromNode.x, fromNode.y, toNode.x, toNode.y, threshold)) {
+                candidates.push(edge);
+            }
+        }
+        
+        return candidates;
     }
 
     isPointOnLine(px, py, x1, y1, x2, y2, threshold) {
@@ -206,33 +275,95 @@ class Graph {
         if (e.button !== 0) return; // Only handle left mouse button
         
         const pos = this.getMousePos(e);
-        const node = this.getNodeAt(pos.x, pos.y);
+        const now = Date.now();
+        
+        // Check if this is a repeat click at same location (for cycling)
+        const isRepeatClick = this.lastClickPos &&
+            Math.abs(pos.x - this.lastClickPos.x) < this.clickPositionThreshold &&
+            Math.abs(pos.y - this.lastClickPos.y) < this.clickPositionThreshold &&
+            (now - this.lastClickTime) < this.clickTimeThreshold;
 
         if (window.appMode === 'select') {
-            if (node) {
-                this.selectedNode = node;
-                this.selectedEdge = null;
-                this.isDragging = true;
-                this.dragOffset.x = pos.x - node.x;
-                this.dragOffset.y = pos.y - node.y;
-            } else {
-                const edge = this.getEdgeAt(pos.x, pos.y);
-                if (edge) {
-                    this.selectedEdge = edge;
-                    this.selectedNode = null;
-                } else {
-                    // Clicked empty space - start panning
-                    this.selectedNode = null;
-                    this.selectedEdge = null;
-                    this.isPanning = true;
-                    this.lastPanPoint = { x: e.clientX, y: e.clientY };
+            // Check for modifier keys (Alt or Ctrl) - allows edge selection even when nodes overlap
+            const modifierPressed = e.altKey || e.ctrlKey || e.metaKey;
+            
+            // Handle cycling through overlapping elements
+            if (isRepeatClick && this.overlapCandidates.length > 1) {
+                // Cycle to next candidate
+                this.overlapIndex = (this.overlapIndex + 1) % this.overlapCandidates.length;
+                const selected = this.overlapCandidates[this.overlapIndex];
+                
+                this.selectedNode = selected.type === 'node' ? selected.item : null;
+                this.selectedEdge = selected.type === 'edge' ? selected.item : null;
+                
+                // Show visual feedback
+                if (window.showNotification) {
+                    const label = selected.type === 'node' 
+                        ? (selected.item.label || 'Unnamed Node')
+                        : `Edge (${selected.item.weight || 1})`;
+                    window.showNotification(
+                        `${this.overlapIndex + 1} of ${this.overlapCandidates.length}: ${label}`,
+                        'success'
+                    );
                 }
+                
+                this.render();
+                return;
+            }
+            
+            // New click - find all candidates
+            const nodes = this.getNodesAt(pos.x, pos.y);
+            // Check edges if modifier pressed OR if no nodes found (standard behavior)
+            const edges = (modifierPressed || nodes.length === 0) ? this.getEdgesAt(pos.x, pos.y) : [];
+            
+            // Build candidates list: nodes first (priority), then edges
+            this.overlapCandidates = [
+                ...nodes.map(n => ({ type: 'node', item: n })),
+                ...edges.map(e => ({ type: 'edge', item: e }))
+            ];
+            
+            this.overlapIndex = 0;
+            this.lastClickPos = pos;
+            this.lastClickTime = now;
+            
+            // Select first candidate
+            if (this.overlapCandidates.length > 0) {
+                const selected = this.overlapCandidates[0];
+                this.selectedNode = selected.type === 'node' ? selected.item : null;
+                this.selectedEdge = selected.type === 'edge' ? selected.item : null;
+                
+                // Show visual feedback if multiple candidates
+                if (this.overlapCandidates.length > 1 && window.showNotification) {
+                    const label = selected.type === 'node' 
+                        ? (selected.item.label || 'Unnamed Node')
+                        : `Edge (${selected.item.weight || 1})`;
+                    window.showNotification(
+                        `1 of ${this.overlapCandidates.length}: ${label}. Click again to cycle.`,
+                        'success'
+                    );
+                }
+                
+                // Start dragging if node selected
+                if (this.selectedNode) {
+                    this.isDragging = true;
+                    this.dragOffset.x = pos.x - this.selectedNode.x;
+                    this.dragOffset.y = pos.y - this.selectedNode.y;
+                }
+            } else {
+                // Clicked empty space - start panning
+                this.selectedNode = null;
+                this.selectedEdge = null;
+                this.overlapCandidates = [];
+                this.isPanning = true;
+                this.lastPanPoint = { x: e.clientX, y: e.clientY };
             }
         } else if (window.appMode === 'node') {
+            const node = this.getNodeAt(pos.x, pos.y);
             if (!node) {
                 this.addNode(pos.x, pos.y);
             }
         } else if (window.appMode === 'edge') {
+            const node = this.getNodeAt(pos.x, pos.y);
             if (node) {
                 if (!this.tempEdgeStart) {
                     this.tempEdgeStart = node;
@@ -328,6 +459,11 @@ class Graph {
         this.selectedEdge = null;
         this.scale = 1;
         this.offset = { x: 0, y: 0 };
+        // Reset overlap cycling state
+        this.overlapCandidates = [];
+        this.overlapIndex = 0;
+        this.lastClickPos = null;
+        this.lastClickTime = 0;
         this.render();
     }
 
