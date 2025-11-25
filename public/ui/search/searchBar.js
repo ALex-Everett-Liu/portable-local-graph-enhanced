@@ -340,12 +340,84 @@ function updateGraphInfo() {
     if (edgeCountElement) {
         edgeCountElement.textContent = graph.edges ? graph.edges.length : 0;
     }
+    
+    // Update selection info
+    updateSelectionInfo();
+}
+
+/**
+ * Update the selection-info sidebar with selected node or edge details
+ */
+function updateSelectionInfo() {
+    const graph = getGraph();
+    if (!graph) return;
+    
+    const selectionInfoElement = document.getElementById('selection-info');
+    if (!selectionInfoElement) return;
+    
+    if (graph.selectedNode) {
+        const node = graph.selectedNode;
+        const layers = node.layers && Array.isArray(node.layers) && node.layers.length > 0
+            ? node.layers.join(', ')
+            : 'None';
+        
+        // Format timestamps
+        const formatTimestamp = (timestamp) => {
+            if (!timestamp) return 'N/A';
+            const date = new Date(timestamp);
+            if (isNaN(date.getTime())) return 'N/A';
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+        };
+        
+        const createdAt = formatTimestamp(node.created_at || node.createdAt);
+        const modifiedAt = formatTimestamp(node.updated_at || node.updatedAt || node.modifiedAt);
+        
+        selectionInfoElement.innerHTML = `
+            <div style="font-size: 13px; line-height: 1.6;">
+                <div><strong>English:</strong> ${escapeHtml(node.label || 'Unnamed Node')}</div>
+                ${node.chineseLabel ? `<div><strong>中文:</strong> ${escapeHtml(node.chineseLabel)}</div>` : ''}
+                <div><strong>Position:</strong> (${Math.round(node.x)}, ${Math.round(node.y)})</div>
+                <div><strong>Color:</strong> <span style="display: inline-block; width: 14px; height: 14px; background: ${node.color || '#3b82f6'}; border: 1px solid #ccc; border-radius: 2px; vertical-align: middle; margin-right: 4px;"></span>${node.color || '#3b82f6'}</div>
+                <div><strong>Size:</strong> ${node.radius || 20}px</div>
+                ${node.category ? `<div><strong>Category:</strong> ${escapeHtml(node.category)}</div>` : ''}
+                <div><strong>Layers:</strong> ${escapeHtml(layers)}</div>
+                <div><strong>Created:</strong> ${createdAt}</div>
+                <div><strong>Modified:</strong> ${modifiedAt}</div>
+            </div>
+        `;
+    } else if (graph.selectedEdge) {
+        const edge = graph.selectedEdge;
+        const fromNode = graph.nodes.find(n => n.id === edge.from);
+        const toNode = graph.nodes.find(n => n.id === edge.to);
+        const fromLabel = fromNode ? (fromNode.label || 'Unnamed Node') : 'Unknown';
+        const toLabel = toNode ? (toNode.label || 'Unnamed Node') : 'Unknown';
+        
+        selectionInfoElement.innerHTML = `
+            <div style="font-size: 13px; line-height: 1.6;">
+                <div><strong>From:</strong> ${escapeHtml(fromLabel)}</div>
+                <div><strong>To:</strong> ${escapeHtml(toLabel)}</div>
+                <div><strong>Weight:</strong> ${edge.weight || 1}</div>
+                ${edge.category ? `<div><strong>Category:</strong> ${escapeHtml(edge.category)}</div>` : ''}
+            </div>
+        `;
+    } else {
+        selectionInfoElement.innerHTML = '<p>Nothing selected</p>';
+    }
 }
 
 // Expose updateGraphInfo on window for use by other modules
 if (typeof window !== 'undefined') {
     window.updateGraphInfo = updateGraphInfo;
 }
+
+// Export for module imports
+export { updateGraphInfo };
 
 /**
  * Escape HTML to prevent XSS

@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2025-11-24
+
+### Added
+- Smart node and edge selection with distance-based priority - selects closest node to click point
+- Overlap detection system - detects all overlapping nodes and edges at click position
+- Cycling through overlapping elements - click same position multiple times to cycle through candidates
+- Modifier key support (Alt/Ctrl/Cmd) - hold modifier while clicking to select edges even when nodes overlap
+- Visual feedback for overlapping elements - shows notification with current position in cycle (e.g., "1 of 3: Node Name")
+- Selection info sidebar display - shows detailed node/edge information when selected
+- `getNodesAt()` and `getEdgesAt()` methods for finding all overlapping candidates
+- `onSelectionChange` callback system for updating UI when selection changes
+
+### Changed
+- Updated `getNodeAt()` to select closest node by distance instead of first match in array order
+- Updated `getNodeAt()` to check nodes in reverse order (topmost first, matching visual z-order)
+- Updated `handleMouseDown()` to implement smart selection with overlap cycling
+- Updated `updateGraphInfo()` to call `updateSelectionInfo()` for sidebar updates
+- Selection now triggers automatic sidebar updates via callback chain
+
+### Fixed
+- Fixed selection-info sidebar not displaying node/edge details when selecting elements
+- Fixed selection info not updating when cycling through overlapping elements
+- Fixed selection info not clearing when clicking empty space
+
+### Technical Details
+- Overlap cycling tracks candidates and current index with time/position thresholds (500ms, 5px)
+- Distance-based selection uses scaled radius + 3px padding for easier clicking
+- Selection info displays: English/Chinese labels, position, color, size, category, layers, timestamps
+- Edge selection info displays: From/To nodes, weight, category
+- Callback system: `onSelectionChange` → `updateGraphInfo()` → `updateSelectionInfo()`
+- Compatible with legacy selection behavior while adding smart features
+
 ## [0.2.3] - 2025-11-24
 
 ### Added

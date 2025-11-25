@@ -17,7 +17,7 @@ import {
     trackEdgeUpdate,
     trackEdgeDelete
 } from './managers/changeTracker.js';
-import { setupSearchComponents } from './ui/search/searchBar.js';
+import { setupSearchComponents, updateGraphInfo } from './ui/search/searchBar.js';
 import { initializeSearchDialog, showSearchDialog } from './ui/dialogs/searchDialog.js';
 import { initializeLayerManagement } from './managers/layerManager.js';
 import { initializeLayerDialog } from './ui/dialogs/layerDialog.js';
@@ -30,14 +30,15 @@ function init() {
         return;
     }
     
-    // Initialize graph with change tracking callbacks
+    // Initialize graph with change tracking callbacks and selection change callback
     const graph = new Graph(canvas, {
         onNodeCreate: trackNodeCreate,
         onNodeUpdate: trackNodeUpdate,
         onNodeDelete: trackNodeDelete,
         onEdgeCreate: trackEdgeCreate,
         onEdgeUpdate: trackEdgeUpdate,
-        onEdgeDelete: trackEdgeDelete
+        onEdgeDelete: trackEdgeDelete,
+        onSelectionChange: updateGraphInfo
     });
     
     // Store graph instance in state

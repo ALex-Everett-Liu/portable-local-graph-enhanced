@@ -31,8 +31,9 @@ class Graph {
         this.clickTimeThreshold = 500; // ms
         this.clickPositionThreshold = 5; // pixels
         
-        // Callbacks for database persistence
+        // Callbacks for database persistence and UI updates
         this.callbacks = callbacks;
+        this.onSelectionChange = callbacks.onSelectionChange || null;
 
         // Initialize GraphRenderer - handles ALL rendering
         this.renderer = new GraphRenderer(canvas);
@@ -307,6 +308,11 @@ class Graph {
                     );
                 }
                 
+                // Trigger selection change callback
+                if (this.onSelectionChange) {
+                    this.onSelectionChange();
+                }
+                
                 this.render();
                 return;
             }
@@ -343,6 +349,11 @@ class Graph {
                     );
                 }
                 
+                // Trigger selection change callback
+                if (this.onSelectionChange) {
+                    this.onSelectionChange();
+                }
+                
                 // Start dragging if node selected
                 if (this.selectedNode) {
                     this.isDragging = true;
@@ -356,6 +367,11 @@ class Graph {
                 this.overlapCandidates = [];
                 this.isPanning = true;
                 this.lastPanPoint = { x: e.clientX, y: e.clientY };
+                
+                // Trigger selection change callback
+                if (this.onSelectionChange) {
+                    this.onSelectionChange();
+                }
             }
         } else if (window.appMode === 'node') {
             const node = this.getNodeAt(pos.x, pos.y);
@@ -438,6 +454,12 @@ class Graph {
         if (node || edge) {
             this.selectedNode = node;
             this.selectedEdge = edge;
+            
+            // Trigger selection change callback
+            if (this.onSelectionChange) {
+                this.onSelectionChange();
+            }
+            
             this.render();
             
             // Show dialog directly instead of context menu
