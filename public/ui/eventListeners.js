@@ -108,5 +108,43 @@ export function setupDialogs() {
 
     // Setup pagination listeners
     setupPaginationListeners();
+
+    // Connections dialog handlers
+    const nodeConnectionsBtn = document.getElementById('node-connections-btn');
+    if (nodeConnectionsBtn) {
+        nodeConnectionsBtn.addEventListener('click', () => {
+            const node = window.currentEditingNode;
+            if (node && window.showNodeConnections) {
+                window.showNodeConnections(node.id);
+            }
+        });
+    }
+
+    const connectionsHighlightAllBtn = document.getElementById('connections-highlight-all-btn');
+    if (connectionsHighlightAllBtn) {
+        connectionsHighlightAllBtn.addEventListener('click', () => {
+            if (window.highlightAllConnections) {
+                window.highlightAllConnections();
+            }
+        });
+    }
+
+    const connectionsFocusBtn = document.getElementById('connections-focus-btn');
+    if (connectionsFocusBtn) {
+        connectionsFocusBtn.addEventListener('click', () => {
+            if (window.focusOnConnectionsNode) {
+                window.focusOnConnectionsNode();
+            }
+        });
+    }
+
+    const connectionsCloseBtn = document.getElementById('connections-close-btn');
+    if (connectionsCloseBtn) {
+        connectionsCloseBtn.addEventListener('click', () => {
+            if (window.closeConnectionsDialog) {
+                window.closeConnectionsDialog();
+            }
+        });
+    }
 }
 

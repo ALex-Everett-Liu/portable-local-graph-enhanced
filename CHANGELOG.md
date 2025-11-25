@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2025-01-25
+
+### Added
+- "View All Connections" feature in Edit Node dialog - shows all connections for a node in categorized sections
+- Connections dialog displaying incoming, outgoing, and bidirectional connections
+- "Highlight All Connections" button - highlights all connected nodes plus the current node on canvas
+- Individual connection highlighting - click any connection item to highlight that specific node pair
+- "Focus on Node" button in connections dialog - centers view on the selected node
+- `getNodeConnections(nodeId)` method in Graph class - returns categorized connections (incoming, outgoing, bidirectional, all)
+- `setHighlightedNodes(nodeIds)` method in Graph class - sets and highlights nodes on canvas
+- Color-coded connection direction indicators (red for incoming, blue for outgoing, green for bidirectional)
+- Connection count display showing total number of connections
+- Connections button in Edit Node dialog for quick access
+
+### Changed
+- Updated Edit Node dialog to include Connections button
+- Updated connections dialog to show node labels (English and Chinese), edge weights, and categories
+
+### Technical Details
+- Connections categorized by direction: incoming (edges pointing to node), outgoing (edges from node), bidirectional (pairs of edges in opposite directions or self-loops)
+- Bidirectional detection identifies pairs of edges between same nodes in opposite directions
+- Connection items are clickable for individual highlighting
+- Dialog integrates with existing graph highlighting system (`highlightedNodes` array)
+- Uses existing `focusOnNode` pattern for centering view on selected node
+- Event listeners wired up in `setupDialogs()` function
+- Functions exposed on window object for compatibility with non-module scripts
+
 ## [0.2.4] - 2025-11-24
 
 ### Added

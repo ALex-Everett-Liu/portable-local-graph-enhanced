@@ -378,6 +378,275 @@ function showNotification(message, type = "success") {
   }, 3000);
 }
 
+// Store current connections node for highlighting
+let currentConnectionsNode = null;
+
+// Show node connections dialog
+function showNodeConnections(nodeId) {
+  const graph = window.graph || window.getGraph?.();
+  if (!graph) {
+    console.error("Graph instance not available");
+    return;
+  }
+
+  const node = graph.nodes.find((n) => n.id === nodeId);
+  if (!node) {
+    console.error("Node not found:", nodeId);
+    return;
+  }
+
+  currentConnectionsNode = node;
+  const connections = graph.getNodeConnections(nodeId);
+
+  // Update dialog title
+  const titleElement = document.getElementById("connections-dialog-title");
+  if (titleElement) {
+    const nodeLabel = node.label || node.chineseLabel || "Unnamed Node";
+    titleElement.textContent = `Connections: ${nodeLabel}`;
+  }
+
+  // Update connection count
+  const countElement = document.getElementById("connections-total-count");
+  if (countElement) {
+    countElement.textContent = connections.all.length;
+  }
+
+  // Render connections
+  renderConnections(connections, node);
+
+  // Show dialog
+  const dialog = document.getElementById("node-connections-dialog");
+  if (dialog) {
+    dialog.classList.remove("hidden");
+  }
+
+  // Close the Edit Node dialog
+  const nodeDialog = document.getElementById("node-dialog");
+  if (nodeDialog) {
+    nodeDialog.classList.add("hidden");
+  }
+}
+
+// Render connections in the dialog
+function renderConnections(connections, node) {
+  const listElement = document.getElementById("connections-list");
+  if (!listElement) return;
+
+  // Clear existing content
+  listElement.innerHTML = "";
+
+  if (connections.all.length === 0) {
+    listElement.innerHTML = '<div class="empty-connections">No connections found</div>';
+    return;
+  }
+
+  // Helper function to escape HTML
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // Helper function to create connection item HTML
+  function createConnectionItem(conn, direction) {
+    const connNode = conn.node;
+    const edge = conn.edge;
+    const nodeLabel = escapeHtml(connNode.label || "Unnamed Node");
+    const nodeChinese = connNode.chineseLabel ? ` (${escapeHtml(connNode.chineseLabel)})` : "";
+    const weight = edge.weight || 1;
+    const category = edge.category ? ` [${escapeHtml(edge.category)}]` : "";
+    
+    let directionClass = "";
+    let directionText = "";
+    if (direction === "incoming") {
+      directionClass = "direction-incoming";
+      directionText = "← Incoming";
+    } else if (direction === "outgoing") {
+      directionClass = "direction-outgoing";
+      directionText = "Outgoing →";
+    } else {
+      directionClass = "direction-bidirectional";
+      directionText = "↔ Bidirectional";
+    }
+
+    const item = document.createElement("div");
+    item.className = "connection-item";
+    item.style.cssText = `
+      padding: 10px;
+      margin-bottom: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    `;
+    item.onmouseover = () => {
+      item.style.backgroundColor = "#f5f5f5";
+    };
+    item.onmouseout = () => {
+      item.style.backgroundColor = "";
+    };
+    item.onclick = () => {
+      // Highlight this specific connection
+      highlightConnection(connNode.id, node.id);
+    };
+
+    item.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="flex: 1;">
+          <div style="font-weight: 500; font-size: 13px; margin-bottom: 4px;">
+            ${nodeLabel}${nodeChinese}
+          </div>
+          <div style="font-size: 11px; color: #666;">
+            Weight: ${weight}${category}
+          </div>
+        </div>
+        <div class="connection-direction ${directionClass}" style="margin-left: 12px;">
+          ${directionText}
+        </div>
+      </div>
+    `;
+
+    return item;
+  }
+
+  // Render bidirectional connections
+  if (connections.bidirectional.length > 0) {
+    const section = document.createElement("div");
+    section.style.marginBottom = "16px";
+    
+    const sectionTitle = document.createElement("div");
+    sectionTitle.className = "connection-direction direction-bidirectional";
+    sectionTitle.style.cssText = "font-weight: 600; margin-bottom: 8px; font-size: 12px;";
+    sectionTitle.textContent = `Bidirectional (${connections.bidirectional.length})`;
+    section.appendChild(sectionTitle);
+
+    connections.bidirectional.forEach((conn) => {
+      section.appendChild(createConnectionItem(conn, "bidirectional"));
+    });
+
+    listElement.appendChild(section);
+  }
+
+  // Render incoming connections
+  if (connections.incoming.length > 0) {
+    const section = document.createElement("div");
+    section.style.marginBottom = "16px";
+    
+    const sectionTitle = document.createElement("div");
+    sectionTitle.className = "connection-direction direction-incoming";
+    sectionTitle.style.cssText = "font-weight: 600; margin-bottom: 8px; font-size: 12px;";
+    sectionTitle.textContent = `Incoming (${connections.incoming.length})`;
+    section.appendChild(sectionTitle);
+
+    connections.incoming.forEach((conn) => {
+      section.appendChild(createConnectionItem(conn, "incoming"));
+    });
+
+    listElement.appendChild(section);
+  }
+
+  // Render outgoing connections
+  if (connections.outgoing.length > 0) {
+    const section = document.createElement("div");
+    section.style.marginBottom = "16px";
+    
+    const sectionTitle = document.createElement("div");
+    sectionTitle.className = "connection-direction direction-outgoing";
+    sectionTitle.style.cssText = "font-weight: 600; margin-bottom: 8px; font-size: 12px;";
+    sectionTitle.textContent = `Outgoing (${connections.outgoing.length})`;
+    section.appendChild(sectionTitle);
+
+    connections.outgoing.forEach((conn) => {
+      section.appendChild(createConnectionItem(conn, "outgoing"));
+    });
+
+    listElement.appendChild(section);
+  }
+}
+
+// Highlight a specific connection (node pair)
+function highlightConnection(nodeId1, nodeId2) {
+  const graph = window.graph || window.getGraph?.();
+  if (!graph) return;
+
+  graph.setHighlightedNodes([nodeId1, nodeId2]);
+}
+
+// Highlight all connections
+function highlightAllConnections() {
+  if (!currentConnectionsNode) {
+    console.warn("No node selected for connections");
+    return;
+  }
+
+  const graph = window.graph || window.getGraph?.();
+  if (!graph) {
+    console.error("Graph instance not available");
+    return;
+  }
+
+  const connections = graph.getNodeConnections(currentConnectionsNode.id);
+  
+  // Get all connected node IDs
+  const nodeIdsToHighlight = connections.all.map((conn) => conn.node.id);
+  nodeIdsToHighlight.push(currentConnectionsNode.id);
+
+  // Set highlighted nodes
+  graph.setHighlightedNodes(nodeIdsToHighlight);
+}
+
+// Focus on the current connections node
+function focusOnConnectionsNode() {
+  if (!currentConnectionsNode) {
+    console.warn("No node selected for connections");
+    return;
+  }
+
+  const graph = window.graph || window.getGraph?.();
+  if (!graph) {
+    console.error("Graph instance not available");
+    return;
+  }
+
+  const node = graph.nodes.find((n) => n.id === currentConnectionsNode.id);
+  if (!node) {
+    console.error("Node not found:", currentConnectionsNode.id);
+    return;
+  }
+
+  // Center the view on the node
+  const canvas = graph.canvas;
+  if (!canvas) {
+    console.error("Canvas not available");
+    return;
+  }
+
+  graph.offset.x = -node.x * graph.scale + canvas.width / 2;
+  graph.offset.y = -node.y * graph.scale + canvas.height / 2;
+
+  // Select the node
+  graph.selectedNode = node;
+  graph.selectedEdge = null;
+
+  if (graph.render) {
+    graph.render();
+  }
+
+  if (window.showNotification) {
+    const nodeLabel = node.label || node.chineseLabel || "Unnamed Node";
+    window.showNotification(`Focused on: ${nodeLabel}`);
+  }
+}
+
+// Close connections dialog
+function closeConnectionsDialog() {
+  const dialog = document.getElementById("node-connections-dialog");
+  if (dialog) {
+    dialog.classList.add("hidden");
+  }
+  currentConnectionsNode = null;
+}
+
 // Export for module system
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
@@ -394,6 +663,10 @@ if (typeof module !== "undefined" && module.exports) {
     isValidHex,
     hexToRgb,
     rgbToHex,
+    showNodeConnections,
+    highlightAllConnections,
+    focusOnConnectionsNode,
+    closeConnectionsDialog,
   };
 } else {
   Object.assign(window, {
@@ -410,5 +683,9 @@ if (typeof module !== "undefined" && module.exports) {
     isValidHex,
     hexToRgb,
     rgbToHex,
+    showNodeConnections,
+    highlightAllConnections,
+    focusOnConnectionsNode,
+    closeConnectionsDialog,
   });
 }

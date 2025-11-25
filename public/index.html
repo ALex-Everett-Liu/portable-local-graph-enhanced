@@ -239,6 +239,7 @@
                             />
                             <span id="size-display">20</span>
                             <div class="dialog-buttons">
+                                <button id="node-connections-btn" class="tool-btn" title="View all connections">Connections</button>
                                 <button id="node-ok">OK</button>
                                 <button id="node-cancel">Cancel</button>
                                 <button id="node-delete" class="danger">
@@ -521,6 +522,23 @@
                                 <button id="dialog-select-node-btn" disabled>Select</button>
                                 <button id="dialog-search-navigate" disabled>Navigate</button>
                                 <button id="dialog-search-cancel">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="node-connections-dialog" class="dialog hidden">
+                        <div class="dialog-content">
+                            <h3 id="connections-dialog-title">Node Connections</h3>
+                            <div class="connection-count">
+                                <strong id="connections-total-count">0</strong> connection(s)
+                            </div>
+                            <div id="connections-list" style="max-height: 400px; overflow-y: auto; margin-bottom: 12px;">
+                                <!-- Connections will be rendered here -->
+                            </div>
+                            <div class="dialog-buttons">
+                                <button id="connections-highlight-all-btn" class="tool-btn">Highlight All Connections</button>
+                                <button id="connections-focus-btn" class="tool-btn">Focus on Node</button>
+                                <button id="connections-close-btn">Close</button>
                             </div>
                         </div>
                     </div>
