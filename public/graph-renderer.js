@@ -32,6 +32,12 @@ export class GraphRenderer {
             showNodeBorders: options.showNodeBorders !== false,
             ...options
         };
+        
+        // Animation state for flow effect
+        this.animationFrameId = null;
+        this.animationStartTime = Date.now();
+        this.isAnimating = false;
+        this.animationTime = 0;
     }
 
     /**
@@ -51,6 +57,9 @@ export class GraphRenderer {
         if (typeof window.appState.showEdgeArrows === 'undefined') {
             window.appState.showEdgeArrows = false;
         }
+        
+        // Check if flow is enabled (animation time is updated by animation loop)
+        const showFlow = window.appState && window.appState.showEdgeArrows === true;
         
         if (!viewState) {
             viewState = { scale: 1, offset: { x: 0, y: 0 } };
@@ -76,6 +85,60 @@ export class GraphRenderer {
         this.renderNodes(nodes, viewState, selectionState, filterState);
         
         this.ctx.restore();
+        
+        // Continue animation loop if flow is enabled
+        if (showFlow && !this.isAnimating) {
+            this.startFlowAnimation();
+        } else if (!showFlow && this.isAnimating) {
+            this.stopFlowAnimation();
+        }
+    }
+    
+    /**
+     * Start the flow animation loop
+     */
+    startFlowAnimation() {
+        if (this.isAnimating) return;
+        this.isAnimating = true;
+        this.animationStartTime = Date.now();
+        this.animateFlow();
+    }
+    
+    /**
+     * Stop the flow animation loop
+     */
+    stopFlowAnimation() {
+        this.isAnimating = false;
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+    }
+    
+    /**
+     * Animation loop for flow effect
+     */
+    animateFlow() {
+        if (!this.isAnimating) return;
+        
+        const showFlow = window.appState && window.appState.showEdgeArrows === true;
+        if (!showFlow) {
+            this.stopFlowAnimation();
+            return;
+        }
+        
+        // Update animation time
+        const now = Date.now();
+        this.animationTime = (now - this.animationStartTime) / 1000;
+        
+        // Trigger graph re-render
+        const graph = window.graph || window.getGraph?.();
+        if (graph && graph.render) {
+            graph.render();
+        }
+        
+        // Continue animation loop
+        this.animationFrameId = requestAnimationFrame(() => this.animateFlow());
     }
 
     /**
@@ -155,10 +218,10 @@ export class GraphRenderer {
         this.ctx.lineTo(to.x, to.y);
         this.ctx.stroke();
         
-        // Draw arrow if enabled in app state
-        const showArrows = window.appState && window.appState.showEdgeArrows === true;
-        if (showArrows) {
-            this.renderEdgeArrow(from, to, scale);
+        // Draw flow effect if enabled in app state
+        const showFlow = window.appState && window.appState.showEdgeArrows === true;
+        if (showFlow) {
+            this.renderEdgeFlow(from, to, scale);
         }
         
         // Always draw weight label
@@ -203,6 +266,68 @@ export class GraphRenderer {
         this.ctx.lineTo(x2, y2);
         this.ctx.closePath();
         this.ctx.fill();
+    }
+
+    /**
+     * Render flow particles on edge to show direction
+     * @param {Object} from - From node
+     * @param {Object} to - To node
+     * @param {number} scale - Current zoom scale
+     */
+    renderEdgeFlow(from, to, scale) {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const length = Math.sqrt(dx * dx + dy * dy);
+        
+        if (length === 0) return;
+        
+        // Flow animation parameters
+        const particleCount = 3; // Number of particles per edge
+        const particleSize = 4 / scale; // Scale particle size with zoom
+        const flowSpeed = 0.4; // Speed of flow (cycles per second)
+        const particleSpacing = 0.3; // Spacing between particles (0-1)
+        
+        // Calculate normalized direction vector
+        const unitX = dx / length;
+        const unitY = dy / length;
+        
+        // Draw particles
+        for (let i = 0; i < particleCount; i++) {
+            // Calculate particle position along edge
+            // Phase cycles from 0 to 1, with particles staggered
+            const basePhase = (this.animationTime * flowSpeed) % 1;
+            const particleOffset = (i * particleSpacing) % 1;
+            const phase = (basePhase + particleOffset) % 1;
+            
+            // Position particle along the edge, keeping some distance from nodes
+            const nodeRadius = 20; // Approximate node radius
+            const startOffset = nodeRadius / length;
+            const endOffset = 1 - (nodeRadius / length);
+            const clampedPhase = startOffset + phase * (endOffset - startOffset);
+            
+            const particleX = from.x + dx * clampedPhase;
+            const particleY = from.y + dy * clampedPhase;
+            
+            // Draw particle with glow effect
+            const gradient = this.ctx.createRadialGradient(
+                particleX, particleY, 0,
+                particleX, particleY, particleSize * 2
+            );
+            gradient.addColorStop(0, 'rgba(74, 144, 226, 1)'); // Bright center
+            gradient.addColorStop(0.5, 'rgba(74, 144, 226, 0.6)'); // Medium glow
+            gradient.addColorStop(1, 'rgba(74, 144, 226, 0)'); // Fade out
+            
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(particleX, particleY, particleSize * 2, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            // Draw solid center for better visibility
+            this.ctx.fillStyle = '#4A90E2';
+            this.ctx.beginPath();
+            this.ctx.arc(particleX, particleY, particleSize, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
     }
 
     /**

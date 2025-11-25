@@ -41,6 +41,38 @@ export function setupEventListeners() {
     document.addEventListener('click', () => {
         hideContextMenu();
     });
+
+    // Show Edge Arrows (Flow Effect) checkbox
+    const showEdgeArrowsCheckbox = document.getElementById('show-edge-arrows');
+    if (showEdgeArrowsCheckbox) {
+        // Initialize appState if it doesn't exist
+        if (!window.appState) {
+            window.appState = { showEdgeArrows: false };
+        }
+        
+        // Set initial checkbox state
+        showEdgeArrowsCheckbox.checked = window.appState.showEdgeArrows || false;
+        
+        // Listen for changes
+        showEdgeArrowsCheckbox.addEventListener('change', (e) => {
+            // Update appState
+            if (!window.appState) {
+                window.appState = {};
+            }
+            window.appState.showEdgeArrows = e.target.checked;
+            
+            // Reset animation start time when toggling
+            const graph = window.graph || window.getGraph?.();
+            if (graph && graph.renderer) {
+                graph.renderer.animationStartTime = Date.now();
+            }
+            
+            // Trigger graph re-render to start/stop animation
+            if (graph && graph.render) {
+                graph.render();
+            }
+        });
+    }
 }
 
 export function setupDialogs() {

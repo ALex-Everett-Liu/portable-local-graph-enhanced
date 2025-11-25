@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.6] - 2025-01-25
+
+### Added
+- Particle-based flow effect for edge direction visualization - animated particles flow along edges showing direction
+- Flow animation system using `requestAnimationFrame` for smooth 60fps animation
+- `renderEdgeFlow()` method in GraphRenderer - renders animated particles with glow effect along edges
+- Animation loop management (`startFlowAnimation()`, `stopFlowAnimation()`, `animateFlow()`) for efficient rendering
+- Event listener for "Show Edge Arrows" checkbox - enables/disables flow effect
+- Flow particles with radial gradient glow effect for better visibility
+- Particle animation parameters: 3 particles per edge, configurable speed and spacing
+
+### Changed
+- Updated "Show Edge Arrows" checkbox functionality - now shows animated flow particles instead of static arrows
+- Updated `renderEdge()` method to use flow effect when enabled
+- Flow effect replaces static arrow rendering for better direction visualization
+
+### Fixed
+- Fixed "Show Edge Arrows" checkbox not working - added missing event listener to update `window.appState.showEdgeArrows`
+- Fixed checkbox state not being initialized on page load
+
+### Technical Details
+- Flow particles move from source node to target node, cycling continuously
+- Particles use radial gradient for glow effect (bright center fading to transparent)
+- Animation time tracked in seconds, particles positioned using phase calculations
+- Particle size scales with zoom level for consistent visual appearance
+- Animation loop only runs when flow effect is enabled (performance optimization)
+- Particles positioned away from node boundaries to avoid overlap
+- Flow speed: 0.4 cycles per second, particle spacing: 0.3 (configurable)
+- Color: `#4A90E2` (blue) with transparency gradient
+
 ## [0.2.5] - 2025-01-25
 
 ### Added
