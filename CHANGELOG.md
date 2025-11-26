@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.7] - 2025-01-25
+## [0.2.7] - 2025-11-26
 
 ### Added
 - "Create Edge via Search" feature - connect distant nodes without manual navigation or zooming
@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dialog follows existing code patterns and integrates with current architecture
 - Category support added after edge creation via `graph.addEdge()` method
 
-## [0.2.6] - 2025-01-25
+## [0.2.6] - 2025-11-26
 
 ### Added
 - Particle-based flow effect for edge direction visualization - animated particles flow along edges showing direction
@@ -63,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Flow speed: 0.4 cycles per second, particle spacing: 0.3 (configurable)
 - Color: `#4A90E2` (blue) with transparency gradient
 
-## [0.2.5] - 2025-01-25
+## [0.2.5] - 2025-11-26
 
 ### Added
 - "View All Connections" feature in Edit Node dialog - shows all connections for a node in categorized sections
@@ -122,7 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Callback system: `onSelectionChange` → `updateGraphInfo()` → `updateSelectionInfo()`
 - Compatible with legacy selection behavior while adding smart features
 
-## [0.2.3] - 2025-11-24
+## [0.2.3] - 2025-11-25
 
 ### Added
 - Layer filter state persistence per database - active layers and filter mode are now saved and restored
