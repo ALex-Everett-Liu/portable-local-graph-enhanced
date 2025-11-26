@@ -266,22 +266,34 @@ function handleHotkeyKeydown(e) {
     
     updateSequenceDisplay();
     
-    // Check for exact match
+    // Parse sequence to extract count and command
     const parsed = parseSequence(sequenceBuffer);
     const exactMatch = COMMANDS[parsed.command];
     
+    // Check for partial matches using the command part (without numeric prefix)
+    // This allows sequences like "3c" to still check for "cn", "ce", "ces"
+    const partialMatches = findMatchingCommands(parsed.command);
+    
+    // Filter out the exact match from partial matches to find longer sequences
+    const longerMatches = partialMatches.filter(m => m.command.length > parsed.command.length);
+    
     if (exactMatch) {
-        // Exact match found - execute immediately
-        executeCommand(parsed.command, parsed.count);
-        resetSequence();
-        
-        // Optionally exit hotkey mode after command
-        // Uncomment if you want auto-exit:
-        // deactivateHotkeyMode();
+        // Exact match found - but check if there are longer sequences possible
+        if (longerMatches.length > 0) {
+            // There are longer sequences possible (e.g., 'c' matches, but 'cn', 'ce', 'ces' also match)
+            // Wait for more input or timeout before executing
+            resetSequenceTimeout();
+        } else {
+            // No longer sequences possible - execute immediately
+            executeCommand(parsed.command, parsed.count);
+            resetSequence();
+            
+            // Optionally exit hotkey mode after command
+            // Uncomment if you want auto-exit:
+            // deactivateHotkeyMode();
+        }
     } else {
-        // Check for partial matches
-        const partialMatches = findMatchingCommands(sequenceBuffer);
-        
+        // No exact match - check for partial matches
         if (partialMatches.length === 0) {
             // No matches - invalid sequence
             showNotification(`Unknown sequence: ${sequenceBuffer}`, 'error');

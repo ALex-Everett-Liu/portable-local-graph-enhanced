@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated toolbar to include hotkey mode button after mode selection buttons
 - Hotkey mode integrates with existing mode system and command structure
 
+### Fixed
+- Fixed hotkey mode conflict where single-character commands (like `c`) executed immediately, preventing multi-character sequences (like `cn`, `ce`, `ces`) from being typed
+- Hotkey manager now checks for longer sequence matches before executing shorter commands
+- Commands with longer sequence variants now wait for timeout or next keypress before executing
+
 ### Technical Details
 - Hotkey mode uses global keydown listener with capture phase for reliable event handling
 - Sequence buffer tracks multi-character commands with timeout reset mechanism
