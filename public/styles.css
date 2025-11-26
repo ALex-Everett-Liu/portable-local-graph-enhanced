@@ -439,7 +439,8 @@ body.local-graph-resizing .resize-handle {
     font-size: 12px;
     pointer-events: none;
     z-index: 1000;
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.4;
 }
 
 /* Responsive design */

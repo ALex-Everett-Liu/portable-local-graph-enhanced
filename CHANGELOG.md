@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `public/managers/commandPalette.js` - Complete command palette module
 - `public/managers/keyboardShortcuts.js` - Global keyboard shortcut manager
 - Command palette and hotkey mode integration - automatically close each other when one opens
+- Enhanced node tooltip - displays English label, Chinese label, category, and layers information on hover
 
 ### Changed
 - Updated hotkey manager to export `getCommands()` function for command palette reuse

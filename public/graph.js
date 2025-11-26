@@ -75,9 +75,9 @@ class Graph {
 
     // Add tooltip element
     this.tooltip = document.createElement("div");
-    this.tooltip.className = "graph-tooltip";
+    this.tooltip.className = "tooltip";
     this.tooltip.style.cssText =
-      "position: absolute; display: none; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 4px; pointer-events: none; z-index: 1000; max-width: 300px; word-wrap: break-word;";
+      "position: absolute; display: none; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 4px; pointer-events: none; z-index: 1000; max-width: 300px; word-wrap: break-word; line-height: 1.4; font-size: 12px;";
     document.body.appendChild(this.tooltip);
   }
 
@@ -444,6 +444,55 @@ class Graph {
     this.render();
   }
 
+  /**
+   * Escape HTML to prevent XSS
+   * @param {string} text - Text to escape
+   * @returns {string} Escaped HTML
+   */
+  escapeHtml(text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
+   * Update tooltip content with node information
+   * @param {Object} node - Node object
+   * @param {number} x - Mouse X position
+   * @param {number} y - Mouse Y position
+   */
+  updateTooltip(node, x, y) {
+    const parts = [];
+    
+    // English label (always show)
+    parts.push(`<div><strong>${this.escapeHtml(node.label || "Unnamed Node")}</strong></div>`);
+    
+    // Chinese label (if exists)
+    if (node.chineseLabel) {
+      parts.push(`<div style="margin-top: 4px; color: rgba(255,255,255,0.9);">中文: ${this.escapeHtml(node.chineseLabel)}</div>`);
+    }
+    
+    // Category (if exists)
+    if (node.category) {
+      parts.push(`<div style="margin-top: 4px; color: rgba(255,255,255,0.85);">Category: ${this.escapeHtml(node.category)}</div>`);
+    }
+    
+    // Layers (if exists)
+    const layers = node.layers && Array.isArray(node.layers) && node.layers.length > 0
+      ? node.layers.join(", ")
+      : (typeof node.layers === "string" && node.layers.trim() ? node.layers : null);
+    
+    if (layers) {
+      parts.push(`<div style="margin-top: 4px; color: rgba(255,255,255,0.85);">Layers: ${this.escapeHtml(layers)}</div>`);
+    }
+    
+    this.tooltip.innerHTML = parts.join("");
+    this.tooltip.style.display = "block";
+    this.tooltip.style.left = x + 10 + "px";
+    this.tooltip.style.top = y + 10 + "px";
+  }
+
   handleMouseMove(e) {
     const pos = this.getMousePos(e);
 
@@ -464,10 +513,7 @@ class Graph {
       // Show tooltip for node under cursor
       const node = this.getNodeAt(pos.x, pos.y);
       if (node && node.label) {
-        this.tooltip.textContent = node.label;
-        this.tooltip.style.display = "block";
-        this.tooltip.style.left = e.clientX + 10 + "px";
-        this.tooltip.style.top = e.clientY + 10 + "px";
+        this.updateTooltip(node, e.clientX, e.clientY);
       } else {
         this.tooltip.style.display = "none";
       }
