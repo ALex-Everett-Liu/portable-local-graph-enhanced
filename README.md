@@ -13,6 +13,8 @@ An independent desktop application for creating and visualizing graph networks. 
 - **Visual Feedback**: Color-coded nodes, weighted edges, tooltips
 
 ### Advanced Features
+- **Command Palette**: Searchable command interface (Alt+P) with fuzzy matching and keyboard navigation
+- **Hotkey Mode**: Vim-like multi-character command sequences (Alt+H) for power users
 - **Search & Navigation**: Inline search bar and advanced search dialog with keyboard navigation
 - **Layer Management**: Organize nodes into layers with filtering and persistence
 - **Smart Selection**: Overlap detection and cycling through overlapping elements
@@ -86,8 +88,16 @@ graph-app/
 
 - **Right-click** on a node or edge to open context menu for editing/deleting
 - **Search**: Use the search bar in toolbar to find nodes quickly
+- **Command Palette**: Press **Alt+P** to open searchable command interface
+- **Hotkey Mode**: Press **Alt+H** to activate vim-like command sequences
 - **Save Changes**: Click "Save Changes" button in sidebar to persist modifications
 - **Pan & Zoom**: Drag empty canvas to pan, scroll wheel to zoom
+
+### Keyboard Shortcuts
+
+- **Alt+P**: Open command palette
+- **Alt+H**: Toggle hotkey mode
+- **Hotkey Mode Commands**: `n` (node mode), `e` (edge mode), `s` (select), `cn` (create node), `dn` (delete node), `f` (find), `l` (load), `w` (save), `?` (help)
 
 ### Documentation
 

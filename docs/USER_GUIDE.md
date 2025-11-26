@@ -12,6 +12,8 @@ Complete guide to using the Graph App desktop application for creating and visua
 - [Canvas Navigation](#canvas-navigation)
 - [Database Operations](#database-operations)
 - [Advanced Features](#advanced-features)
+  - [Command Palette](#command-palette)
+  - [Hotkey Mode](#hotkey-mode)
 - [Tips & Best Practices](#tips--best-practices)
 
 ## Getting Started
@@ -24,9 +26,11 @@ Complete guide to using the Graph App desktop application for creating and visua
 
 ### Understanding the Interface
 
-- **Toolbar** (top): Mode selection, search, and action buttons
+- **Toolbar** (top): Mode selection, search, action buttons, and hotkey mode toggle
 - **Canvas** (center): Main graph visualization area
 - **Sidebar** (right): Graph info, selection details, and display options
+- **Command Palette** (overlay): Press Alt+P to open searchable command interface
+- **Hotkey Mode** (overlay): Press Alt+H to activate vim-like command sequences
 
 ## Basic Operations
 
@@ -295,6 +299,43 @@ When you select a node or edge, the sidebar shows detailed information:
 
 ## Advanced Features
 
+### Command Palette
+
+A searchable command interface for quick access to all app functions:
+
+1. Press **Alt+P** (or click the Hotkey button and press `?`) to open the command palette
+2. **Type to search** - Commands are filtered by name or key sequence in real-time
+3. **Navigate** - Use Arrow keys to move through results
+4. **Execute** - Press Enter or click to execute a command
+5. **Close** - Press Escape or click outside to close
+
+**Features**:
+- Fuzzy search matching by command name or key sequence
+- Commands grouped by category (Modes, Create, Delete, Edit, Navigation, Help)
+- Shows command key and description for each command
+- Intelligent match scoring for better search results
+
+### Hotkey Mode
+
+Vim-like command sequences for power users:
+
+1. Press **Alt+H** (or click the Hotkey button in toolbar) to activate hotkey mode
+2. **Type command sequences** - Multi-character commands like `cn` (create node), `dn` (delete node)
+3. **Visual feedback** - See `:sequence` displayed at bottom of screen
+4. **Press Esc** to exit hotkey mode
+
+**How It Works**:
+- Type commands as sequences (e.g., `cn` = create node, `dn` = delete node)
+- Single-character commands wait for longer sequences (e.g., `c` waits for `cn`, `ce`, `ces`)
+- Commands timeout after 2 seconds of inactivity
+- Count prefixes supported (e.g., `3n` creates 3 nodes)
+
+**Example Workflow**:
+1. Press `Alt+H` to activate hotkey mode
+2. Type `cn` to switch to node mode
+3. Click on canvas to create nodes
+4. Press `Esc` to exit hotkey mode
+
 ### Edge Flow Visualization
 
 Visualize edge direction with animated particles:
@@ -362,10 +403,48 @@ Nodes support bilingual labels:
 
 ### Keyboard Shortcuts
 
-- **Arrow Keys**: Navigate search results
-- **Enter**: Select search result or confirm dialog
-- **Escape**: Close dropdowns and dialogs
+#### Global Shortcuts
+- **Alt+P**: Open command palette (searchable command interface)
+- **Alt+H**: Toggle hotkey mode (vim-like command sequences)
+- **Arrow Keys**: Navigate search results and command palette
+- **Enter**: Select search result, execute command, or confirm dialog
+- **Escape**: Close dropdowns, dialogs, command palette, or exit hotkey mode
 - **Alt/Ctrl/Cmd + Click**: Select edges when nodes overlap
+
+#### Hotkey Mode Commands
+When hotkey mode is active (press `Alt+H` or click the Hotkey button), you can type command sequences:
+
+**Mode Shortcuts**:
+- `n` - Switch to Node mode
+- `e` - Switch to Edge mode
+- `s` - Switch to Select mode
+
+**Node Operations**:
+- `cn` - Create node(s) (switch to node mode)
+- `dn` - Delete selected node
+- `en` - Edit selected node
+
+**Edge Operations**:
+- `ce` - Create edge (switch to edge mode)
+- `de` - Delete selected edge
+- `ee` - Edit selected edge
+- `ces` - Create edge via search dialog
+
+**Navigation**:
+- `f` - Find/Search (open search dialog)
+- `l` - Load database
+- `w` - Write/Save As
+- `c` - Clear graph
+
+**Help**:
+- `?` - Show help overlay with all commands
+
+**Count Prefixes**: You can prefix commands with numbers, e.g., `3n` to create 3 nodes.
+
+**Tips**:
+- Type commands quickly - sequences timeout after 2 seconds of inactivity
+- Press `Esc` to exit hotkey mode
+- Visual feedback shows `:sequence` at bottom of screen while typing
 
 ### Workflow Recommendations
 
