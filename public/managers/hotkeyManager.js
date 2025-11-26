@@ -441,6 +441,11 @@ function showNotification(message, type = 'success') {
 export function activateHotkeyMode() {
     if (hotkeyModeActive) return;
     
+    // Close command palette if active (avoid circular dependency by checking window)
+    if (window.closeCommandPalette) {
+        window.closeCommandPalette();
+    }
+    
     hotkeyModeActive = true;
     resetSequence();
     updateUI();
@@ -533,5 +538,12 @@ export function isHotkeyModeActive() {
  */
 export function getCurrentSequence() {
     return sequenceBuffer;
+}
+
+/**
+ * Export commands for use by other modules (e.g., command palette)
+ */
+export function getCommands() {
+    return COMMANDS;
 }
 

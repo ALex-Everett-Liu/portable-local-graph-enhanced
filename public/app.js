@@ -23,6 +23,9 @@ import { initializeEdgeSearchDialog } from './ui/dialogs/edgeSearchDialog.js';
 import { initializeLayerManagement } from './managers/layerManager.js';
 import { initializeLayerDialog } from './ui/dialogs/layerDialog.js';
 import { saveFilterStateToDb } from './services/databaseService.js';
+import { initializeKeyboardShortcuts } from './managers/keyboardShortcuts.js';
+import { deactivateHotkeyMode } from './managers/hotkeyManager.js';
+import { closeCommandPalette } from './managers/commandPalette.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -74,11 +77,18 @@ function init() {
     initializeLayerManagement();
     initializeLayerDialog();
     
+    // Setup global keyboard shortcuts (Alt+P for palette, Alt+H for hotkey mode)
+    initializeKeyboardShortcuts();
+    
     // Expose search dialog function globally
     window.showSearchDialog = showSearchDialog;
     
     // Expose filter state save function globally
     window.saveFilterStateToDb = saveFilterStateToDb;
+    
+    // Expose hotkey and command palette functions globally (for cross-module access)
+    window.deactivateHotkeyMode = deactivateHotkeyMode;
+    window.closeCommandPalette = closeCommandPalette;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');

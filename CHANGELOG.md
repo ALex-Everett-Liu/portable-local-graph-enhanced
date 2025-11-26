@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.3.1] - 2025-11-26
+
+### Added
+- Command palette feature - searchable command interface accessible via `Alt+P` keyboard shortcut
+- Real-time command search with fuzzy matching by command name or key sequence
+- Keyboard navigation in command palette: Arrow keys to navigate, Enter to execute, Escape to close
+- Command grouping by category (Modes, Create, Delete, Edit, Navigation, Help) when no search query
+- Match scoring algorithm for intelligent search result ordering
+- Visual command display showing command key and description
+- Click-outside-to-close functionality for command palette
+- Global keyboard shortcuts: `Alt+P` for command palette, `Alt+H` for hotkey mode
+- `public/managers/commandPalette.js` - Complete command palette module
+- `public/managers/keyboardShortcuts.js` - Global keyboard shortcut manager
+- Command palette and hotkey mode integration - automatically close each other when one opens
+
+### Changed
+- Updated hotkey manager to export `getCommands()` function for command palette reuse
+- Updated app initialization to include keyboard shortcuts setup
+- Command palette reuses command definitions from hotkey manager for consistency
+
+### Technical Details
+- Command palette uses overlay UI with search input and scrollable results list
+- Search algorithm matches by command key or description with scoring for relevance
+- Keyboard shortcuts use capture phase event listeners for global accessibility
+- Circular dependency avoided by exposing functions on window object
+- Command palette respects input fields - shortcuts don't trigger when typing in inputs
+- Results container supports up to 400px height with scrollable overflow
+- Selected command highlighted with blue background and left border indicator
+- Command count displayed in footer with real-time updates
+
 ## [0.3.0] - 2025-11-26
 
 ### Added
