@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+> **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
+
 ## [0.2.8] - 2025-11-26
 
 ### Added
@@ -23,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated sidebar to include "Database Operations" section before "Layer Management"
 - Merge dialog follows existing dialog patterns and integrates with current architecture
+- Updated README.md with expanded features list and improved organization
+- Created comprehensive User Guide documentation (`docs/USER_GUIDE.md`)
+- Created CHANGELOG archive system (`CHANGELOG_ARCHIVE.md`) for managing long changelog history
 
 ### Fixed
 - Fixed merge dialog path storage issue - path now properly stored before dialog closes
@@ -540,33 +545,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ES6 module imports for better code organization
 - Improved error handling for missing DOM elements
 - Better separation between UI logic and graph logic
-
-## [0.1.0] - 2025-11-19
-
-### Added
-- Initial release as standalone desktop application
-- Graph visualization with interactive canvas
-- Node creation, editing, and deletion
-- Edge creation, editing, and deletion
-- Three interaction modes: Select, Add Node, Add Edge
-- Context menu for editing nodes and edges
-- Change tracking system with save/discard functionality
-- SQLite database for persistent storage
-- Express API server for backend operations
-- Electron desktop application wrapper
-- Tooltip display for node full content
-- Visual feedback for selected nodes and edges
-- Weighted edges with visual representation
-- Color customization for nodes
-- Clear all functionality
-- Database initialization and sequence ID management
-- Import/export functionality via API
-
-### Technical Details
-- Built with Electron for cross-platform desktop support
-- Express.js backend server running on port 3004
-- SQLite database with graph_nodes and graph_edges tables
-- Canvas-based rendering for graph visualization
-- RESTful API endpoints for all graph operations
-
-[0.1.0]: https://github.com/yourusername/graph-app/releases/tag/v0.1.0

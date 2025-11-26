@@ -4,12 +4,26 @@ An independent desktop application for creating and visualizing graph networks. 
 
 ## Features
 
+### Core Features
 - **Node Creation**: Click to add nodes to the graph
-- **Edge Creation**: Connect nodes by clicking on two nodes
+- **Edge Creation**: Connect nodes by clicking on two nodes or via search dialog
 - **Interactive Editing**: Drag nodes, edit properties via context menu
 - **Persistent Storage**: All data is saved to a local SQLite database
 - **Change Tracking**: Track unsaved changes with save/discard functionality
 - **Visual Feedback**: Color-coded nodes, weighted edges, tooltips
+
+### Advanced Features
+- **Search & Navigation**: Inline search bar and advanced search dialog with keyboard navigation
+- **Layer Management**: Organize nodes into layers with filtering and persistence
+- **Smart Selection**: Overlap detection and cycling through overlapping elements
+- **View Connections**: See all connections for any node with categorized display
+- **Edge Flow Visualization**: Animated particles showing edge direction
+- **Database Operations**: Load, save, merge databases with conflict resolution
+- **Canvas Navigation**: Pan and zoom with view state persistence
+- **Bilingual Support**: English and Chinese labels for nodes
+- **Categories**: Tag nodes and edges with categories for organization
+
+> 📖 **For detailed usage instructions, see the [User Guide](docs/USER_GUIDE.md)**
 
 ## Installation
 
@@ -60,25 +74,26 @@ graph-app/
     └── graphService.js
 ```
 
-## Usage
+## Quick Start
 
-### Modes
+### Basic Usage
 
 1. **Select Mode** (default): Click and drag nodes, select edges
 2. **Add Node Mode**: Click anywhere to add a new node
 3. **Add Edge Mode**: Click on two nodes to connect them
 
-### Editing
+### Quick Actions
 
-- **Right-click** on a node or edge to open context menu
-- **Edit**: Modify node label/color or edge weight
-- **Delete**: Remove node or edge
+- **Right-click** on a node or edge to open context menu for editing/deleting
+- **Search**: Use the search bar in toolbar to find nodes quickly
+- **Save Changes**: Click "Save Changes" button in sidebar to persist modifications
+- **Pan & Zoom**: Drag empty canvas to pan, scroll wheel to zoom
 
-### Saving Changes
+### Documentation
 
-- Changes are tracked automatically
-- Click **Save Changes** to persist to database
-- Click **Discard Changes** to revert unsaved modifications
+- **[User Guide](docs/USER_GUIDE.md)**: Complete step-by-step guide for all features
+- **[Architecture](docs/ARCHITECTURE.md)**: Technical architecture documentation
+- **[Development Guide](docs/DEVELOPMENT_GUIDE.md)**: Guidelines for contributors
 
 ## Database
 
@@ -113,15 +128,34 @@ The database stores:
 
 All endpoints are prefixed with `/api/plugins/graph`:
 
+### Graph Data
 - `GET /` - Get all graph data
+- `POST /import` - Import graph data (bulk)
+- `DELETE /clear` - Clear all data
+
+### Nodes
 - `POST /nodes` - Create a node
 - `PUT /nodes/:id` - Update a node
 - `DELETE /nodes/:id` - Delete a node
+
+### Edges
 - `POST /edges` - Create an edge
 - `PUT /edges/:id` - Update an edge
 - `DELETE /edges/:id` - Delete an edge
-- `DELETE /clear` - Clear all data
-- `POST /import` - Import graph data (bulk)
+
+### Database Operations
+- `GET /databases` - List all database files
+- `POST /switch-database` - Switch to a different database
+- `POST /save-as` - Save current graph to a new database file
+- `POST /merge` - Merge data from another database
+
+### View State
+- `GET /view-state` - Get canvas view state (scale, offset)
+- `POST /view-state` - Save canvas view state
+
+### Filter State
+- `GET /filter-state` - Get layer filter state
+- `POST /filter-state` - Save layer filter state
 
 ## Development
 
