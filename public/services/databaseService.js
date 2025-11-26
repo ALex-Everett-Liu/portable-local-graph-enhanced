@@ -313,12 +313,17 @@ export async function fetchDatabases() {
 }
 
 export async function mergeDatabase(sourceDbPath, conflictResolution = 'skip') {
+    // Validate input
+    if (!sourceDbPath || typeof sourceDbPath !== 'string' || sourceDbPath.trim() === '') {
+        throw new Error('Source database path is required');
+    }
+    
     try {
         const response = await fetch(`${API_BASE}/merge`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                sourceDbPath,
+                sourceDbPath: sourceDbPath.trim(),
                 conflictResolution
             })
         });

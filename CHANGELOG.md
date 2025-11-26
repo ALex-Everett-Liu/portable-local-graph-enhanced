@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.8] - 2025-11-26
+
+### Added
+- Database merge feature - merge data from another database file into the current database
+- Merge dialog in sidebar with database selection and conflict resolution options
+- Three conflict resolution strategies: Skip Conflicts (default), Replace Conflicts, Rename Conflicts
+- Detailed merge statistics showing nodes/edges added, skipped, and renamed
+- `POST /api/plugins/graph/merge` API endpoint for database merging
+- `mergeFromDatabase()` service function with transaction support and conflict detection
+- Node ID mapping system for tracking renamed nodes during merge
+- Edge reference updates when nodes are renamed during merge
+- Merge button in sidebar under "Database Operations" section
+- Visual feedback for selected source database in merge dialog
+- Merge button disabled state until database is selected
+
+### Changed
+- Updated sidebar to include "Database Operations" section before "Layer Management"
+- Merge dialog follows existing dialog patterns and integrates with current architecture
+
+### Fixed
+- Fixed merge dialog path storage issue - path now properly stored before dialog closes
+- Fixed merge validation to prevent empty path errors
+- Improved error handling with better validation and user feedback
+
+### Technical Details
+- Merge process uses database transactions for data integrity
+- Nodes processed before edges to maintain reference integrity
+- Conflict detection uses ID-based comparison for fast lookup
+- Rename strategy generates new UUIDs and updates edge references automatically
+- Replace strategy deletes existing items before inserting new ones
+- Skip strategy preserves existing data and ignores conflicting items
+- Merge statistics tracked: nodesAdded, nodesSkipped, nodesRenamed, edgesAdded, edgesSkipped, edgesRenamed
+- Source database connection properly closed after merge completion
+- Graph automatically reloaded after successful merge to display merged data
+
 ## [0.2.7] - 2025-11-26
 
 ### Added

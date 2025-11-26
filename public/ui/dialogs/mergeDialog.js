@@ -29,12 +29,14 @@ export async function showMergeDialog() {
     // Load database list
     databaseList.innerHTML = '<p style="text-align: center; color: #999; font-size: 12px;">Loading databases...</p>';
     selectedDatabasePath = null;
+    updateMergeButtonState();
     
     try {
         allDatabases = await fetchDatabases();
         
         if (allDatabases.length === 0) {
             databaseList.innerHTML = '<p style="text-align: center; color: #999; font-size: 12px;">No database files found.</p>';
+            updateMergeButtonState();
             return;
         }
         
@@ -43,6 +45,7 @@ export async function showMergeDialog() {
     } catch (error) {
         console.error('Error loading databases:', error);
         databaseList.innerHTML = `<p style="text-align: center; color: #f44336; font-size: 12px;">Error: ${error.message}</p>`;
+        updateMergeButtonState();
     }
 }
 
@@ -55,11 +58,12 @@ function renderDatabaseList() {
     allDatabases.forEach(db => {
         const item = document.createElement('div');
         item.className = 'merge-database-item';
+        const dbPath = db.fullPath || db.path;
         item.style.cssText = 'padding: 8px; margin: 4px 0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; background: #f9f9f9; transition: all 0.2s;';
-        item.innerHTML = `<strong>${db.name}</strong><br><small style="color: #666;">${db.path}</small>`;
+        item.innerHTML = `<strong>${db.name}</strong><br><small style="color: #666;">${dbPath}</small>`;
         
         // Check if this item is selected
-        if (selectedDatabasePath === db.path) {
+        if (selectedDatabasePath === dbPath) {
             item.style.background = '#e3f2fd';
             item.style.borderColor = '#2196f3';
         }
@@ -74,27 +78,46 @@ function renderDatabaseList() {
             // Highlight selected
             item.style.background = '#e3f2fd';
             item.style.borderColor = '#2196f3';
-            selectedDatabasePath = db.path;
+            // Use fullPath if available, otherwise path
+            selectedDatabasePath = dbPath;
+            console.log('Selected database path:', selectedDatabasePath);
+            
+            // Update merge button state
+            updateMergeButtonState();
         });
         
         item.addEventListener('mouseenter', () => {
-            if (selectedDatabasePath !== db.path) {
+            if (selectedDatabasePath !== dbPath) {
                 item.style.background = '#f0f0f0';
             }
         });
         
         item.addEventListener('mouseleave', () => {
-            if (selectedDatabasePath !== db.path) {
+            if (selectedDatabasePath !== dbPath) {
                 item.style.background = '#f9f9f9';
             }
         });
         
         databaseList.appendChild(item);
     });
+    
+    // Update merge button state after rendering
+    updateMergeButtonState();
+}
+
+function updateMergeButtonState() {
+    const mergeOkBtn = document.getElementById('merge-ok');
+    if (mergeOkBtn) {
+        const hasSelection = selectedDatabasePath && selectedDatabasePath.trim() !== '';
+        mergeOkBtn.disabled = !hasSelection;
+        mergeOkBtn.style.opacity = hasSelection ? '1' : '0.5';
+        mergeOkBtn.style.cursor = hasSelection ? 'pointer' : 'not-allowed';
+    }
 }
 
 export async function handleMergeOK() {
-    if (!selectedDatabasePath) {
+    // Check if a database is selected
+    if (!selectedDatabasePath || selectedDatabasePath.trim() === '') {
         alert('Please select a source database file to merge.');
         return;
     }
@@ -102,6 +125,9 @@ export async function handleMergeOK() {
     // Get conflict resolution strategy
     const resolutionRadio = document.querySelector('input[name="merge-conflict-resolution"]:checked');
     const conflictResolution = resolutionRadio ? resolutionRadio.value : 'skip';
+    
+    // Store the path before hiding dialog (in case hideMergeDialog resets it)
+    const sourcePath = selectedDatabasePath;
     
     // Hide dialog first
     hideMergeDialog();
@@ -114,7 +140,7 @@ export async function handleMergeOK() {
     document.body.appendChild(loadingMsg);
     
     try {
-        const result = await mergeDatabase(selectedDatabasePath, conflictResolution);
+        const result = await mergeDatabase(sourcePath, conflictResolution);
         
         // Remove loading indicator
         document.body.removeChild(loadingMsg);
