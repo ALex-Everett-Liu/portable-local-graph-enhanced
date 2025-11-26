@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated hotkey manager to export `getCommands()` function for command palette reuse
 - Updated app initialization to include keyboard shortcuts setup
 - Command palette reuses command definitions from hotkey manager for consistency
+- Moved search-container toolbar section to leftmost position (before node-mode button) for better accessibility
 
 ### Technical Details
 - Command palette uses overlay UI with search input and scrollable results list
