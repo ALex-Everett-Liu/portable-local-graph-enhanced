@@ -312,3 +312,35 @@ export async function fetchDatabases() {
     }
 }
 
+export async function mergeDatabase(sourceDbPath, conflictResolution = 'skip') {
+    try {
+        const response = await fetch(`${API_BASE}/merge`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sourceDbPath,
+                conflictResolution
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to merge database');
+        }
+        
+        const result = await response.json();
+        
+        // Reload graph from database to show merged data
+        await loadGraphFromDb();
+        
+        // Mark database as modified for save tracking
+        // Note: After merge, we consider the database as modified
+        // The user should save if they want to persist the merge
+        
+        return result.stats;
+    } catch (error) {
+        console.error('Error merging database:', error);
+        throw error;
+    }
+}
+

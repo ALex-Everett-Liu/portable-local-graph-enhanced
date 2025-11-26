@@ -432,6 +432,210 @@ async function exportGraphData(graphDb) {
   };
 }
 
+/**
+ * Merge data from a source database into the target database
+ * @param {Object} targetDb - Target database connection (current database)
+ * @param {string} sourceDbPath - Path to source database file
+ * @param {string} conflictResolution - Conflict resolution strategy: 'skip', 'replace', or 'rename'
+ * @returns {Promise<Object>} Merge statistics
+ */
+async function mergeFromDatabase(targetDb, sourceDbPath, conflictResolution = 'skip') {
+  // Import sqlite3 and open function to create a new database connection
+  const sqlite3 = require("sqlite3").verbose();
+  const { open } = require("sqlite");
+  
+  // Open source database connection
+  const sourceDb = await open({
+    filename: sourceDbPath,
+    driver: sqlite3.Database,
+  });
+  
+  try {
+    // Load all data from source database
+    const sourceNodes = await sourceDb.all("SELECT * FROM graph_nodes");
+    const sourceEdges = await sourceDb.all("SELECT * FROM graph_edges");
+    
+    // Load existing data from target database
+    const targetNodes = await targetDb.all("SELECT * FROM graph_nodes");
+    const targetEdges = await targetDb.all("SELECT * FROM graph_edges");
+    
+    // Create sets of existing IDs for fast lookup
+    const existingNodeIds = new Set(targetNodes.map(node => node.id));
+    const existingEdgeIds = new Set(targetEdges.map(edge => edge.id));
+    
+    // Track node ID mappings for rename strategy (oldId -> newId)
+    const nodeIdMapping = new Map();
+    
+    // Statistics
+    const stats = {
+      nodesAdded: 0,
+      nodesSkipped: 0,
+      nodesRenamed: 0,
+      edgesAdded: 0,
+      edgesSkipped: 0,
+      edgesRenamed: 0,
+      conflicts: []
+    };
+    
+    // Get max sequence IDs
+    const maxNodeSequenceResult = await targetDb.get(
+      "SELECT MAX(sequence_id) as max_seq FROM graph_nodes WHERE sequence_id IS NOT NULL"
+    );
+    const maxEdgeSequenceResult = await targetDb.get(
+      "SELECT MAX(sequence_id) as max_seq FROM graph_edges WHERE sequence_id IS NOT NULL"
+    );
+    let nextNodeSequenceId = (maxNodeSequenceResult?.max_seq || 0) + 1;
+    let nextEdgeSequenceId = (maxEdgeSequenceResult?.max_seq || 0) + 1;
+    
+    // Start transaction
+    await targetDb.run("BEGIN TRANSACTION");
+    
+    try {
+      // Process nodes first
+      for (const sourceNode of sourceNodes) {
+        const nodeId = sourceNode.id;
+        const hasConflict = existingNodeIds.has(nodeId);
+        
+        let finalNodeId = nodeId;
+        let shouldProcess = true;
+        
+        if (hasConflict) {
+          stats.conflicts.push({ type: 'node', id: nodeId, label: sourceNode.label });
+          
+          if (conflictResolution === 'skip') {
+            stats.nodesSkipped++;
+            shouldProcess = false;
+          } else if (conflictResolution === 'replace') {
+            // Delete existing node and its edges first
+            await targetDb.run("DELETE FROM graph_edges WHERE from_node_id = ? OR to_node_id = ?", [nodeId, nodeId]);
+            await targetDb.run("DELETE FROM graph_nodes WHERE id = ?", nodeId);
+            // Node will be re-added below, so keep it in existingNodeIds
+            stats.nodesRenamed++; // Counted as renamed for stats
+          } else if (conflictResolution === 'rename') {
+            // Generate new UUID
+            finalNodeId = uuidv7();
+            nodeIdMapping.set(nodeId, finalNodeId);
+            stats.nodesRenamed++;
+          }
+        }
+        
+        if (shouldProcess) {
+          // Convert layers array to comma-separated string
+          const layersStr = sourceNode.layers || null;
+          
+          const now = Date.now();
+          await targetDb.run(
+            `INSERT INTO graph_nodes (id, x, y, label, chinese_label, color, radius, category, layers, sequence_id, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              finalNodeId,
+              sourceNode.x,
+              sourceNode.y,
+              sourceNode.label,
+              sourceNode.chinese_label || null,
+              sourceNode.color || "#3b82f6",
+              sourceNode.radius || 20,
+              sourceNode.category || null,
+              layersStr,
+              nextNodeSequenceId++,
+              sourceNode.created_at || now,
+              sourceNode.updated_at || now
+            ]
+          );
+          
+          // Add the new/renamed node ID to the existing set for edge reference checking
+          existingNodeIds.add(finalNodeId);
+          
+          if (hasConflict && conflictResolution === 'replace') {
+            // Already counted above
+          } else if (!hasConflict) {
+            stats.nodesAdded++;
+          }
+        }
+      }
+      
+      // Process edges
+      for (const sourceEdge of sourceEdges) {
+        const edgeId = sourceEdge.id;
+        const fromNodeId = sourceEdge.from_node_id;
+        const toNodeId = sourceEdge.to_node_id;
+        
+        // Map node IDs if they were renamed
+        let finalFromNodeId = nodeIdMapping.get(fromNodeId) || fromNodeId;
+        let finalToNodeId = nodeIdMapping.get(toNodeId) || toNodeId;
+        
+        // Check if referenced nodes exist in target database (including newly added/renamed nodes)
+        const fromNodeExists = existingNodeIds.has(finalFromNodeId);
+        const toNodeExists = existingNodeIds.has(finalToNodeId);
+        
+        // Skip edge if either node doesn't exist
+        if (!fromNodeExists || !toNodeExists) {
+          stats.edgesSkipped++;
+          continue;
+        }
+        
+        const hasConflict = existingEdgeIds.has(edgeId);
+        
+        let finalEdgeId = edgeId;
+        let shouldProcess = true;
+        
+        if (hasConflict) {
+          stats.conflicts.push({ type: 'edge', id: edgeId, from: finalFromNodeId, to: finalToNodeId });
+          
+          if (conflictResolution === 'skip') {
+            stats.edgesSkipped++;
+            shouldProcess = false;
+          } else if (conflictResolution === 'replace') {
+            // Delete existing edge
+            await targetDb.run("DELETE FROM graph_edges WHERE id = ?", edgeId);
+            stats.edgesRenamed++; // Counted as renamed for stats
+          } else if (conflictResolution === 'rename') {
+            // Generate new UUID
+            finalEdgeId = uuidv7();
+            stats.edgesRenamed++;
+          }
+        }
+        
+        if (shouldProcess) {
+          const now = Date.now();
+          await targetDb.run(
+            `INSERT INTO graph_edges (id, from_node_id, to_node_id, weight, category, sequence_id, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              finalEdgeId,
+              finalFromNodeId,
+              finalToNodeId,
+              sourceEdge.weight || 1.0,
+              sourceEdge.category || null,
+              nextEdgeSequenceId++,
+              sourceEdge.created_at || now,
+              sourceEdge.updated_at || now
+            ]
+          );
+          
+          if (hasConflict && conflictResolution === 'replace') {
+            // Already counted above
+          } else if (!hasConflict) {
+            stats.edgesAdded++;
+          }
+        }
+      }
+      
+      // Commit transaction
+      await targetDb.run("COMMIT");
+    } catch (error) {
+      // Rollback on error
+      await targetDb.run("ROLLBACK");
+      throw error;
+    }
+    
+    return stats;
+  } finally {
+    // Close source database connection
+    await sourceDb.close();
+  }
+}
+
 module.exports = {
   getAllGraphData,
   createNode,
@@ -446,5 +650,6 @@ module.exports = {
   saveFilterState,
   loadFilterState,
   exportGraphData,
+  mergeFromDatabase,
 };
 

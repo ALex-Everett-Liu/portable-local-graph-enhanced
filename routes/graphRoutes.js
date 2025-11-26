@@ -61,5 +61,8 @@ router.post("/switch-database", graphController.switchDatabase);
 // Save current graph to a new database file
 router.post("/save-as", graphController.saveAs);
 
+// Merge data from a source database into the current database
+router.post("/merge", graphController.mergeDatabase);
+
 module.exports = router;
 

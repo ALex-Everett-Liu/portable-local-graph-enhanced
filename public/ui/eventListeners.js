@@ -1,6 +1,7 @@
 import { setMode } from '../managers/modeManager.js';
 import { showLoadDialog, setupPaginationListeners, handleLoadOK, handleLoadCancel } from './dialogs/loadDialog.js';
 import { showSaveAsDialog, handleSaveAsOK, handleSaveAsCancel } from './dialogs/saveAsDialog.js';
+import { showMergeDialog, handleMergeOK, handleMergeCancel } from './dialogs/mergeDialog.js';
 import { saveAllChanges, discardAllChanges, clearGraph } from './saveDiscardUI.js';
 import { hideContextMenu } from './contextMenu.js';
 import { showSearchDialog } from './dialogs/searchDialog.js';
@@ -31,6 +32,12 @@ export function setupEventListeners() {
     const createEdgeSearchBtn = document.getElementById('create-edge-search-btn');
     if (createEdgeSearchBtn) {
         createEdgeSearchBtn.addEventListener('click', () => showEdgeSearchDialog());
+    }
+
+    // Merge Database button
+    const mergeDbBtn = document.getElementById('merge-db-btn');
+    if (mergeDbBtn) {
+        mergeDbBtn.addEventListener('click', () => showMergeDialog());
     }
 
     // Save/Discard buttons
@@ -147,6 +154,16 @@ export function setupDialogs() {
 
     // Setup pagination listeners
     setupPaginationListeners();
+
+    // Merge dialog handlers
+    const mergeOk = document.getElementById('merge-ok');
+    if (mergeOk) {
+        mergeOk.addEventListener('click', handleMergeOK);
+    }
+    const mergeCancel = document.getElementById('merge-cancel');
+    if (mergeCancel) {
+        mergeCancel.addEventListener('click', handleMergeCancel);
+    }
 
     // Connections dialog handlers
     const nodeConnectionsBtn = document.getElementById('node-connections-btn');

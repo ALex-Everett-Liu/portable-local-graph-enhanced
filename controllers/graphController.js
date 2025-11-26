@@ -271,3 +271,44 @@ exports.saveAs = async (req, res) => {
   }
 };
 
+/**
+ * Merge data from a source database into the current database
+ * POST /api/plugins/graph/merge
+ */
+exports.mergeDatabase = async (req, res) => {
+  try {
+    const { sourceDbPath, conflictResolution } = req.body;
+    
+    if (!sourceDbPath) {
+      return res.status(400).json({ error: "sourceDbPath is required" });
+    }
+    
+    // Validate conflict resolution
+    const validResolutions = ['skip', 'replace', 'rename'];
+    const resolution = conflictResolution || 'skip';
+    if (!validResolutions.includes(resolution)) {
+      return res.status(400).json({ error: `conflictResolution must be one of: ${validResolutions.join(', ')}` });
+    }
+    
+    // Validate source database file exists
+    const fs = require("fs").promises;
+    try {
+      await fs.access(sourceDbPath);
+    } catch {
+      return res.status(400).json({ error: "Source database file not found" });
+    }
+    
+    // Perform merge
+    const stats = await graphService.mergeFromDatabase(req.graphDb, sourceDbPath, resolution);
+    
+    res.json({
+      success: true,
+      message: "Database merged successfully",
+      stats
+    });
+  } catch (error) {
+    console.error("Error merging database:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
