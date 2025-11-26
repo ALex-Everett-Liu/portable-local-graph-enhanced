@@ -1,4 +1,5 @@
 import { setMode } from '../managers/modeManager.js';
+import { toggleHotkeyMode } from '../managers/hotkeyManager.js';
 import { showLoadDialog, setupPaginationListeners, handleLoadOK, handleLoadCancel } from './dialogs/loadDialog.js';
 import { showSaveAsDialog, handleSaveAsOK, handleSaveAsCancel } from './dialogs/saveAsDialog.js';
 import { showMergeDialog, handleMergeOK, handleMergeCancel } from './dialogs/mergeDialog.js';
@@ -12,6 +13,12 @@ export function setupEventListeners() {
     document.getElementById('select-mode').addEventListener('click', () => setMode('select'));
     document.getElementById('node-mode').addEventListener('click', () => setMode('node'));
     document.getElementById('edge-mode').addEventListener('click', () => setMode('edge'));
+    
+    // Hotkey mode button
+    const hotkeyModeBtn = document.getElementById('hotkey-mode-btn');
+    if (hotkeyModeBtn) {
+        hotkeyModeBtn.addEventListener('click', () => toggleHotkeyMode());
+    }
 
     // Load button
     document.getElementById('load-btn').addEventListener('click', () => showLoadDialog());

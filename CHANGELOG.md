@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.3.0] - 2025-11-26
+
+### Added
+- Vim-like hotkey manager with multi-character sequence support - activate hotkey mode to execute commands via keyboard shortcuts
+- Hotkey mode button in toolbar - click to activate/deactivate hotkey mode
+- Multi-character command sequences: `cn` (create node), `dn` (delete node), `en` (edit node), `ce` (create edge), `de` (delete edge), `ee` (edit edge), `ces` (create edge via search)
+- Single-character mode shortcuts: `n` (node mode), `e` (edge mode), `s` (select mode)
+- Navigation shortcuts: `f` (find/search), `l` (load), `w` (write/save), `c` (clear)
+- Count prefix support: `3n` (create 3 nodes), `2dn` (delete 2 nodes) - numeric prefixes before commands
+- Sequence timeout handling: 2-second timeout (like vim's `timeoutlen`) - resets sequence after inactivity
+- Visual sequence display: shows `:sequence` at bottom of screen when typing commands
+- Help overlay: press `?` in hotkey mode to see all available commands with descriptions
+- Command validation: shows error notifications for invalid sequences
+- Input field protection: hotkey mode doesn't interfere when typing in input fields
+- `public/managers/hotkeyManager.js` - Complete hotkey management module with vim-like behavior
+
+### Changed
+- Updated toolbar to include hotkey mode button after mode selection buttons
+- Hotkey mode integrates with existing mode system and command structure
+
+### Technical Details
+- Hotkey mode uses global keydown listener with capture phase for reliable event handling
+- Sequence buffer tracks multi-character commands with timeout reset mechanism
+- Command parsing extracts numeric prefixes and command sequences (e.g., "3n" → count: 3, command: "n")
+- Partial match detection for autocomplete (shows possible completions)
+- Maximum sequence length limit (10 characters) prevents infinite sequences
+- Escape key always exits hotkey mode regardless of current state
+- Visual feedback uses fixed-position overlay with monospace font and green terminal-style colors
+- Help overlay displays commands grouped by category (Modes, Node Operations, Edge Operations, Navigation, Help)
+- Commands execute immediately on exact match, or wait for timeout/next key on partial match
+- Module exports: `activateHotkeyMode()`, `deactivateHotkeyMode()`, `toggleHotkeyMode()`, `isHotkeyModeActive()`
+
 ## [0.2.8] - 2025-11-26
 
 ### Added
