@@ -59,14 +59,22 @@ export async function loadGraphFromDb() {
             console.log(`Loaded ${data.metadata.totalNodes} nodes and ${data.metadata.totalEdges} edges from database`);
             
             // Load and apply filter state if available
+            // First, get all available layers from the current database
+            const availableLayers = graph.getAllLayers();
+            
             if (data.filterState && data.filterState.layerFilterEnabled) {
-                graph.setLayerFilterMode(data.filterState.layerFilterMode);
-                graph.setActiveLayers(data.filterState.activeLayers);
+                // Filter activeLayers to only include layers that exist in current database
+                const validActiveLayers = (data.filterState.activeLayers || []).filter(
+                    layer => availableLayers.includes(layer)
+                );
                 
-                // Store original filter state
+                graph.setLayerFilterMode(data.filterState.layerFilterMode);
+                graph.setActiveLayers(validActiveLayers);
+                
+                // Store original filter state (only with valid layers)
                 originalState.filterState = {
-                    layerFilterEnabled: true,
-                    activeLayers: [...(data.filterState.activeLayers || [])],
+                    layerFilterEnabled: validActiveLayers.length > 0,
+                    activeLayers: [...validActiveLayers],
                     layerFilterMode: data.filterState.layerFilterMode || 'include'
                 };
                 
@@ -79,7 +87,7 @@ export async function loadGraphFromDb() {
                     window.updateLayerSummary();
                 }
                 
-                console.log(`Restored filter state: ${data.filterState.layerFilterMode} mode with ${data.filterState.activeLayers.length} active layer(s)`);
+                console.log(`Restored filter state: ${data.filterState.layerFilterMode} mode with ${validActiveLayers.length} active layer(s)`);
             } else {
                 // Clear filter state if not found or disabled
                 graph.clearLayerFilter();
@@ -96,6 +104,18 @@ export async function loadGraphFromDb() {
             unsavedChanges.edges.clear();
             unsavedChanges.viewState = null;
             unsavedChanges.filterState = null;
+            
+            // Close and refresh layer dialog if it's open (to clear any cached layer state)
+            const layerDialog = document.getElementById('layer-management-dialog');
+            if (layerDialog && !layerDialog.classList.contains('hidden')) {
+                // Close the dialog to force refresh on next open
+                layerDialog.classList.add('hidden');
+            }
+            
+            // Update layer summary to reflect new database
+            if (typeof window.updateLayerSummary === 'function') {
+                window.updateLayerSummary();
+            }
         }
     } catch (error) {
         console.warn('Could not connect to graph database:', error.message);

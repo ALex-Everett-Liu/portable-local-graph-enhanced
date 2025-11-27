@@ -616,6 +616,11 @@ class Graph {
     this.selectedEdge = null;
     this.scale = data.scale || 1;
     this.offset = data.offset || { x: 0, y: 0 };
+    
+    // Clear active layers when importing new data - they will be restored from filterState if available
+    // This ensures we don't have stale layers from previous database
+    this.activeLayers = new Set();
+    
     this.render();
 
     // skipCallbacks is used when loading from database to avoid circular saves

@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed Save/Discard buttons appearing when clicking/right-clicking nodes without dragging them
 - Fixed change tracking being triggered on node selection instead of only on actual position changes
+- Fixed filterState changes not being saved properly - Save button now correctly detects and saves filterState changes
+- Fixed layer dialog showing layers from other database files - layers are now properly filtered to only show layers from current database
+- Fixed activeLayers persisting across database switches - activeLayers are now cleared and filtered when switching databases
 
 ### Technical Details
 - View state tracking removed from viewStateManager.js - no longer automatically tracks pan/zoom changes
@@ -30,6 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sidebar "Save View" button saves view state directly to database without change tracking
 - Node drag detection improved - only tracks changes when node position actually changes (threshold: 0.01px)
 - Toolbar Save/Discard buttons exclude viewState from change count and operations
+- saveAllChanges() now properly checks for filterState changes in early return validation
+- saveFilterStateToDb() accepts tracked filterState parameter to ensure correct data is saved
+- importData() clears activeLayers to prevent stale layers from previous databases
+- Database loading filters activeLayers to only include layers that exist in current database
+- Layer dialog automatically closes when switching databases to force refresh on next open
 
 ## [0.3.1] - 2025-11-26
 
