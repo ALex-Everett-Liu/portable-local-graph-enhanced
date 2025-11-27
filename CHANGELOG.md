@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.3.6] - 2025-11-27
+
+### Added
+- Database export functionality - export all 4 database tables (graph_nodes, graph_edges, graph_metadata, filter_state) as JSON or CSV
+- Export dialog with format selection (JSON/CSV) accessible from sidebar "Database Operations" section
+- JSON export - single file containing all tables with proper structure
+- CSV export - ZIP file containing separate CSV files for each table plus export manifest
+- JSZip library integration for creating ZIP archives (CSV exports bundled into single ZIP file)
+- Export hotkey command: `ex` (export database) - added to hotkey manager and command palette
+- Export button in sidebar under "Database Operations" section
+
+### Changed
+- CSV export now downloads single ZIP file instead of multiple individual files (prevents multiple download popups)
+- Export dialog follows existing dialog patterns and integrates with current architecture
+
+### Technical Details
+- Export API endpoint: `GET /api/plugins/graph/export?format=json|csv`
+- Backend export function (`services/graphService.js`) fetches all 4 tables from database
+- CSV conversion handles proper escaping (commas, quotes, newlines) for valid CSV format
+- ZIP file creation uses JSZip library (loaded via CDN) for client-side ZIP generation
+- Fallback mechanism: if JSZip fails to load, CSV export falls back to individual file downloads
+- Export manifest included in CSV ZIP with export metadata (timestamp, tables list, format)
+- Export command (`ex`) categorized under "Database Operations" in hotkey system and command palette
+
 ## [0.3.5] - 2025-11-27
 
 ### Added

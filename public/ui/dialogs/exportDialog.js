@@ -34,9 +34,13 @@ export function closeExportDialog() {
 
 /**
  * Download file helper
+ * @param {string|Blob} content - File content (string) or Blob object
+ * @param {string} filename - Filename for download
+ * @param {string} mimeType - MIME type
  */
 function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
+    // If content is already a Blob, use it directly; otherwise create a Blob
+    const blob = content instanceof Blob ? content : new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -48,12 +52,58 @@ function downloadFile(content, filename, mimeType) {
 }
 
 /**
- * Download multiple files as ZIP (for CSV)
+ * Download CSV files as a ZIP archive
  */
-function downloadCSVFiles(csvData) {
-    // For CSV, we'll create separate files for each table
-    // Since we can't create a real ZIP in browser without a library,
-    // we'll download each CSV file separately with a delay
+async function downloadCSVFilesAsZip(csvData) {
+    // Check if JSZip is available
+    if (typeof JSZip === 'undefined') {
+        console.error('JSZip library not loaded. Falling back to individual file downloads.');
+        // Fallback to individual downloads if JSZip is not available
+        downloadCSVFilesIndividually(csvData);
+        return;
+    }
+    
+    try {
+        const zip = new JSZip();
+        const tables = ['graph_nodes', 'graph_edges', 'graph_metadata', 'filter_state'];
+        const timestamp = Date.now();
+        
+        // Add each CSV file to the ZIP
+        for (const tableName of tables) {
+            if (csvData[tableName] && csvData[tableName] !== '') {
+                zip.file(`${tableName}.csv`, csvData[tableName]);
+            }
+        }
+        
+        // Add manifest file
+        const manifest = {
+            exportedAt: csvData.exportedAt || new Date().toISOString(),
+            tables: tables.filter(t => csvData[t] && csvData[t] !== ''),
+            format: 'csv'
+        };
+        zip.file('export-manifest.json', JSON.stringify(manifest, null, 2));
+        
+        // Generate ZIP file and download
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        downloadFile(
+            zipBlob,
+            `graph-export-${timestamp}.zip`,
+            'application/zip'
+        );
+    } catch (error) {
+        console.error('Error creating ZIP file:', error);
+        if (window.showNotification) {
+            window.showNotification('Failed to create ZIP file. Downloading individual files instead.', 'error');
+        }
+        // Fallback to individual downloads
+        downloadCSVFilesIndividually(csvData);
+    }
+}
+
+/**
+ * Fallback: Download CSV files individually (if ZIP fails)
+ */
+function downloadCSVFilesIndividually(csvData) {
     const tables = ['graph_nodes', 'graph_edges', 'graph_metadata', 'filter_state'];
     let delay = 0;
     
@@ -113,11 +163,11 @@ async function handleExport() {
                     window.showNotification('Database exported successfully as JSON', 'success');
                 }
             } else {
-                // Download multiple CSV files
-                downloadCSVFiles(data);
+                // Download CSV files as ZIP
+                await downloadCSVFilesAsZip(data);
                 
                 if (window.showNotification) {
-                    window.showNotification('Database exported successfully as CSV files', 'success');
+                    window.showNotification('Database exported successfully as ZIP file', 'success');
                 }
             }
             

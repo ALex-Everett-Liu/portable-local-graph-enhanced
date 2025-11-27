@@ -170,7 +170,7 @@ function getCommandCategory(key) {
     if (key.startsWith('e') && ['en', 'ee'].includes(key)) return 'Edit';
     if (key === 'ea') return 'Display Options';
     if (['fs', 'sv'].includes(key)) return 'View Operations';
-    if (key === 'md') return 'Database Operations';
+    if (['md', 'ex'].includes(key)) return 'Database Operations';
     if (key === 'ml') return 'Layer Management';
     if (key === 'nt') return 'Template Operations';
     if (key === 'st') return 'Settings';

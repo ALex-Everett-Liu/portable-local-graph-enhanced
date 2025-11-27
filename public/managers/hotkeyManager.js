@@ -12,6 +12,7 @@ import { showMergeDialog } from '../ui/dialogs/mergeDialog.js';
 import { openLayerDialog } from '../ui/dialogs/layerDialog.js';
 import { createNewGraphTemplate } from '../ui/template.js';
 import { openSettingsDialog } from '../ui/dialogs/settingsDialog.js';
+import { showExportDialog } from '../ui/dialogs/exportDialog.js';
 
 let hotkeyModeActive = false;
 let sequenceBuffer = '';
@@ -187,6 +188,11 @@ const COMMANDS = {
     'md': { 
         action: () => showMergeDialog(), 
         description: 'Merge database',
+        requiresCount: false 
+    },
+    'ex': { 
+        action: () => showExportDialog(), 
+        description: 'Export database',
         requiresCount: false 
     },
     
@@ -464,7 +470,7 @@ function showHelpOverlay() {
         'Edge Operations': ['ce', 'de', 'ee', 'ces'],
         'Display Options': ['ea'],
         'View Operations': ['fs', 'sv'],
-        'Database Operations': ['md'],
+        'Database Operations': ['md', 'ex'],
         'Layer Management': ['ml'],
         'Template Operations': ['nt'],
         'Settings': ['st'],
