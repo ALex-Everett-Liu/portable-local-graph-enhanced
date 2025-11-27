@@ -51,7 +51,11 @@ export function updateSaveButtonVisibility() {
 }
 
 export async function saveAllChanges() {
-    const totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+    // Check for all types of changes (nodes, edges, filterState)
+    const hasNodeEdgeChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
+    const hasFilterStateChanges = unsavedChanges.filterState !== null;
+    const totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size + (hasFilterStateChanges ? 1 : 0);
+    
     if (totalChanges === 0) {
         const saveButton = document.getElementById('save-changes');
         if (saveButton) {
@@ -109,7 +113,8 @@ export async function saveAllChanges() {
 
         // Save filter state if changed
         if (unsavedChanges.filterState) {
-            await saveFilterStateToDb();
+            // Use the tracked filter state instead of reading from graph
+            await saveFilterStateToDb(unsavedChanges.filterState);
             // Update original state
             originalState.filterState = {...unsavedChanges.filterState};
         }

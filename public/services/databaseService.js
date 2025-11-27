@@ -235,25 +235,32 @@ export async function saveViewStateToDb() {
     }
 }
 
-export async function saveFilterStateToDb() {
-    const graph = getGraph();
-    if (!graph) return;
-    
-    try {
-        const filterState = {
+export async function saveFilterStateToDb(filterState = null) {
+    // If filterState is provided, use it; otherwise read from graph (for manual saves)
+    let stateToSave;
+    if (filterState) {
+        stateToSave = filterState;
+    } else {
+        const graph = getGraph();
+        if (!graph) return;
+        
+        stateToSave = {
             layerFilterEnabled: graph.activeLayers && graph.activeLayers.size > 0,
             activeLayers: graph.activeLayers ? Array.from(graph.activeLayers) : [],
             layerFilterMode: graph.getLayerFilterMode() || 'include'
         };
-        
+    }
+    
+    try {
         const response = await fetch(`${API_BASE}/filter-state`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(filterState)
+            body: JSON.stringify(stateToSave)
         });
         if (!response.ok) throw new Error('Failed to save filter state');
     } catch (error) {
         console.error('Error saving filter state to database:', error);
+        throw error; // Re-throw so saveAllChanges can handle it
     }
 }
 
