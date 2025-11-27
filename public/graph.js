@@ -13,6 +13,7 @@ class Graph {
     this.selectedEdge = null;
     this.isDragging = false;
     this.dragOffset = { x: 0, y: 0 };
+    this.dragStartPosition = null; // Track original position when drag starts
     this.scale = 1;
     this.offset = { x: 0, y: 0 };
     this.isPanning = false;
@@ -408,6 +409,11 @@ class Graph {
           this.isDragging = true;
           this.dragOffset.x = pos.x - this.selectedNode.x;
           this.dragOffset.y = pos.y - this.selectedNode.y;
+          // Store original position to detect if node actually moved
+          this.dragStartPosition = {
+            x: this.selectedNode.x,
+            y: this.selectedNode.y
+          };
         }
       } else {
         // Clicked empty space - start panning
@@ -522,10 +528,17 @@ class Graph {
 
   handleMouseUp(e) {
     if (this.isDragging && this.selectedNode) {
-      // Trigger callback for database persistence when dragging ends
-      if (this.callbacks.onNodeUpdate) {
-        this.callbacks.onNodeUpdate(this.selectedNode);
+      // Only trigger callback if node actually moved
+      if (this.dragStartPosition) {
+        const moved = 
+          Math.abs(this.selectedNode.x - this.dragStartPosition.x) > 0.01 ||
+          Math.abs(this.selectedNode.y - this.dragStartPosition.y) > 0.01;
+        
+        if (moved && this.callbacks.onNodeUpdate) {
+          this.callbacks.onNodeUpdate(this.selectedNode);
+        }
       }
+      this.dragStartPosition = null;
     }
     this.isDragging = false;
     this.isPanning = false;
