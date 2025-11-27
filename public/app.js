@@ -15,7 +15,9 @@ import {
     trackNodeDelete,
     trackEdgeCreate,
     trackEdgeUpdate,
-    trackEdgeDelete
+    trackEdgeDelete,
+    trackViewStateUpdate,
+    trackFilterStateUpdate
 } from './managers/changeTracker.js';
 import { setupSearchComponents, updateGraphInfo } from './ui/search/searchBar.js';
 import { initializeSearchDialog, showSearchDialog } from './ui/dialogs/searchDialog.js';
@@ -58,6 +60,8 @@ function init() {
     window.trackEdgeCreate = trackEdgeCreate;
     window.trackEdgeUpdate = trackEdgeUpdate;
     window.trackEdgeDelete = trackEdgeDelete;
+    window.trackViewStateUpdate = trackViewStateUpdate;
+    window.trackFilterStateUpdate = trackFilterStateUpdate;
     
     // Expose constants on window for non-module scripts
     window.GRAPH_CONSTANTS = GRAPH_CONSTANTS;

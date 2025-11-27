@@ -7,13 +7,17 @@ export const API_BASE = '/api/plugins/graph';
 // Track unsaved changes
 export const unsavedChanges = {
     nodes: new Map(), // nodeId -> {type: 'create'|'update'|'delete', data: {...}, originalData: {...}}
-    edges: new Map()  // edgeId -> {type: 'create'|'update'|'delete', data: {...}, originalData: {...}}
+    edges: new Map(), // edgeId -> {type: 'create'|'update'|'delete', data: {...}, originalData: {...}}
+    viewState: null,  // {scale, offset} or null if no changes
+    filterState: null  // {layerFilterEnabled, activeLayers, layerFilterMode} or null if no changes
 };
 
 // Store original state from database
 export const originalState = {
     nodes: new Map(), // nodeId -> node data
-    edges: new Map()  // edgeId -> edge data
+    edges: new Map(), // edgeId -> edge data
+    viewState: null,  // {scale, offset} from database
+    filterState: null // {layerFilterEnabled, activeLayers, layerFilterMode} from database
 };
 
 // Setters/getters for controlled access

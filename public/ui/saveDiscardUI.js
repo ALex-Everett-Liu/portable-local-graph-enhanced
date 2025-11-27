@@ -7,6 +7,7 @@ import {
     updateEdgeInDb, 
     deleteEdgeFromDb,
     saveViewStateToDb,
+    saveFilterStateToDb,
     clearGraphInDb
 } from '../services/databaseService.js';
 
@@ -16,8 +17,15 @@ export function updateSaveButtonVisibility() {
     const saveButton = document.getElementById('save-changes');
     const discardButton = document.getElementById('discard-changes');
     
-    const hasChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
-    const totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+    const hasNodeEdgeChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
+    const hasViewStateChanges = unsavedChanges.viewState !== null;
+    const hasFilterStateChanges = unsavedChanges.filterState !== null;
+    const hasChanges = hasNodeEdgeChanges || hasViewStateChanges || hasFilterStateChanges;
+    
+    // Count all changes
+    let totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+    if (hasViewStateChanges) totalChanges += 1;
+    if (hasFilterStateChanges) totalChanges += 1;
     
     if (saveButton) {
         if (hasChanges) {
@@ -101,13 +109,29 @@ export async function saveAllChanges() {
             }
         }
 
-        // Save view state (scale and offset)
-        await saveViewStateToDb();
+        // Save view state if changed
+        if (unsavedChanges.viewState) {
+            await saveViewStateToDb();
+            // Update original state
+            originalState.viewState = {...unsavedChanges.viewState};
+        }
+
+        // Save filter state if changed
+        if (unsavedChanges.filterState) {
+            await saveFilterStateToDb();
+            // Update original state
+            originalState.filterState = {...unsavedChanges.filterState};
+        }
 
         // Clear unsaved changes
-        const savedCount = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+        let savedCount = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+        if (unsavedChanges.viewState) savedCount += 1;
+        if (unsavedChanges.filterState) savedCount += 1;
+        
         unsavedChanges.nodes.clear();
         unsavedChanges.edges.clear();
+        unsavedChanges.viewState = null;
+        unsavedChanges.filterState = null;
         updateSaveButtonVisibility();
 
         if (saveButton) {
@@ -136,7 +160,13 @@ export function discardAllChanges() {
     const graph = getGraph();
     if (!graph) return;
     
-    const totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+    const hasNodeEdgeChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
+    const hasViewStateChanges = unsavedChanges.viewState !== null;
+    const hasFilterStateChanges = unsavedChanges.filterState !== null;
+    let totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+    if (hasViewStateChanges) totalChanges += 1;
+    if (hasFilterStateChanges) totalChanges += 1;
+    
     if (totalChanges === 0) {
         const discardButton = document.getElementById('discard-changes');
         if (discardButton) {
@@ -199,10 +229,39 @@ export function discardAllChanges() {
             }
         }
 
+        // Restore view state if changed
+        if (unsavedChanges.viewState && originalState.viewState) {
+            graph.scale = originalState.viewState.scale;
+            graph.offset = {...originalState.viewState.offset};
+        }
+
+        // Restore filter state if changed
+        if (unsavedChanges.filterState && originalState.filterState) {
+            const filterState = originalState.filterState;
+            graph.activeLayers = new Set(filterState.activeLayers || []);
+            graph.setLayerFilterMode(filterState.layerFilterMode || 'include');
+            
+            // Update sidebar radio buttons
+            const sidebarRadio = document.querySelector(
+                `input[name="layer-filter-mode"][value="${filterState.layerFilterMode || 'include'}"]`
+            );
+            if (sidebarRadio) sidebarRadio.checked = true;
+            
+            // Update layer summary
+            if (typeof window.updateLayerSummary === 'function') {
+                window.updateLayerSummary();
+            }
+        }
+
         // Clear unsaved changes
-        const discardedCount = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+        let discardedCount = unsavedChanges.nodes.size + unsavedChanges.edges.size;
+        if (unsavedChanges.viewState) discardedCount += 1;
+        if (unsavedChanges.filterState) discardedCount += 1;
+        
         unsavedChanges.nodes.clear();
         unsavedChanges.edges.clear();
+        unsavedChanges.viewState = null;
+        unsavedChanges.filterState = null;
         
         // Re-render graph
         graph.render();
@@ -240,8 +299,12 @@ export async function clearGraph() {
         // Clear unsaved changes tracking
         unsavedChanges.nodes.clear();
         unsavedChanges.edges.clear();
+        unsavedChanges.viewState = null;
+        unsavedChanges.filterState = null;
         originalState.nodes.clear();
         originalState.edges.clear();
+        originalState.viewState = null;
+        originalState.filterState = null;
         updateSaveButtonVisibility();
     }
 }

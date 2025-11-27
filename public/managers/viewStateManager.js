@@ -1,25 +1,31 @@
 import { getGraph } from '../state/appState.js';
-import { saveViewStateToDb } from '../services/databaseService.js';
+import { trackViewStateUpdate } from './changeTracker.js';
 
-// Debounce function for view state saving
-let viewStateSaveTimeout = null;
+// Debounce function for view state tracking
+let viewStateTrackTimeout = null;
 
-function debouncedSaveViewState() {
-    if (viewStateSaveTimeout) {
-        clearTimeout(viewStateSaveTimeout);
+function debouncedTrackViewState() {
+    if (viewStateTrackTimeout) {
+        clearTimeout(viewStateTrackTimeout);
     }
-    viewStateSaveTimeout = setTimeout(() => {
-        saveViewStateToDb();
-    }, 500); // Save after 500ms of no changes
+    viewStateTrackTimeout = setTimeout(() => {
+        const graph = getGraph();
+        if (graph) {
+            trackViewStateUpdate({
+                scale: graph.scale,
+                offset: {...graph.offset}
+            });
+        }
+    }, 500); // Track after 500ms of no changes
 }
 
 export function setupViewStateSaving() {
     const graph = getGraph();
     if (!graph) return;
     
-    // Save view state when scale or offset changes
+    // Track view state changes when scale or offset changes
     // We'll intercept the render calls or use a proxy
-    // For now, we'll save on pan/zoom end
+    // For now, we'll track on pan/zoom end
     const originalRender = graph.render.bind(graph);
     let lastScale = graph.scale;
     let lastOffset = { ...graph.offset };
@@ -35,7 +41,7 @@ export function setupViewStateSaving() {
         if (scaleChanged || offsetChanged) {
             lastScale = graph.scale;
             lastOffset = { ...graph.offset };
-            debouncedSaveViewState();
+            debouncedTrackViewState();
         }
     };
 }

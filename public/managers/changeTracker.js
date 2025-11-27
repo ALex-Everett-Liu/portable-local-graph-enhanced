@@ -98,3 +98,26 @@ export function trackEdgeDelete(edgeId) {
     updateSaveButtonVisibility();
 }
 
+export function trackViewStateUpdate(viewState) {
+    // Track view state changes (scale and offset)
+    unsavedChanges.viewState = {
+        scale: viewState.scale,
+        offset: {...viewState.offset}
+    };
+    updateSaveButtonVisibility();
+}
+
+export function trackFilterStateUpdate(filterState) {
+    // Track filter state changes (layer filters)
+    unsavedChanges.filterState = {
+        layerFilterEnabled: filterState.layerFilterEnabled,
+        activeLayers: Array.isArray(filterState.activeLayers) 
+            ? [...filterState.activeLayers]
+            : (filterState.activeLayers instanceof Set 
+                ? Array.from(filterState.activeLayers) 
+                : []),
+        layerFilterMode: filterState.layerFilterMode || 'include'
+    };
+    updateSaveButtonVisibility();
+}
+

@@ -463,9 +463,14 @@ function applyLayerDialogSelection() {
   );
   if (sidebarRadio) sidebarRadio.checked = true;
 
-  // Save filter state to database
-  if (typeof window.saveFilterStateToDb === "function") {
-    window.saveFilterStateToDb();
+  // Track filter state changes instead of saving immediately
+  if (typeof window.trackFilterStateUpdate === "function") {
+    const filterState = {
+      layerFilterEnabled: selectedLayers.length > 0,
+      activeLayers: selectedLayers,
+      layerFilterMode: mode
+    };
+    window.trackFilterStateUpdate(filterState);
   }
 
   // Close dialog

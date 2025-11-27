@@ -29,9 +29,14 @@ export function initializeLayerManagement() {
                 window.graph.setLayerFilterMode(this.value);
                 updateLayerSummary();
                 
-                // Save filter state to database when mode changes
-                if (typeof window.saveFilterStateToDb === 'function') {
-                    window.saveFilterStateToDb();
+                // Track filter state changes instead of saving immediately
+                if (typeof window.trackFilterStateUpdate === 'function') {
+                    const filterState = {
+                        layerFilterEnabled: window.graph.activeLayers && window.graph.activeLayers.size > 0,
+                        activeLayers: window.graph.activeLayers ? Array.from(window.graph.activeLayers) : [],
+                        layerFilterMode: this.value
+                    };
+                    window.trackFilterStateUpdate(filterState);
                 }
                 
                 // Apply current filter with new mode

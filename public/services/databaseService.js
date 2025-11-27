@@ -49,6 +49,12 @@ export async function loadGraphFromDb() {
                 originalState.edges.set(edge.id, {...edge});
             });
             
+            // Store original view state
+            originalState.viewState = {
+                scale: convertedData.scale || 1,
+                offset: {...(convertedData.offset || { x: 0, y: 0 })}
+            };
+            
             graph.importData(convertedData, true); // true = skip callbacks to avoid tracking
             console.log(`Loaded ${data.metadata.totalNodes} nodes and ${data.metadata.totalEdges} edges from database`);
             
@@ -56,6 +62,13 @@ export async function loadGraphFromDb() {
             if (data.filterState && data.filterState.layerFilterEnabled) {
                 graph.setLayerFilterMode(data.filterState.layerFilterMode);
                 graph.setActiveLayers(data.filterState.activeLayers);
+                
+                // Store original filter state
+                originalState.filterState = {
+                    layerFilterEnabled: true,
+                    activeLayers: [...(data.filterState.activeLayers || [])],
+                    layerFilterMode: data.filterState.layerFilterMode || 'include'
+                };
                 
                 // Update sidebar radio buttons
                 const sidebarRadio = document.querySelector(`input[name="layer-filter-mode"][value="${data.filterState.layerFilterMode}"]`);
@@ -70,11 +83,19 @@ export async function loadGraphFromDb() {
             } else {
                 // Clear filter state if not found or disabled
                 graph.clearLayerFilter();
+                // Store original filter state as empty
+                originalState.filterState = {
+                    layerFilterEnabled: false,
+                    activeLayers: [],
+                    layerFilterMode: 'include'
+                };
             }
             
             // Clear unsaved changes when loading fresh data
             unsavedChanges.nodes.clear();
             unsavedChanges.edges.clear();
+            unsavedChanges.viewState = null;
+            unsavedChanges.filterState = null;
         }
     } catch (error) {
         console.warn('Could not connect to graph database:', error.message);
