@@ -30,6 +30,7 @@ export const GRAPH_CONSTANTS = {
   // Text settings
   DEFAULT_FONT_SIZE: 14,
   DEFAULT_FONT_FAMILY: "Arial",
+  DEFAULT_CHINESE_FONT_FAMILY: "Arial",
   TEXT_BACKGROUND_COLOR: "rgba(105, 105, 105, 0.7)",
   TEXT_COLOR: "#ffffff",
 

@@ -28,6 +28,8 @@ import { saveFilterStateToDb } from './services/databaseService.js';
 import { initializeKeyboardShortcuts } from './managers/keyboardShortcuts.js';
 import { deactivateHotkeyMode } from './managers/hotkeyManager.js';
 import { closeCommandPalette } from './managers/commandPalette.js';
+import { initializeSettingsDialog } from './ui/dialogs/settingsDialog.js';
+import { initializeFontSettings } from './managers/fontSettingsManager.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -80,6 +82,12 @@ function init() {
     // Setup layer management
     initializeLayerManagement();
     initializeLayerDialog();
+    
+    // Setup settings dialog
+    initializeSettingsDialog();
+    
+    // Initialize and apply font settings
+    initializeFontSettings();
     
     // Setup global keyboard shortcuts (Alt+P for palette, Alt+H for hotkey mode)
     initializeKeyboardShortcuts();

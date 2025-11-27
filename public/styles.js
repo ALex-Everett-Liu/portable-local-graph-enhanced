@@ -174,10 +174,12 @@ export function getNodeBorderColor(node, isSelected, isHighlighted) {
  * Calculate appropriate font size for canvas
  * @param {number} baseSize - Base font size
  * @param {number} scale - Current zoom scale
+ * @param {string} fontFamily - Optional font family override
  * @returns {string} Font size string for canvas
  */
-export function getFontString(baseSize, scale) {
+export function getFontString(baseSize, scale, fontFamily = null) {
   const size = Math.max(8, baseSize / scale);
-  return `${size}px ${GRAPH_CONSTANTS.DEFAULT_FONT_FAMILY}`;
+  const family = fontFamily || GRAPH_CONSTANTS.DEFAULT_FONT_FAMILY;
+  return `${size}px ${family}`;
 }
 
