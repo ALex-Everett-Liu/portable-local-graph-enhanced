@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Manual Graph Drawing App</title>
         <link rel="stylesheet" href="styles.css" />
+        <!-- Add Lucide Icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
     </head>
     <body>
         <div class="app-container">
@@ -30,14 +32,14 @@
                                 title="Clear Search"
                                 style="padding: 6px 10px; display: none;"
                             >
-                                ✕
+                                <i data-lucide="x" class="icon"></i>
                             </button>
                             <button
                                 id="search-dialog-btn"
                                 class="tool-btn"
                                 title="Open Search Dialog"
                             >
-                                <span class="icon">🔍</span>
+                                <i data-lucide="search" class="icon"></i>
                             </button>
                         </div>
                         <div
@@ -54,7 +56,7 @@
                         title="Save Changes"
                         style="display: none"
                     >
-                        <span class="icon">💾</span>
+                        <i data-lucide="save" class="icon"></i>
                         <span>Save Changes</span>
                     </button>
                     <button
@@ -63,7 +65,7 @@
                         title="Discard Changes"
                         style="display: none"
                     >
-                        <span class="icon">↶</span>
+                        <i data-lucide="undo-2" class="icon"></i>
                         <span>Discard</span>
                     </button>
                 </div>
@@ -74,11 +76,11 @@
                         class="tool-btn active"
                         title="Node Mode"
                     >
-                        <span class="icon">⚫</span>
+                        <i data-lucide="circle" class="icon"></i>
                         <span>Node</span>
                     </button>
                     <button id="edge-mode" class="tool-btn" title="Edge Mode">
-                        <span class="icon">🔗</span>
+                        <i data-lucide="link" class="icon"></i>
                         <span>Edge</span>
                     </button>
                     <button
@@ -86,7 +88,7 @@
                         class="tool-btn"
                         title="Select Mode"
                     >
-                        <span class="icon">👆</span>
+                        <i data-lucide="mouse-pointer-2" class="icon"></i>
                         <span>Select</span>
                     </button>
                     <button
@@ -94,7 +96,7 @@
                         class="tool-btn"
                         title="Hotkey Mode (Vim-like)"
                     >
-                        <span class="icon">⌨️</span>
+                        <i data-lucide="keyboard" class="icon"></i>
                         <span>Hotkey</span>
                     </button>
                 </div>
@@ -105,11 +107,11 @@
                         class="tool-btn"
                         title="Load Database"
                     >
-                        <span class="icon">📂</span>
+                        <i data-lucide="folder-open" class="icon"></i>
                         <span>Load</span>
                     </button>
                     <button id="save-as-btn" class="tool-btn" title="Save As">
-                        <span class="icon">💾</span>
+                        <i data-lucide="save" class="icon"></i>
                         <span>Save As</span>
                     </button>
                     <button
@@ -117,7 +119,7 @@
                         class="tool-btn danger"
                         title="Clear All"
                     >
-                        <span class="icon">🗑️</span>
+                        <i data-lucide="trash-2" class="icon"></i>
                     </button>
                 </div>
             </div>
@@ -155,7 +157,7 @@
                                         font-size: 12px;
                                     "
                                 >
-                                    ↺ Reverse Direction
+                                    <i data-lucide="rotate-cw" class="icon"></i> Reverse Direction
                                 </button>
                             </div>
                             <div class="dialog-buttons">
@@ -841,7 +843,7 @@
                                 style="width: 100%; padding: 8px; font-size: 12px;"
                                 title="Save View State"
                             >
-                                <span class="icon">💾</span>
+                                <i data-lucide="save" class="icon"></i>
                                 Save View
                             </button>
                         </div>
@@ -859,7 +861,7 @@
                                 style="width: 100%; padding: 8px; font-size: 12px;"
                                 title="Create Edge via Search"
                             >
-                                <span class="icon">🔗</span>
+                                <i data-lucide="link" class="icon"></i>
                                 Create Edge
                             </button>
                         </div>
@@ -877,7 +879,7 @@
                                 style="width: 100%; padding: 8px; font-size: 12px;"
                                 title="Merge Database"
                             >
-                                <span class="icon">🔗</span>
+                                <i data-lucide="git-merge" class="icon"></i>
                                 Merge Database
                             </button>
                         </div>
@@ -895,7 +897,7 @@
                                 style="width: 100%; padding: 8px; font-size: 12px;"
                                 title="Manage Layers"
                             >
-                                <span class="icon">📋</span>
+                                <i data-lucide="layers" class="icon"></i>
                                 Manage Layers
                             </button>
                         </div>
@@ -939,7 +941,7 @@
                                 style="width: 100%; padding: 8px; font-size: 12px;"
                                 title="New Graph Template"
                             >
-                                <span class="icon">📄</span>
+                                <i data-lucide="file-plus" class="icon"></i>
                                 New Graph Template
                             </button>
                         </div>
@@ -1141,5 +1143,9 @@
         <!-- Main Application -->
         <script type="module" src="graph.js"></script>
         <script type="module" src="app.js"></script>
+        <!-- Initialize Lucide Icons -->
+        <script>
+            lucide.createIcons();
+        </script>
     </body>
 </html>
