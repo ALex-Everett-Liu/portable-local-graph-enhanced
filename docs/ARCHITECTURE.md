@@ -15,14 +15,14 @@ Graph App is a **local-first desktop application** built with Electron, designed
 │  │  Main Process    │         │ Renderer Process │          │
 │  │  (main.js)       │         │  (BrowserWindow) │          │
 │  │                  │         │                  │          │
-│  │  • App lifecycle │◄──────►│  • UI Rendering  │          │
+│  │  • App lifecycle │◄──────► │  • UI Rendering  │          │
 │  │  • Window mgmt   │         │  • User Input    │          │
 │  │  • Server start  │         │  • Canvas        │          │
 │  └──────────────────┘         └────────┬─────────┘          │
 │           │                            │                    │
 │           │                            │ HTTP (localhost)   │
 │           │                            │                    │
-│           ▼                           ▼                    │
+│           ▼                            ▼                    │
 │  ┌──────────────────────────────────────────────┐           │
 │  │         Express Server (server.js)           │           │
 │  │         Running on localhost:6825            │           │
@@ -32,14 +32,14 @@ Graph App is a **local-first desktop application** built with Electron, designed
 │  │  │ (graphRoutes)│─►│(graphController) │      │           │
 │  │  └──────────────┘  └────────┬─────────┘      │           │
 │  │                             │                │           │
-│  │                             ▼               │           │
+│  │                             ▼                │           │
 │  │                    ┌──────────────┐          │           │
 │  │                    │   Services   │          │           │
 │  │                    │(graphService)│          │           │
 │  │                    └──────┬───────┘          │           │
 │  └───────────────────────────┼───────────────── ┘           │
 │                              │                              │
-│                              ▼                             │
+│                              ▼                              │
 │                    ┌──────────────────┐                     │
 │                    │  SQLite Database │                     │
 │                    │   (data/*.db)    │                     │
@@ -92,9 +92,9 @@ public/
 ├── graph.js                 # Graph class (orchestrator, delegates to modules)
 ├── graph-renderer.js        # Canvas rendering engine
 ├── templates/               # HTML template fragments
-│   ├── toolbar.html        # Toolbar component
-│   ├── sidebar.html        # Sidebar component
-│   └── dialogs/            # Dialog templates
+│   ├── toolbar.html         # Toolbar component
+│   ├── sidebar.html         # Sidebar component
+│   └── dialogs/             # Dialog templates
 │       ├── weight-dialog.html
 │       ├── node-dialog.html
 │       ├── load-dialog.html
@@ -107,7 +107,7 @@ public/
 │       ├── layer-rename-dialog.html
 │       └── settings-dialog.html
 ├── graph/                   # Graph module structure
-│   ├── operations/         # Node and edge operations
+│   ├── operations/          # Node and edge operations
 │   │   ├── nodeOperations.js    # Node CRUD and queries
 │   │   └── edgeOperations.js    # Edge CRUD and queries
 │   ├── handlers/           # Event handlers
@@ -342,7 +342,7 @@ The application is designed to work **completely offline** without any internet 
 │  ┌──────────────┐  ┌──────────────┐     │
 │  │   Renderer   │  │   Express    │     │
 │  │   Process    │◄─┤   Server     │     │
-│  │              │  │ (localhost)   │    │
+│  │              │  │ (localhost)  │     │
 │  │ • Local HTML │  │ • Local API  │     │
 │  │ • Local JS   │  │ • No network │     │
 │  │ • require()  │  │              │     │
@@ -350,7 +350,7 @@ The application is designed to work **completely offline** without any internet 
 │         │                 │             │
 │         └────────┬────────┘             │
 │                  │                      │
-│                  ▼                     │
+│                  ▼                      │
 │         ┌─────────────────┐             │
 │         │  SQLite Files   │             │
 │         │   (data/*.db)   │             │
@@ -477,7 +477,7 @@ The application is designed to work **completely offline** without any internet 
 │   ├── toolbar.html
 │   ├── sidebar.html
 │   └── dialogs/            # Dialog templates
-├── graph/                   # Graph module structure
+├── graph/                  # Graph module structure
 │   ├── operations/         # Node/edge operations
 │   ├── handlers/           # Event handlers
 │   ├── layers/             # Layer management
