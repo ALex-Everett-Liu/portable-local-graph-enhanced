@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.3.3] - 2025-11-27
+
+### Added
+- Settings dialog accessible from sidebar - comprehensive settings interface with tabbed navigation
+- Fonts tab in settings dialog - allows users to customize fonts for UI and canvas rendering
+- Font settings persistence - font preferences saved to localStorage and restored on app load
+- UI font customization - change font family for interface elements (toolbar, dialogs, sidebar)
+- Canvas label font customization - separate settings for English and Chinese labels on graph nodes
+- Canvas font size control - adjustable font size slider (8-24px) for canvas labels
+- Live font previews - real-time preview of selected fonts in settings dialog
+- LXGW Bright font integration - added professional bilingual font (English + Chinese) from [LXGW Bright project](https://github.com/lxgw/LxgwBright)
+- @font-face declarations for LXGW Bright - supports Light (300), Regular (400), Medium (500) weights with italic variants
+- Font files stored in `public/fonts/` directory for local font loading
+- Reset to defaults functionality - restore all font settings to original values
+
+### Changed
+- Updated settings dialog to include LXGW Bright in all font selectors (UI, Canvas English, Canvas Chinese)
+- Enhanced font preview texts to show both English and Chinese characters for better font evaluation
+
+### Technical Details
+- Font settings stored in localStorage with key `graphApp_fontSettings`
+- Font settings manager (`public/managers/fontSettingsManager.js`) handles persistence and application
+- Settings dialog module (`public/ui/dialogs/settingsDialog.js`) manages UI interactions
+- Font constants updated to support dynamic font changes (`DEFAULT_CHINESE_FONT_FAMILY`)
+- Font changes trigger immediate graph redraw for canvas labels
+- LXGW Bright font files (6 variants) copied to `public/fonts/` directory
+- Font-face declarations use `font-display: swap` for optimal loading performance
+
 ## [0.3.2] - 2025-11-27
 
 ### Added
