@@ -10,3 +10,4 @@ data/
 win-unpacked/
 mac/
 linux-unpacked/
+public/lucide.min.js

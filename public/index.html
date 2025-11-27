@@ -5,8 +5,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Manual Graph Drawing App</title>
         <link rel="stylesheet" href="styles.css" />
-        <!-- Add Lucide Icons -->
-        <script src="https://unpkg.com/lucide@latest"></script>
+        <!-- Add Lucide Icons - Local first, CDN fallback -->
+        <script>
+            // Try to load Lucide locally first, fallback to CDN
+            (function() {
+                const script = document.createElement('script');
+                script.src = 'lucide.min.js';
+                script.onerror = function() {
+                    // If local file fails, try CDN
+                    const cdnScript = document.createElement('script');
+                    cdnScript.src = 'https://unpkg.com/lucide@latest';
+                    cdnScript.onerror = function() {
+                        // If both fail, mark Lucide as unavailable
+                        window.lucideUnavailable = true;
+                        console.warn('Lucide icons unavailable. Falling back to emojis.');
+                    };
+                    document.head.appendChild(cdnScript);
+                };
+                document.head.appendChild(script);
+            })();
+        </script>
     </head>
     <body>
         <div class="app-container">
@@ -1143,9 +1161,80 @@
         <!-- Main Application -->
         <script type="module" src="graph.js"></script>
         <script type="module" src="app.js"></script>
-        <!-- Initialize Lucide Icons -->
+        <!-- Initialize Lucide Icons with fallback -->
         <script>
-            lucide.createIcons();
+            // Wait for Lucide to load, then initialize icons
+            let initAttempts = 0;
+            const maxAttempts = 50; // 5 seconds max wait
+            
+            function initializeLucideIcons() {
+                initAttempts++;
+                
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    try {
+                        lucide.createIcons();
+                        console.log('Lucide icons initialized successfully');
+                        return;
+                    } catch (error) {
+                        console.error('Error initializing Lucide icons:', error);
+                        fallbackToEmojis();
+                        return;
+                    }
+                }
+                
+                if (window.lucideUnavailable) {
+                    fallbackToEmojis();
+                    return;
+                }
+                
+                // Wait a bit more for script to load (up to max attempts)
+                if (initAttempts < maxAttempts) {
+                    setTimeout(initializeLucideIcons, 100);
+                } else {
+                    console.warn('Lucide icons timed out. Falling back to emojis.');
+                    fallbackToEmojis();
+                }
+            }
+            
+            function fallbackToEmojis() {
+                // Map Lucide icon names to emojis
+                const emojiMap = {
+                    'x': '✕',
+                    'search': '🔍',
+                    'save': '💾',
+                    'undo-2': '↶',
+                    'circle': '⚫',
+                    'link': '🔗',
+                    'mouse-pointer-2': '👆',
+                    'keyboard': '⌨️',
+                    'folder-open': '📂',
+                    'trash-2': '🗑️',
+                    'rotate-cw': '↺',
+                    'git-merge': '🔗',
+                    'layers': '📋',
+                    'file-plus': '📄'
+                };
+                
+                // Replace all Lucide icons with emojis
+                document.querySelectorAll('[data-lucide]').forEach(function(el) {
+                    const iconName = el.getAttribute('data-lucide');
+                    const emoji = emojiMap[iconName] || '•';
+                    const span = document.createElement('span');
+                    span.className = 'icon';
+                    span.textContent = emoji;
+                    el.parentNode.replaceChild(span, el);
+                });
+                
+                console.log('Fell back to emoji icons');
+            }
+            
+            // Start initialization after DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeLucideIcons);
+            } else {
+                // Small delay to ensure scripts are loaded
+                setTimeout(initializeLucideIcons, 50);
+            }
         </script>
     </body>
 </html>

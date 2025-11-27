@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change tracking for filter state (layer filters) - filter state changes are now tracked and can be saved/discarded with other changes
 - New Graph Template button in sidebar - start fresh with a template graph containing 1 centered node and scale set to 2
 - Template functionality (`public/ui/template.js`) - safer alternative to Clear button that creates a starting point instead of empty canvas
+- Lucide icons integration - replaced emoji icons with professional SVG icons from Lucide icon library
+- Offline fallback system for icons - three-tier fallback (local file → CDN → emojis) ensures icons work offline
 
 ### Changed
 - Removed automatic view state tracking - pan/zoom no longer triggers change tracking
@@ -21,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - View state is now saved separately via sidebar button instead of being tracked automatically
 - Filter state changes are now tracked and included in Save/Discard operations
 - Fixed node selection triggering change tracking - Save/Discard buttons only appear when nodes are actually moved, not just selected
+- Replaced emoji icons with Lucide SVG icons throughout the UI for better consistency and professional appearance
 
 ### Fixed
 - Fixed Save/Discard buttons appearing when clicking/right-clicking nodes without dragging them
