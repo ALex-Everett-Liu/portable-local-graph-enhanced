@@ -6,6 +6,12 @@ import { showSearchDialog } from '../ui/dialogs/searchDialog.js';
 import { showSaveAsDialog } from '../ui/dialogs/saveAsDialog.js';
 import { showEdgeSearchDialog } from '../ui/dialogs/edgeSearchDialog.js';
 import { clearGraph } from '../ui/saveDiscardUI.js';
+import { toggleFullscreen } from './fullscreenManager.js';
+import { saveViewStateToDb } from '../services/databaseService.js';
+import { showMergeDialog } from '../ui/dialogs/mergeDialog.js';
+import { openLayerDialog } from '../ui/dialogs/layerDialog.js';
+import { createNewGraphTemplate } from '../ui/template.js';
+import { openSettingsDialog } from '../ui/dialogs/settingsDialog.js';
 
 let hotkeyModeActive = false;
 let sequenceBuffer = '';
@@ -140,6 +146,75 @@ const COMMANDS = {
     'c': { 
         action: () => clearGraph(), 
         description: 'Clear graph',
+        requiresCount: false 
+    },
+    
+    // Display options
+    'ea': { 
+        action: () => {
+            // Toggle show edge arrows checkbox
+            const checkbox = document.getElementById('show-edge-arrows');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                // Trigger change event to update state
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        }, 
+        description: 'Show edge arrows',
+        requiresCount: false 
+    },
+    
+    // View operations
+    'fs': { 
+        action: () => toggleFullscreen(), 
+        description: 'Fullscreen canvas',
+        requiresCount: false 
+    },
+    'sv': { 
+        action: async () => {
+            try {
+                await saveViewStateToDb();
+                showNotification('View state saved', 'success');
+            } catch (error) {
+                showNotification('Failed to save view state', 'error');
+            }
+        }, 
+        description: 'Save view',
+        requiresCount: false 
+    },
+    
+    // Database operations
+    'md': { 
+        action: () => showMergeDialog(), 
+        description: 'Merge database',
+        requiresCount: false 
+    },
+    
+    // Layer management
+    'ml': { 
+        action: () => openLayerDialog(), 
+        description: 'Manage layers',
+        requiresCount: false 
+    },
+    
+    // Template operations
+    'nt': { 
+        action: async () => {
+            try {
+                await createNewGraphTemplate();
+                showNotification('New graph template created', 'success');
+            } catch (error) {
+                showNotification('Failed to create template', 'error');
+            }
+        }, 
+        description: 'New graph template',
+        requiresCount: false 
+    },
+    
+    // Settings
+    'st': { 
+        action: () => openSettingsDialog(), 
+        description: 'Open settings',
         requiresCount: false 
     },
     
@@ -387,6 +462,12 @@ function showHelpOverlay() {
         'Modes': ['n', 'e', 's'],
         'Node Operations': ['cn', 'dn', 'en'],
         'Edge Operations': ['ce', 'de', 'ee', 'ces'],
+        'Display Options': ['ea'],
+        'View Operations': ['fs', 'sv'],
+        'Database Operations': ['md'],
+        'Layer Management': ['ml'],
+        'Template Operations': ['nt'],
+        'Settings': ['st'],
         'Navigation': ['f', 'l', 'w', 'c'],
         'Help': ['?']
     };

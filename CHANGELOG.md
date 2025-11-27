@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Click-outside-to-close functionality for selection popup
 - Popup positioning logic - automatically positions near click location while staying within viewport
 - Fullscreen mode integration with node selection and overlap cycling
+- New hotkey commands: `ea` (show edge arrows), `fs` (fullscreen canvas), `sv` (save view), `md` (merge database), `ml` (manage layers), `nt` (new graph template), `st` (open settings)
+- Command palette updated with new command categories: Display Options, View Operations, Database Operations, Layer Management, Template Operations, Settings
 
 ### Changed
 - Updated sidebar to include "View" section with fullscreen button
@@ -34,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Popup closes when clicking empty canvas space or deselecting nodes
 - Fullscreen state tracked internally to prevent popup display in normal mode
 - Exit button uses Lucide icons with emoji fallback for offline support
+- Hotkey manager (`public/managers/hotkeyManager.js`) updated with 7 new commands and proper async error handling
+- Command palette (`public/managers/commandPalette.js`) automatically picks up new commands via `getCommands()` export
+- New commands integrated with existing hotkey system and help overlay categories
 
 ## [0.3.4] - 2025-11-27
 
