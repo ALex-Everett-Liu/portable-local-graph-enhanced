@@ -1,0 +1,39 @@
+<div id="node-connections-dialog" class="dialog hidden">
+    <div class="dialog-content">
+        <h3 id="connections-dialog-title">
+            Node Connections
+        </h3>
+        <div class="connection-count">
+            <strong id="connections-total-count">0</strong>
+            connection(s)
+        </div>
+        <div
+            id="connections-list"
+            style="
+                max-height: 400px;
+                overflow-y: auto;
+                margin-bottom: 12px;
+            "
+        >
+            <!-- Connections will be rendered here -->
+        </div>
+        <div class="dialog-buttons">
+            <button
+                id="connections-highlight-all-btn"
+                class="tool-btn"
+            >
+                Highlight All Connections
+            </button>
+            <button
+                id="connections-focus-btn"
+                class="tool-btn"
+            >
+                Focus on Node
+            </button>
+            <button id="connections-close-btn">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+

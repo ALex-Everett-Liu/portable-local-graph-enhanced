@@ -1,0 +1,303 @@
+<div class="sidebar" id="local-graph-sidebar">
+    <div
+        class="resize-handle"
+        id="local-graph-resize-handle"
+    ></div>
+    <div class="sidebar-section">
+        <h3>Graph Info</h3>
+        <div id="graph-info">
+            <p>Nodes: <span id="node-count">0</span></p>
+            <p>Edges: <span id="edge-count">0</span></p>
+            <p>Mode: <span id="current-mode">Node</span></p>
+            <p
+                id="search-count"
+                style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-top: 8px;
+                "
+            >
+                0 nodes
+            </p>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h3>Selected</h3>
+        <div id="selection-info">
+            <p>Nothing selected</p>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h3>Instructions</h3>
+        <div class="instructions">
+            <p>
+                <strong>Node Mode:</strong> Click to create
+                nodes
+            </p>
+            <p>
+                <strong>Edge Mode:</strong> Click two nodes to
+                connect
+            </p>
+            <p>
+                <strong>Select Mode:</strong> Click to
+                select/move nodes
+            </p>
+            <p>
+                <strong>Right-click:</strong> Edit node/edge
+                properties
+            </p>
+            <p>
+                <strong>Drag:</strong> Move nodes or pan canvas
+            </p>
+            <p><strong>Scroll:</strong> Zoom in/out</p>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h4>Display Options</h4>
+        <div class="filter-controls">
+            <div style="margin-bottom: 8px">
+                <label
+                    style="
+                        font-size: 11px;
+                        display: flex;
+                        align-items: center;
+                        cursor: pointer;
+                    "
+                >
+                    <input
+                        type="checkbox"
+                        id="show-edge-arrows"
+                        style="margin-right: 6px"
+                    />
+                    Show Edge Arrows
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h4>View State</h4>
+        <div style="margin-bottom: 8px">
+            <p
+                style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-bottom: 8px;
+                "
+            >
+                Save current zoom and pan position
+            </p>
+            <button
+                id="save-view-state-btn"
+                class="tool-btn"
+                style="
+                    width: 100%;
+                    padding: 8px;
+                    font-size: 12px;
+                "
+                title="Save View State"
+            >
+                <i
+                    data-lucide="hard-drive-download"
+                    class="icon"
+                ></i>
+                Save View
+            </button>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h4>Create Edge</h4>
+        <div style="margin-bottom: 8px">
+            <p
+                style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-bottom: 8px;
+                "
+            >
+                Connect distant nodes via search
+            </p>
+            <button
+                id="create-edge-search-btn"
+                class="tool-btn"
+                style="
+                    width: 100%;
+                    padding: 8px;
+                    font-size: 12px;
+                "
+                title="Create Edge via Search"
+            >
+                <i data-lucide="link-2" class="icon"></i>
+                Create Edge
+            </button>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h4>Database Operations</h4>
+        <div style="margin-bottom: 8px">
+            <p
+                style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-bottom: 8px;
+                "
+            >
+                Merge data from another database
+            </p>
+            <button
+                id="merge-db-btn"
+                class="tool-btn"
+                style="
+                    width: 100%;
+                    padding: 8px;
+                    font-size: 12px;
+                "
+                title="Merge Database"
+            >
+                <i data-lucide="git-merge" class="icon"></i>
+                Merge Database
+            </button>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h4>Layer Management</h4>
+        <div style="margin-bottom: 8px">
+            <p
+                id="layer-summary"
+                style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-bottom: 8px;
+                "
+            >
+                No layers defined
+            </p>
+            <button
+                id="manage-layers-btn"
+                class="tool-btn"
+                style="
+                    width: 100%;
+                    padding: 8px;
+                    font-size: 12px;
+                "
+                title="Manage Layers"
+            >
+                <i data-lucide="layers" class="icon"></i>
+                Manage Layers
+            </button>
+        </div>
+        <div style="margin-top: 8px">
+            <div style="margin-bottom: 8px">
+                <label
+                    style="
+                        font-size: 11px;
+                        display: block;
+                        margin-bottom: 4px;
+                    "
+                >
+                    Filter Mode:
+                </label>
+                <label
+                    style="
+                        font-size: 11px;
+                        display: flex;
+                        align-items: center;
+                        cursor: pointer;
+                        margin-bottom: 4px;
+                    "
+                >
+                    <input
+                        type="radio"
+                        name="layer-filter-mode"
+                        value="include"
+                        checked
+                        style="margin-right: 6px"
+                    />
+                    Include
+                </label>
+                <label
+                    style="
+                        font-size: 11px;
+                        display: flex;
+                        align-items: center;
+                        cursor: pointer;
+                    "
+                >
+                    <input
+                        type="radio"
+                        name="layer-filter-mode"
+                        value="exclude"
+                        style="margin-right: 6px"
+                    />
+                    Exclude
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h4>Templates</h4>
+        <div style="margin-bottom: 8px">
+            <p
+                style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-bottom: 8px;
+                "
+            >
+                Start fresh with a template
+            </p>
+            <button
+                id="new-template-btn"
+                class="tool-btn"
+                style="
+                    width: 100%;
+                    padding: 8px;
+                    font-size: 12px;
+                "
+                title="New Graph Template"
+            >
+                <i
+                    data-lucide="layout-template"
+                    class="icon"
+                ></i>
+                New Graph Template
+            </button>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <h4>Settings</h4>
+        <div style="margin-bottom: 8px">
+            <p
+                style="
+                    font-size: 12px;
+                    color: #666;
+                    margin-bottom: 8px;
+                "
+            >
+                Customize application preferences
+            </p>
+            <button
+                id="settings-btn"
+                class="tool-btn"
+                style="
+                    width: 100%;
+                    padding: 8px;
+                    font-size: 12px;
+                "
+                title="Settings"
+            >
+                <i data-lucide="settings" class="icon"></i>
+                Settings
+            </button>
+        </div>
+    </div>
+</div>
+

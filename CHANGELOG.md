@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.3] - 2025-11-27
 
 ### Added
+- Lucide icons integration - replaced emoji icons with professional SVG icons from Lucide icon library
+- Offline fallback system for icons - three-tier fallback (local file → CDN → emojis) ensures icons work offline
 - Settings dialog accessible from sidebar - comprehensive settings interface with tabbed navigation
 - Fonts tab in settings dialog - allows users to customize fonts for UI and canvas rendering
 - Font settings persistence - font preferences saved to localStorage and restored on app load
@@ -23,10 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reset to defaults functionality - restore all font settings to original values
 
 ### Changed
+- Replaced emoji icons with Lucide SVG icons throughout the UI for better consistency and professional appearance
 - Updated settings dialog to include LXGW Bright in all font selectors (UI, Canvas English, Canvas Chinese)
 - Enhanced font preview texts to show both English and Chinese characters for better font evaluation
 
 ### Technical Details
+- Save/Discard button text updates now preserve icon structure by updating only span elements instead of replacing entire innerHTML
+- Lucide icons re-initialized when Save/Discard buttons become visible to ensure icons render correctly
 - Font settings stored in localStorage with key `graphApp_fontSettings`
 - Font settings manager (`public/managers/fontSettingsManager.js`) handles persistence and application
 - Settings dialog module (`public/ui/dialogs/settingsDialog.js`) manages UI interactions
@@ -42,8 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change tracking for filter state (layer filters) - filter state changes are now tracked and can be saved/discarded with other changes
 - New Graph Template button in sidebar - start fresh with a template graph containing 1 centered node and scale set to 2
 - Template functionality (`public/ui/template.js`) - safer alternative to Clear button that creates a starting point instead of empty canvas
-- Lucide icons integration - replaced emoji icons with professional SVG icons from Lucide icon library
-- Offline fallback system for icons - three-tier fallback (local file → CDN → emojis) ensures icons work offline
 
 ### Changed
 - Removed automatic view state tracking - pan/zoom no longer triggers change tracking
@@ -51,7 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - View state is now saved separately via sidebar button instead of being tracked automatically
 - Filter state changes are now tracked and included in Save/Discard operations
 - Fixed node selection triggering change tracking - Save/Discard buttons only appear when nodes are actually moved, not just selected
-- Replaced emoji icons with Lucide SVG icons throughout the UI for better consistency and professional appearance
 
 ### Fixed
 - Fixed Save/Discard buttons appearing when clicking/right-clicking nodes without dragging them
@@ -72,8 +74,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - importData() clears activeLayers to prevent stale layers from previous databases
 - Database loading filters activeLayers to only include layers that exist in current database
 - Layer dialog automatically closes when switching databases to force refresh on next open
-- Save/Discard button text updates now preserve icon structure by updating only span elements instead of replacing entire innerHTML
-- Lucide icons re-initialized when Save/Discard buttons become visible to ensure icons render correctly
 
 ## [0.3.1] - 2025-11-26
 

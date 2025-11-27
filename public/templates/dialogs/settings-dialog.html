@@ -1,0 +1,167 @@
+<div id="settings-dialog" class="dialog hidden">
+    <div class="dialog-content" style="max-width: 600px">
+        <h3>Settings</h3>
+        
+        <!-- Tab Navigation -->
+        <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #dee2e6;">
+            <button
+                id="settings-tab-fonts"
+                class="settings-tab active"
+                data-tab="fonts"
+                style="
+                    padding: 8px 16px;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+                    font-size: 14px;
+                    color: #495057;
+                    border-bottom: 2px solid #007bff;
+                    margin-bottom: -1px;
+                "
+            >
+                Fonts
+            </button>
+        </div>
+
+        <!-- Fonts Tab Content -->
+        <div id="settings-content-fonts" class="settings-tab-content">
+            <div style="margin-bottom: 20px">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                    UI Font
+                </h4>
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                    Font family for interface elements (toolbar, dialogs, sidebar)
+                </p>
+                <select
+                    id="ui-font-family"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        font-size: 13px;
+                        margin-bottom: 8px;
+                    "
+                >
+                    <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif">System Default</option>
+                    <option value="'LXGW Bright', Arial, sans-serif">LXGW Bright</option>
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="'Helvetica Neue', Helvetica, Arial, sans-serif">Helvetica Neue</option>
+                    <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Segoe UI</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                    <option value="'Courier New', Courier, monospace">Courier New</option>
+                </select>
+                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px; color: #666;">
+                    Preview: <span id="ui-font-preview" style="font-weight: 500;">The quick brown fox jumps over the lazy dog 快速棕色狐狸</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                    Canvas Label Font (English)
+                </h4>
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                    Font family for English labels on graph nodes
+                </p>
+                <select
+                    id="canvas-font-family"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        font-size: 13px;
+                        margin-bottom: 8px;
+                    "
+                >
+                    <option value="Arial">Arial</option>
+                    <option value="'LXGW Bright', Arial, sans-serif">LXGW Bright</option>
+                    <option value="'Helvetica Neue', Helvetica, Arial, sans-serif">Helvetica Neue</option>
+                    <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Segoe UI</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                    <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                    <option value="'Courier New', Courier, monospace">Courier New</option>
+                </select>
+                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px; color: #666;">
+                    Preview: <span id="canvas-font-preview" style="font-weight: 500;">Node Label 节点标签</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                    Canvas Label Font (Chinese)
+                </h4>
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                    Font family for Chinese labels on graph nodes
+                </p>
+                <select
+                    id="canvas-chinese-font-family"
+                    style="
+                        width: 100%;
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        font-size: 13px;
+                        margin-bottom: 8px;
+                    "
+                >
+                    <option value="Arial">Arial (Default)</option>
+                    <option value="'LXGW Bright', Arial, sans-serif">LXGW Bright</option>
+                    <option value="'Microsoft YaHei', '微软雅黑', Arial, sans-serif">Microsoft YaHei</option>
+                    <option value="'SimHei', '黑体', Arial, sans-serif">SimHei (黑体)</option>
+                    <option value="'SimSun', '宋体', Arial, serif">SimSun (宋体)</option>
+                    <option value="'KaiTi', '楷体', Arial, serif">KaiTi (楷体)</option>
+                    <option value="'FangSong', '仿宋', Arial, serif">FangSong (仿宋)</option>
+                    <option value="'PingFang SC', '苹方', Arial, sans-serif">PingFang SC</option>
+                    <option value="'Hiragino Sans GB', '冬青黑体', Arial, sans-serif">Hiragino Sans GB</option>
+                    <option value="'Noto Sans SC', Arial, sans-serif">Noto Sans SC</option>
+                    <option value="'Source Han Sans SC', Arial, sans-serif">Source Han Sans SC</option>
+                </select>
+                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px; color: #666;">
+                    Preview: <span id="canvas-chinese-font-preview" style="font-weight: 500;">中文标签 快速棕色狐狸跳过懒狗</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                    Canvas Font Size
+                </h4>
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                    Base font size for canvas labels (default: 14px)
+                </p>
+                <input
+                    type="range"
+                    id="canvas-font-size"
+                    min="8"
+                    max="24"
+                    value="14"
+                    step="1"
+                    style="width: 100%; margin-bottom: 8px;"
+                />
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666;">
+                    <span>8px</span>
+                    <span id="canvas-font-size-value" style="font-weight: 600; color: #007bff;">14px</span>
+                    <span>24px</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dialog-buttons">
+            <button id="settings-reset-btn">Reset to Defaults</button>
+            <button id="settings-apply-btn">Apply</button>
+            <button id="settings-cancel-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+

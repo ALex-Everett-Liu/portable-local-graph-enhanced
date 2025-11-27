@@ -1,0 +1,44 @@
+<div id="weight-dialog" class="dialog hidden">
+    <div class="dialog-content">
+        <h3>Set Edge Properties</h3>
+        <label>Weight:</label>
+        <input
+            type="number"
+            id="weight-input"
+            placeholder="Enter weight"
+            step="0.1"
+            min="0"
+        />
+        <label>Category:</label>
+        <input
+            type="text"
+            id="edge-category"
+            placeholder="Category (optional)"
+        />
+        <div style="margin: 15px 0; text-align: center">
+            <button
+                id="reverse-edge-btn"
+                class="tool-btn"
+                style="
+                    background: #007bff;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 8px 16px;
+                    font-size: 12px;
+                "
+            >
+                <i data-lucide="rotate-cw" class="icon"></i>
+                Reverse Direction
+            </button>
+        </div>
+        <div class="dialog-buttons">
+            <button id="weight-ok">OK</button>
+            <button id="weight-cancel">Cancel</button>
+            <button id="weight-delete" class="danger">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
