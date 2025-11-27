@@ -10,4 +10,5 @@ data/
 win-unpacked/
 mac/
 linux-unpacked/
+public/fonts
 public/lucide.min.js
