@@ -42,6 +42,23 @@
                         </div>
                     </div>
 
+        <!-- Fullscreen exit button -->
+        <button id="fullscreen-exit-btn" class="fullscreen-exit-btn">
+            <i data-lucide="minimize-2" class="icon"></i>
+            Exit Fullscreen
+        </button>
+
+        <!-- Selection info popup -->
+        <div id="selection-info-popup" class="selection-info-popup">
+            <div class="selection-info-popup-header">
+                <h3>Node Details</h3>
+                <button class="selection-info-popup-close" id="selection-info-popup-close">×</button>
+            </div>
+            <div class="selection-info-popup-content" id="selection-info-popup-content">
+                <p>Nothing selected</p>
+            </div>
+        </div>
+
         <!-- Load Template Loader -->
         <script type="module">
             import { initializeTemplates } from './utils/templateLoader.js';
@@ -123,6 +140,8 @@
                     layers: "📋",
                     "layout-template": "📄",
                     settings: "⚙️",
+                    "maximize-2": "⛶",
+                    "minimize-2": "⛶",
                 };
 
                 // Replace all Lucide icons with emojis

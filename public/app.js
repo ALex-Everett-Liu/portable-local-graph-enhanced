@@ -30,6 +30,7 @@ import { deactivateHotkeyMode } from './managers/hotkeyManager.js';
 import { closeCommandPalette } from './managers/commandPalette.js';
 import { initializeSettingsDialog } from './ui/dialogs/settingsDialog.js';
 import { initializeFontSettings } from './managers/fontSettingsManager.js';
+import { initializeFullscreen } from './managers/fullscreenManager.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -91,6 +92,9 @@ function init() {
     
     // Setup global keyboard shortcuts (Alt+P for palette, Alt+H for hotkey mode)
     initializeKeyboardShortcuts();
+    
+    // Initialize fullscreen functionality
+    initializeFullscreen();
     
     // Expose search dialog function globally
     window.showSearchDialog = showSearchDialog;

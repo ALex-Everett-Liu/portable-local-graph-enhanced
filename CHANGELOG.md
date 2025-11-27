@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.3.5] - 2025-11-27
+
+### Added
+- Fullscreen canvas mode - immersive view without sidebar and toolbar interference
+- Fullscreen toggle button in sidebar under "View" section
+- Exit fullscreen button in top-right corner when in fullscreen mode
+- Selection info popup window - appears when clicking nodes in fullscreen mode
+- Popup displays comprehensive node details (English/Chinese labels, position, color, size, category, layers, timestamps)
+- ESC key support - closes popup first, then exits fullscreen on second press
+- Click-outside-to-close functionality for selection popup
+- Popup positioning logic - automatically positions near click location while staying within viewport
+- Fullscreen mode integration with node selection and overlap cycling
+
+### Changed
+- Updated sidebar to include "View" section with fullscreen button
+- Canvas container now supports fullscreen CSS class for immersive viewing
+- Selection info popup replaces sidebar selection-info section when in fullscreen mode
+
+### Technical Details
+- Fullscreen manager module (`public/managers/fullscreenManager.js`) handles fullscreen state and popup display
+- Canvas automatically resizes to fill viewport when entering/exiting fullscreen
+- Popup content matches sidebar selection-info format for consistency
+- Mouse handlers updated to show popup on node clicks in fullscreen mode
+- Popup updates when cycling through overlapping nodes
+- Popup closes when clicking empty canvas space or deselecting nodes
+- Fullscreen state tracked internally to prevent popup display in normal mode
+- Exit button uses Lucide icons with emoji fallback for offline support
+
 ## [0.3.4] - 2025-11-27
 
 ### Changed

@@ -9,6 +9,7 @@ import { addNode } from "../operations/nodeOperations.js";
 import { addEdge } from "../operations/edgeOperations.js";
 import { getMousePos, updateTooltip } from "../utils/graphUtils.js";
 import { GRAPH_CONSTANTS } from "../../utils/constants.js";
+import { isInFullscreen, showSelectionInfoPopup, hideSelectionInfoPopup } from "../../managers/fullscreenManager.js";
 
 /**
  * Create mouse handlers bound to a graph instance
@@ -54,6 +55,16 @@ export function createMouseHandlers(graph) {
               `${graph.overlapIndex + 1} of ${graph.overlapCandidates.length}: ${label}`,
               "success",
             );
+          }
+
+          // Update popup in fullscreen mode when cycling through nodes
+          if (isInFullscreen() && selected.type === "node") {
+            const rect = graph.canvas.getBoundingClientRect();
+            const screenX = rect.left + (selected.item.x * graph.scale + graph.offset.x);
+            const screenY = rect.top + (selected.item.y * graph.scale + graph.offset.y);
+            showSelectionInfoPopup(selected.item, screenX, screenY);
+          } else if (isInFullscreen() && selected.type === "edge") {
+            hideSelectionInfoPopup();
           }
 
           // Trigger selection change callback
@@ -106,6 +117,17 @@ export function createMouseHandlers(graph) {
             graph.onSelectionChange();
           }
 
+          // Show popup in fullscreen mode when node is selected
+          if (isInFullscreen() && graph.selectedNode) {
+            const rect = graph.canvas.getBoundingClientRect();
+            const screenX = e.clientX;
+            const screenY = e.clientY;
+            showSelectionInfoPopup(graph.selectedNode, screenX, screenY);
+          } else if (isInFullscreen() && !graph.selectedNode) {
+            // Hide popup when clicking empty space in fullscreen
+            hideSelectionInfoPopup();
+          }
+
           // Start dragging if node selected
           if (graph.selectedNode) {
             graph.isDragging = true;
@@ -124,6 +146,11 @@ export function createMouseHandlers(graph) {
           graph.overlapCandidates = [];
           graph.isPanning = true;
           graph.lastPanPoint = { x: e.clientX, y: e.clientY };
+
+          // Hide popup when clicking empty space in fullscreen
+          if (isInFullscreen()) {
+            hideSelectionInfoPopup();
+          }
 
           // Trigger selection change callback
           if (graph.onSelectionChange) {
