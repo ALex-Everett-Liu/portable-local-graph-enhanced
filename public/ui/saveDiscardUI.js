@@ -27,11 +27,33 @@ export function updateSaveButtonVisibility() {
     
     if (saveButton) {
         if (hasChanges) {
-            saveButton.textContent = `Save Changes (${totalChanges})`;
+            // Preserve icon structure, only update text span
+            const textSpan = saveButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = `Save Changes (${totalChanges})`;
+            } else {
+                saveButton.innerHTML = `<i data-lucide="save" class="icon"></i><span>Save Changes (${totalChanges})</span>`;
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                }
+            }
             saveButton.style.display = 'block';
             saveButton.classList.add('has-unsaved');
+            // Re-initialize Lucide icons when button becomes visible
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
         } else {
-            saveButton.textContent = 'Save Changes';
+            // Preserve icon structure, only update text span
+            const textSpan = saveButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = 'Save Changes';
+            } else {
+                saveButton.innerHTML = `<i data-lucide="save" class="icon"></i><span>Save Changes</span>`;
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                }
+            }
             saveButton.style.display = 'none';
             saveButton.classList.remove('has-unsaved');
         }
@@ -39,11 +61,33 @@ export function updateSaveButtonVisibility() {
     
     if (discardButton) {
         if (hasChanges) {
-            discardButton.textContent = `Discard Changes (${totalChanges})`;
+            // Preserve icon structure, only update text span
+            const textSpan = discardButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = `Discard Changes (${totalChanges})`;
+            } else {
+                discardButton.innerHTML = `<i data-lucide="undo-2" class="icon"></i><span>Discard Changes (${totalChanges})</span>`;
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                }
+            }
             discardButton.style.display = 'block';
             discardButton.classList.add('has-unsaved');
+            // Re-initialize Lucide icons when button becomes visible
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
         } else {
-            discardButton.textContent = 'Discard Changes';
+            // Preserve icon structure, only update text span
+            const textSpan = discardButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = 'Discard';
+            } else {
+                discardButton.innerHTML = `<i data-lucide="undo-2" class="icon"></i><span>Discard</span>`;
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    lucide.createIcons();
+                }
+            }
             discardButton.style.display = 'none';
             discardButton.classList.remove('has-unsaved');
         }
@@ -59,20 +103,34 @@ export async function saveAllChanges() {
     if (totalChanges === 0) {
         const saveButton = document.getElementById('save-changes');
         if (saveButton) {
-            const originalText = saveButton.textContent;
-            saveButton.textContent = 'No changes to save';
+            const textSpan = saveButton.querySelector('span');
+            const originalText = textSpan ? textSpan.textContent : 'Save Changes';
+            if (textSpan) {
+                textSpan.textContent = 'No changes to save';
+            } else {
+                saveButton.textContent = 'No changes to save';
+            }
             setTimeout(() => {
-                saveButton.textContent = originalText;
+                if (textSpan) {
+                    textSpan.textContent = originalText;
+                } else {
+                    saveButton.textContent = originalText;
+                }
             }, 1500);
         }
         return;
     }
 
     const saveButton = document.getElementById('save-changes');
-    const originalText = saveButton ? saveButton.textContent : 'Save Changes';
+    const textSpan = saveButton ? saveButton.querySelector('span') : null;
+    const originalText = textSpan ? textSpan.textContent : (saveButton ? saveButton.textContent : 'Save Changes');
     
     if (saveButton) {
-        saveButton.textContent = 'Saving...';
+        if (textSpan) {
+            textSpan.textContent = 'Saving...';
+        } else {
+            saveButton.textContent = 'Saving...';
+        }
         saveButton.disabled = true;
     }
 
@@ -129,9 +187,18 @@ export async function saveAllChanges() {
         updateSaveButtonVisibility();
 
         if (saveButton) {
-            saveButton.textContent = `Saved ${savedCount} change${savedCount !== 1 ? 's' : ''}!`;
+            const textSpan = saveButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = `Saved ${savedCount} change${savedCount !== 1 ? 's' : ''}!`;
+            } else {
+                saveButton.textContent = `Saved ${savedCount} change${savedCount !== 1 ? 's' : ''}!`;
+            }
             setTimeout(() => {
-                saveButton.textContent = originalText;
+                if (textSpan) {
+                    textSpan.textContent = originalText;
+                } else {
+                    saveButton.textContent = originalText;
+                }
                 saveButton.disabled = false;
                 updateSaveButtonVisibility();
             }, 2000);
@@ -141,9 +208,18 @@ export async function saveAllChanges() {
     } catch (error) {
         console.error('Error saving changes:', error);
         if (saveButton) {
-            saveButton.textContent = 'Error!';
+            const textSpan = saveButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = 'Error!';
+            } else {
+                saveButton.textContent = 'Error!';
+            }
             setTimeout(() => {
-                saveButton.textContent = originalText;
+                if (textSpan) {
+                    textSpan.textContent = originalText;
+                } else {
+                    saveButton.textContent = originalText;
+                }
                 saveButton.disabled = false;
             }, 2000);
         }
@@ -162,20 +238,34 @@ export function discardAllChanges() {
     if (totalChanges === 0) {
         const discardButton = document.getElementById('discard-changes');
         if (discardButton) {
-            const originalText = discardButton.textContent;
-            discardButton.textContent = 'No changes to discard';
+            const textSpan = discardButton.querySelector('span');
+            const originalText = textSpan ? textSpan.textContent : 'Discard';
+            if (textSpan) {
+                textSpan.textContent = 'No changes to discard';
+            } else {
+                discardButton.textContent = 'No changes to discard';
+            }
             setTimeout(() => {
-                discardButton.textContent = originalText;
+                if (textSpan) {
+                    textSpan.textContent = originalText;
+                } else {
+                    discardButton.textContent = originalText;
+                }
             }, 1500);
         }
         return;
     }
 
     const discardButton = document.getElementById('discard-changes');
-    const originalText = discardButton ? discardButton.textContent : 'Discard Changes';
+    const textSpan = discardButton ? discardButton.querySelector('span') : null;
+    const originalText = textSpan ? textSpan.textContent : (discardButton ? discardButton.textContent : 'Discard');
     
     if (discardButton) {
-        discardButton.textContent = 'Discarding...';
+        if (textSpan) {
+            textSpan.textContent = 'Discarding...';
+        } else {
+            discardButton.textContent = 'Discarding...';
+        }
         discardButton.disabled = true;
     }
 
@@ -252,9 +342,18 @@ export function discardAllChanges() {
         updateSaveButtonVisibility();
 
         if (discardButton) {
-            discardButton.textContent = `Discarded ${discardedCount} change${discardedCount !== 1 ? 's' : ''}!`;
+            const textSpan = discardButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = `Discarded ${discardedCount} change${discardedCount !== 1 ? 's' : ''}!`;
+            } else {
+                discardButton.textContent = `Discarded ${discardedCount} change${discardedCount !== 1 ? 's' : ''}!`;
+            }
             setTimeout(() => {
-                discardButton.textContent = originalText;
+                if (textSpan) {
+                    textSpan.textContent = originalText;
+                } else {
+                    discardButton.textContent = originalText;
+                }
                 discardButton.disabled = false;
             }, 2000);
         }
@@ -263,9 +362,18 @@ export function discardAllChanges() {
     } catch (error) {
         console.error('Error discarding changes:', error);
         if (discardButton) {
-            discardButton.textContent = 'Error!';
+            const textSpan = discardButton.querySelector('span');
+            if (textSpan) {
+                textSpan.textContent = 'Error!';
+            } else {
+                discardButton.textContent = 'Error!';
+            }
             setTimeout(() => {
-                discardButton.textContent = originalText;
+                if (textSpan) {
+                    textSpan.textContent = originalText;
+                } else {
+                    discardButton.textContent = originalText;
+                }
                 discardButton.disabled = false;
             }, 2000);
         }

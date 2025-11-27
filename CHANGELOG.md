@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed filterState changes not being saved properly - Save button now correctly detects and saves filterState changes
 - Fixed layer dialog showing layers from other database files - layers are now properly filtered to only show layers from current database
 - Fixed activeLayers persisting across database switches - activeLayers are now cleared and filtered when switching databases
+- Fixed Lucide icons not displaying on Save/Discard buttons - icons now preserved when buttons are shown/hidden and text is updated
 
 ### Technical Details
 - View state tracking removed from viewStateManager.js - no longer automatically tracks pan/zoom changes
@@ -43,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - importData() clears activeLayers to prevent stale layers from previous databases
 - Database loading filters activeLayers to only include layers that exist in current database
 - Layer dialog automatically closes when switching databases to force refresh on next open
+- Save/Discard button text updates now preserve icon structure by updating only span elements instead of replacing entire innerHTML
+- Lucide icons re-initialized when Save/Discard buttons become visible to ensure icons render correctly
 
 ## [0.3.1] - 2025-11-26
 
