@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.3.2] - 2025-11-26
+
+### Added
+- Manual view state save button in sidebar - save current zoom and pan position on demand
+- Change tracking for filter state (layer filters) - filter state changes are now tracked and can be saved/discarded with other changes
+
+### Changed
+- Removed automatic view state tracking - pan/zoom no longer triggers change tracking
+- Toolbar Save/Discard buttons now focus on main content changes (nodes, edges, filterState) only
+- View state is now saved separately via sidebar button instead of being tracked automatically
+- Filter state changes are now tracked and included in Save/Discard operations
+- Fixed node selection triggering change tracking - Save/Discard buttons only appear when nodes are actually moved, not just selected
+
+### Fixed
+- Fixed Save/Discard buttons appearing when clicking/right-clicking nodes without dragging them
+- Fixed change tracking being triggered on node selection instead of only on actual position changes
+
+### Technical Details
+- View state tracking removed from viewStateManager.js - no longer automatically tracks pan/zoom changes
+- Filter state tracking added to changeTracker.js - filter state changes are tracked alongside nodes/edges
+- Sidebar "Save View" button saves view state directly to database without change tracking
+- Node drag detection improved - only tracks changes when node position actually changes (threshold: 0.01px)
+- Toolbar Save/Discard buttons exclude viewState from change count and operations
+
 ## [0.3.1] - 2025-11-26
 
 ### Added

@@ -7,6 +7,8 @@ import { saveAllChanges, discardAllChanges, clearGraph } from './saveDiscardUI.j
 import { hideContextMenu } from './contextMenu.js';
 import { showSearchDialog } from './dialogs/searchDialog.js';
 import { showEdgeSearchDialog } from './dialogs/edgeSearchDialog.js';
+import { saveViewStateToDb } from '../services/databaseService.js';
+import { getGraph } from '../state/appState.js';
 
 export function setupEventListeners() {
     // Mode buttons
@@ -45,6 +47,35 @@ export function setupEventListeners() {
     const mergeDbBtn = document.getElementById('merge-db-btn');
     if (mergeDbBtn) {
         mergeDbBtn.addEventListener('click', () => showMergeDialog());
+    }
+
+    // Save View State button
+    const saveViewStateBtn = document.getElementById('save-view-state-btn');
+    if (saveViewStateBtn) {
+        saveViewStateBtn.addEventListener('click', async () => {
+            const graph = getGraph();
+            if (!graph) return;
+            
+            const originalText = saveViewStateBtn.textContent;
+            saveViewStateBtn.textContent = 'Saving...';
+            saveViewStateBtn.disabled = true;
+            
+            try {
+                await saveViewStateToDb();
+                saveViewStateBtn.textContent = 'Saved!';
+                setTimeout(() => {
+                    saveViewStateBtn.textContent = originalText;
+                    saveViewStateBtn.disabled = false;
+                }, 1500);
+            } catch (error) {
+                console.error('Error saving view state:', error);
+                saveViewStateBtn.textContent = 'Error!';
+                setTimeout(() => {
+                    saveViewStateBtn.textContent = originalText;
+                    saveViewStateBtn.disabled = false;
+                }, 2000);
+            }
+        });
     }
 
     // Save/Discard buttons

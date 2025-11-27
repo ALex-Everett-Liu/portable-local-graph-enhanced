@@ -18,13 +18,11 @@ export function updateSaveButtonVisibility() {
     const discardButton = document.getElementById('discard-changes');
     
     const hasNodeEdgeChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
-    const hasViewStateChanges = unsavedChanges.viewState !== null;
     const hasFilterStateChanges = unsavedChanges.filterState !== null;
-    const hasChanges = hasNodeEdgeChanges || hasViewStateChanges || hasFilterStateChanges;
+    const hasChanges = hasNodeEdgeChanges || hasFilterStateChanges;
     
-    // Count all changes
+    // Count changes (excluding viewState - it's saved separately)
     let totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size;
-    if (hasViewStateChanges) totalChanges += 1;
     if (hasFilterStateChanges) totalChanges += 1;
     
     if (saveButton) {
@@ -109,13 +107,6 @@ export async function saveAllChanges() {
             }
         }
 
-        // Save view state if changed
-        if (unsavedChanges.viewState) {
-            await saveViewStateToDb();
-            // Update original state
-            originalState.viewState = {...unsavedChanges.viewState};
-        }
-
         // Save filter state if changed
         if (unsavedChanges.filterState) {
             await saveFilterStateToDb();
@@ -123,14 +114,12 @@ export async function saveAllChanges() {
             originalState.filterState = {...unsavedChanges.filterState};
         }
 
-        // Clear unsaved changes
+        // Clear unsaved changes (excluding viewState - it's saved separately)
         let savedCount = unsavedChanges.nodes.size + unsavedChanges.edges.size;
-        if (unsavedChanges.viewState) savedCount += 1;
         if (unsavedChanges.filterState) savedCount += 1;
         
         unsavedChanges.nodes.clear();
         unsavedChanges.edges.clear();
-        unsavedChanges.viewState = null;
         unsavedChanges.filterState = null;
         updateSaveButtonVisibility();
 
@@ -161,10 +150,8 @@ export function discardAllChanges() {
     if (!graph) return;
     
     const hasNodeEdgeChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
-    const hasViewStateChanges = unsavedChanges.viewState !== null;
     const hasFilterStateChanges = unsavedChanges.filterState !== null;
     let totalChanges = unsavedChanges.nodes.size + unsavedChanges.edges.size;
-    if (hasViewStateChanges) totalChanges += 1;
     if (hasFilterStateChanges) totalChanges += 1;
     
     if (totalChanges === 0) {
@@ -229,12 +216,6 @@ export function discardAllChanges() {
             }
         }
 
-        // Restore view state if changed
-        if (unsavedChanges.viewState && originalState.viewState) {
-            graph.scale = originalState.viewState.scale;
-            graph.offset = {...originalState.viewState.offset};
-        }
-
         // Restore filter state if changed
         if (unsavedChanges.filterState && originalState.filterState) {
             const filterState = originalState.filterState;
@@ -253,14 +234,12 @@ export function discardAllChanges() {
             }
         }
 
-        // Clear unsaved changes
+        // Clear unsaved changes (excluding viewState - it's saved separately)
         let discardedCount = unsavedChanges.nodes.size + unsavedChanges.edges.size;
-        if (unsavedChanges.viewState) discardedCount += 1;
         if (unsavedChanges.filterState) discardedCount += 1;
         
         unsavedChanges.nodes.clear();
         unsavedChanges.edges.clear();
-        unsavedChanges.viewState = null;
         unsavedChanges.filterState = null;
         
         // Re-render graph
@@ -299,11 +278,9 @@ export async function clearGraph() {
         // Clear unsaved changes tracking
         unsavedChanges.nodes.clear();
         unsavedChanges.edges.clear();
-        unsavedChanges.viewState = null;
         unsavedChanges.filterState = null;
         originalState.nodes.clear();
         originalState.edges.clear();
-        originalState.viewState = null;
         originalState.filterState = null;
         updateSaveButtonVisibility();
     }
