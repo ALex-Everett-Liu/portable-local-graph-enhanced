@@ -29,10 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical Details
 - Built with Electron for cross-platform desktop support
-- Express.js backend server running on port 3004
+- Express.js backend server running on port 6825
 - SQLite database with graph_nodes and graph_edges tables
 - Canvas-based rendering for graph visualization
 - RESTful API endpoints for all graph operations
 
 [0.1.0]: https://github.com/yourusername/graph-app/releases/tag/v0.1.0
-

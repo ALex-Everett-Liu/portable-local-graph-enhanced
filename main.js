@@ -1,13 +1,13 @@
-const { app, BrowserWindow, Menu } = require('electron');
-const path = require('path');
+const { app, BrowserWindow, Menu } = require("electron");
+const path = require("path");
 
 // Import the Express server
-require('./server');
+require("./server");
 
 let mainWindow;
 
-app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch("disable-gpu");
+app.commandLine.appendSwitch("disable-software-rasterizer");
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -15,14 +15,14 @@ function createWindow() {
     height: 800,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false
-    }
+      contextIsolation: false,
+    },
   });
 
-  mainWindow.loadURL('http://localhost:3004');
-  
+  mainWindow.loadURL("http://localhost:6825");
+
   // Wait for everything to load before attempting DevTools
-  mainWindow.webContents.on('did-finish-load', () => {
+  mainWindow.webContents.on("did-finish-load", () => {
     setTimeout(() => {
       try {
         console.log("Opening DevTools after page load");
@@ -33,62 +33,61 @@ function createWindow() {
     }, 2000);
   });
 
-  mainWindow.on('closed', function () {
+  mainWindow.on("closed", function () {
     mainWindow = null;
   });
 
   // Create custom menu with DevTools option
   const menuTemplate = [
     {
-      label: 'File',
+      label: "File",
       submenu: [
         {
-          label: 'Quit',
-          accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
+          label: "Quit",
+          accelerator: process.platform === "darwin" ? "Cmd+Q" : "Ctrl+Q",
           click: () => {
             app.quit();
-          }
-        }
-      ]
+          },
+        },
+      ],
     },
     {
-      label: 'Developer',
+      label: "Developer",
       submenu: [
         {
-          label: 'Toggle DevTools',
+          label: "Toggle DevTools",
           click: () => {
             if (mainWindow) {
               mainWindow.webContents.toggleDevTools();
             }
           },
-          accelerator: 'F12'
+          accelerator: "F12",
         },
         {
-          label: 'Reload',
+          label: "Reload",
           click: () => {
             if (mainWindow) {
               mainWindow.reload();
             }
           },
-          accelerator: 'Ctrl+R'
-        }
-      ]
-    }
+          accelerator: "Ctrl+R",
+        },
+      ],
+    },
   ];
-  
+
   const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
 }
 
-app.on('ready', async () => {
+app.on("ready", async () => {
   createWindow();
 });
 
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
+app.on("window-all-closed", function () {
+  if (process.platform !== "darwin") app.quit();
 });
 
-app.on('activate', function () {
+app.on("activate", function () {
   if (mainWindow === null) createWindow();
 });
-

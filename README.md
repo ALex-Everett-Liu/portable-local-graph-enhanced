@@ -42,7 +42,7 @@ npm start
 ```
 
 This will:
-- Start the Express server on port 3004
+- Start the Express server on port 6825
 - Launch the Electron desktop app
 - Open DevTools automatically
 
@@ -169,9 +169,8 @@ All endpoints are prefixed with `/api/plugins/graph`:
 
 ## Development
 
-The app runs a local Express server on port 3004. The Electron app loads `http://localhost:3004` in its window.
+The app runs a local Express server on port 6825. The Electron app loads `http://localhost:6825` in its window.
 
 ## License
 
 Same as the parent Luhmann Roam project.
-

@@ -25,7 +25,7 @@ Graph App is a **local-first desktop application** built with Electron, designed
 │           ▼                           ▼                    │
 │  ┌──────────────────────────────────────────────┐           │
 │  │         Express Server (server.js)           │           │
-│  │         Running on localhost:3004            │           │
+│  │         Running on localhost:6825            │           │
 │  │                                              │           │
 │  │  ┌──────────────┐  ┌──────────────────┐      │           │
 │  │  │   Routes     │  │   Controllers    │      │           │
@@ -78,7 +78,7 @@ Graph App is a **local-first desktop application** built with Electron, designed
 **Key Features:**
 - `nodeIntegration: true` - Allows Node.js APIs in renderer
 - `contextIsolation: false` - Enables direct Node.js access
-- Loads `http://localhost:3004` (local Express server)
+- Loads `http://localhost:6825` (local Express server)
 
 ### 2. Renderer Process (Frontend)
 
@@ -262,7 +262,7 @@ The application is designed to work **completely offline** without any internet 
 - ✅ No dynamic imports from CDN
 
 #### 2. **Local Server Architecture**
-- ✅ Express server runs locally on `localhost:3004`
+- ✅ Express server runs locally on `localhost:6825`
 - ✅ All API calls use relative URLs (`/api/plugins/graph`)
 - ✅ Server and client bundled in same Electron app
 - ✅ No external API dependencies
@@ -366,7 +366,7 @@ The application is designed to work **completely offline** without any internet 
 
 **Protocol:** HTTP REST API over localhost
 
-**Base URL:** `http://localhost:3004/api/plugins/graph`
+**Base URL:** `http://localhost:6825/api/plugins/graph`
 
 **Request/Response Format:** JSON
 
@@ -497,7 +497,7 @@ The application is designed to work **completely offline** without any internet 
 ```bash
 npm start
 ```
-1. Starts Express server on port 3004
+1. Starts Express server on port 6825
 2. Launches Electron window
 3. Opens DevTools automatically
 

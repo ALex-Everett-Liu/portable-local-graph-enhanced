@@ -9,7 +9,7 @@ const {
 const graphRoutes = require("./routes/graphRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 3004;
+const PORT = process.env.PORT || 6825;
 
 // Middleware
 app.use(cors());
@@ -42,4 +42,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
