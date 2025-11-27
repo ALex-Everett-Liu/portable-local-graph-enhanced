@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSV export now downloads single ZIP file instead of multiple individual files (prevents multiple download popups)
 - Export dialog follows existing dialog patterns and integrates with current architecture
 
+### Fixed
+- Fixed edge search dialog becoming too tall when searching for source/target nodes - dialog now has max-height constraint with scrollable content area
+- Fixed "Create Edge" and "Cancel" buttons becoming inaccessible when dropdowns expand - buttons now remain fixed at bottom of dialog
+
 ### Technical Details
 - Export API endpoint: `GET /api/plugins/graph/export?format=json|csv`
 - Backend export function (`services/graphService.js`) fetches all 4 tables from database
@@ -30,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fallback mechanism: if JSZip fails to load, CSV export falls back to individual file downloads
 - Export manifest included in CSV ZIP with export metadata (timestamp, tables list, format)
 - Export command (`ex`) categorized under "Database Operations" in hotkey system and command palette
+- Edge search dialog restructured with flexbox layout - form fields wrapped in scrollable container (`edge-dialog-body`) while buttons remain fixed at bottom
+- Dialog max-height set to 85vh with custom scrollbar styling for better UX
+- Dropdowns maintain their own max-height (200px) and scroll independently within scrollable content area
 
 ## [0.3.5] - 2025-11-27
 
