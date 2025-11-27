@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.1] - 2025-11-28
+
+### Added
+- Selection info popup for web app - displays detailed node information when clicking on nodes
+- Node click detection with world coordinate conversion - accurate hit detection at any zoom level
+- Popup positioning logic - automatically positions near click location while staying within viewport
+- Close popup functionality - ESC key, close button, or click outside to dismiss
+- Node selection highlighting - selected nodes are visually highlighted on canvas
+- JSON file import support - load graph data from JSON export files (alternative to .db files)
+- Vercel deployment configuration - vercel.json with proper static site settings
+
+### Changed
+- Updated pan/zoom interaction - clicking nodes shows popup instead of starting pan
+- Improved click handling - distinguishes between node clicks and empty space clicks
+- Enhanced reset view - clears selection and hides popup when resetting view
+
+### Fixed
+- Fixed Vercel deployment errors - removed invalid regex patterns in vercel.json headers
+- Fixed build configuration - added empty build/install commands to prevent Electron app build attempts
+- Fixed deployment documentation - added Root Directory requirement and troubleshooting guide
+
+### Technical Details
+- Popup displays: English/Chinese labels, position, color, size, category, layers, timestamps
+- Node hit detection uses scaled radius calculation for accurate selection at different zoom levels
+- Screen-to-world coordinate conversion ensures correct node detection regardless of pan/zoom state
+- Popup automatically adjusts position to stay within viewport boundaries
+- Selection state managed separately from pan state for better UX
+
 ## [0.4.0] - 2025-11-28
 
 ### Added

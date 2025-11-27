@@ -36,6 +36,25 @@
         </div>
     </div>
 
+    <!-- Selection info popup -->
+    <div id="selection-info-popup" class="selection-info-popup">
+        <div class="selection-info-popup-header">
+            <h3>Node Details</h3>
+            <button
+                class="selection-info-popup-close"
+                id="selection-info-popup-close"
+            >
+                ×
+            </button>
+        </div>
+        <div
+            class="selection-info-popup-content"
+            id="selection-info-popup-content"
+        >
+            <p>Nothing selected</p>
+        </div>
+    </div>
+
     <!-- Load SQL.js from CDN - must load before module script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
     <script type="module" src="app.js"></script>
