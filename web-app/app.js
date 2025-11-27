@@ -2,6 +2,7 @@
  * Main application logic for graph viewer web app
  */
 import { GraphRenderer } from './graph-renderer.js';
+import { GRAPH_CONSTANTS } from './utils/constants.js';
 
 // Wait for SQL.js to load
 let SQL = null;
@@ -68,6 +69,71 @@ async function loadDatabase(file) {
         console.error('Error loading database:', error);
         statusText.textContent = `Error: ${error.message}`;
         alert(`Failed to load database: ${error.message}`);
+    }
+}
+
+/**
+ * Load graph data from JSON export file
+ */
+async function loadJSON(file) {
+    const statusText = document.getElementById('status-text');
+    statusText.textContent = 'Loading JSON export...';
+    
+    try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        // Validate JSON structure
+        if (!data.graph_nodes || !data.graph_edges) {
+            throw new Error('Invalid JSON format. Expected graph_nodes and graph_edges arrays.');
+        }
+        
+        // Convert database format to graph format
+        nodes = data.graph_nodes.map(node => ({
+            id: node.id,
+            x: node.x,
+            y: node.y,
+            label: node.label || '',
+            chineseLabel: node.chinese_label || node.chineseLabel || '',
+            color: node.color || GRAPH_CONSTANTS.DEFAULT_NODE_COLOR,
+            radius: node.radius || GRAPH_CONSTANTS.DEFAULT_NODE_RADIUS,
+            category: node.category || null,
+            layers: node.layers 
+                ? (typeof node.layers === 'string' 
+                    ? node.layers.split(',').map(l => l.trim()).filter(l => l)
+                    : node.layers)
+                : []
+        }));
+        
+        edges = data.graph_edges.map(edge => ({
+            id: edge.id,
+            from: edge.from_node_id || edge.from,
+            to: edge.to_node_id || edge.to,
+            weight: edge.weight || 1,
+            category: edge.category || null
+        }));
+        
+        // Load view state from metadata if available
+        if (data.graph_metadata && data.graph_metadata.length > 0) {
+            const meta = data.graph_metadata[0];
+            viewState.scale = meta.scale || 1;
+            viewState.offset = { 
+                x: meta.offset_x || 0, 
+                y: meta.offset_y || 0 
+            };
+        } else {
+            viewState.scale = 1;
+            viewState.offset = { x: 0, y: 0 };
+        }
+        
+        statusText.textContent = `Loaded: ${nodes.length} nodes, ${edges.length} edges (from JSON)`;
+        
+        // Initial render
+        render();
+    } catch (error) {
+        console.error('Error loading JSON:', error);
+        statusText.textContent = `Error: ${error.message}`;
+        alert(`Failed to load JSON: ${error.message}`);
     }
 }
 
@@ -264,6 +330,21 @@ function init() {
         const file = e.target.files[0];
         if (file) {
             loadDatabase(file);
+        }
+    });
+    
+    // Setup JSON file input
+    const jsonFileInput = document.getElementById('json-file-input');
+    const jsonFileLabel = jsonFileInput.previousElementSibling;
+    
+    jsonFileLabel.addEventListener('click', () => {
+        jsonFileInput.click();
+    });
+    
+    jsonFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            loadJSON(file);
         }
     });
     

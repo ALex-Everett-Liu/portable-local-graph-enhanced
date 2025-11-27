@@ -53,13 +53,27 @@ The app will be available at `http://localhost:3000`
 - **Canvas Rendering**: Uses HTML5 Canvas for graph visualization
 - **No Backend Required**: All processing happens in the browser (client-side only)
 
+## Deployment
+
+### Deploy to Vercel
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+**Quick Deploy:**
+1. Push code to GitHub/GitLab/Bitbucket
+2. Import project in Vercel dashboard
+3. Set root directory to `web-app`
+4. Deploy!
+
+**Note:** Users can upload `.db` files via the file input (client-side processing), or use JSON export files for easier sharing.
+
 ## Future Development
 
 This minimal version can be extended with:
-- Export to JSON/CSV
 - Search functionality
 - Filter by layers/categories
-- Deploy to Vercel or other hosting platforms
+- Pre-loaded example graphs
+- Shareable graph URLs
 
 ## Notes
 
