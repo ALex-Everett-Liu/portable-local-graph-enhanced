@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Viewer - Web App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <div class="toolbar">
+            <div class="toolbar-section">
+                <label for="db-file-input" class="file-input-label">
+                    📁 Load Database File
+                </label>
+                <input type="file" id="db-file-input" accept=".db" style="display: none;">
+            </div>
+            <div class="toolbar-section">
+                <span id="status-text">Ready to load database</span>
+            </div>
+            <div class="toolbar-section">
+                <button id="reset-view-btn" class="tool-btn">Reset View</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="graph-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load SQL.js from CDN - must load before module script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
+

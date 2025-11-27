@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.0] - 2025-11-28
+
+### Added
+- Minimal web app for viewing graph data (`web-app/` directory) - standalone web application for exploring graph visualizations in browser
+- SQLite WASM integration using sql.js - read database files directly in browser without backend server
+- Read-only graph viewer with canvas rendering - visualize nodes and edges from SQLite database files
+- Pan and zoom functionality - mouse drag to pan, mouse wheel to zoom (0.1x to 5x range)
+- File input interface - load `.db` files from local file system
+- Reset view button - restore default zoom and pan position
+- Graph renderer module adapted for web - read-only version of GraphRenderer class
+- Utility modules for web app - constants, geometry, algorithms, and styles utilities
+- Express server for local hosting - simple HTTP server for development (port 3000)
+- Comprehensive documentation - README.md and QUICKSTART.md for web app usage
+
+### Changed
+- N/A (new feature branch)
+
+### Technical Details
+- Web app uses SQL.js (SQLite compiled to WebAssembly) for client-side database reading
+- All processing happens in browser - no backend database required for viewing
+- Compatible with same database schema as Electron desktop app
+- Canvas rendering uses HTML5 Canvas API with proper coordinate transformations
+- View state (scale, offset) loaded from `graph_metadata` table if available
+- Database files loaded entirely into memory for processing
+- Ready for deployment to static hosting platforms (Vercel, Netlify, etc.)
+- SQL.js loaded from CDN with fallback error handling
+
 ## [0.3.6] - 2025-11-27
 
 ### Added
