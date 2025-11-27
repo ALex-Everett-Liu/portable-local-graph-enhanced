@@ -360,6 +360,35 @@ export async function fetchDatabases() {
     }
 }
 
+/**
+ * Export all database tables
+ * @param {string} format - 'json' or 'csv'
+ * @returns {Promise<Object>} Export data
+ */
+export async function exportAllTables(format = 'json') {
+    if (format !== 'json' && format !== 'csv') {
+        throw new Error('Format must be "json" or "csv"');
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE}/export?format=${format}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to export tables');
+        }
+        
+        if (format === 'json') {
+            return await response.json();
+        } else {
+            // CSV format returns JSON with CSV strings for each table
+            return await response.json();
+        }
+    } catch (error) {
+        console.error('Error exporting tables:', error);
+        throw error;
+    }
+}
+
 export async function mergeDatabase(sourceDbPath, conflictResolution = 'skip') {
     // Validate input
     if (!sourceDbPath || typeof sourceDbPath !== 'string' || sourceDbPath.trim() === '') {

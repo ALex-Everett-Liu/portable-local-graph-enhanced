@@ -64,5 +64,8 @@ router.post("/save-as", graphController.saveAs);
 // Merge data from a source database into the current database
 router.post("/merge", graphController.mergeDatabase);
 
+// Export all database tables
+router.get("/export", graphController.exportAllTables);
+
 module.exports = router;
 

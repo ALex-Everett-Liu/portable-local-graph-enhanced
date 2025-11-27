@@ -272,6 +272,82 @@ exports.saveAs = async (req, res) => {
 };
 
 /**
+ * Export all database tables
+ * GET /api/plugins/graph/export?format=json|csv
+ */
+exports.exportAllTables = async (req, res) => {
+  try {
+    const { format } = req.query; // 'json' or 'csv'
+    
+    if (!format || (format !== 'json' && format !== 'csv')) {
+      return res.status(400).json({ error: "Format must be 'json' or 'csv'" });
+    }
+    
+    const data = await graphService.exportAllTables(req.graphDb);
+    
+    if (format === 'json') {
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="graph-export-${Date.now()}.json"`);
+      res.json(data);
+    } else if (format === 'csv') {
+      // Convert to CSV format
+      const csvData = convertToCSV(data);
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="graph-export-${Date.now()}.json"`);
+      // Return JSON with CSV strings for each table (client will create files)
+      res.json(csvData);
+    }
+  } catch (error) {
+    console.error("Error exporting tables:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Convert data to CSV format
+ * Returns JSON object with CSV strings for each table
+ */
+function convertToCSV(data) {
+  const csvFiles = {};
+  
+  // Convert each table to CSV
+  for (const [tableName, rows] of Object.entries(data)) {
+    if (tableName === 'exportedAt') {
+      csvFiles[tableName] = data.exportedAt;
+      continue;
+    }
+    
+    if (!rows || rows.length === 0) {
+      csvFiles[tableName] = '';
+      continue;
+    }
+    
+    // Get headers from first row
+    const headers = Object.keys(rows[0]);
+    const csvRows = [headers.join(',')];
+    
+    // Convert each row
+    for (const row of rows) {
+      const values = headers.map(header => {
+        const value = row[header];
+        if (value === null || value === undefined) return '';
+        // Escape commas and quotes in CSV
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      });
+      csvRows.push(values.join(','));
+    }
+    
+    csvFiles[tableName] = csvRows.join('\n');
+  }
+  
+  return csvFiles;
+}
+
+/**
  * Merge data from a source database into the current database
  * POST /api/plugins/graph/merge
  */

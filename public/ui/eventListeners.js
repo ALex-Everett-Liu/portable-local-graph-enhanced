@@ -50,6 +50,16 @@ export function setupEventListeners() {
         mergeDbBtn.addEventListener('click', () => showMergeDialog());
     }
 
+    // Export Database button
+    const exportDbBtn = document.getElementById('export-db-btn');
+    if (exportDbBtn) {
+        exportDbBtn.addEventListener('click', () => {
+            if (window.showExportDialog) {
+                window.showExportDialog();
+            }
+        });
+    }
+
     // New Graph Template button
     const newTemplateBtn = document.getElementById('new-template-btn');
     if (newTemplateBtn) {

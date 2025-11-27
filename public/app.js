@@ -31,6 +31,7 @@ import { closeCommandPalette } from './managers/commandPalette.js';
 import { initializeSettingsDialog } from './ui/dialogs/settingsDialog.js';
 import { initializeFontSettings } from './managers/fontSettingsManager.js';
 import { initializeFullscreen } from './managers/fullscreenManager.js';
+import { initializeExportDialog, showExportDialog } from './ui/dialogs/exportDialog.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -87,6 +88,9 @@ function init() {
     // Setup settings dialog
     initializeSettingsDialog();
     
+    // Setup export dialog
+    initializeExportDialog();
+    
     // Initialize and apply font settings
     initializeFontSettings();
     
@@ -105,6 +109,9 @@ function init() {
     // Expose hotkey and command palette functions globally (for cross-module access)
     window.deactivateHotkeyMode = deactivateHotkeyMode;
     window.closeCommandPalette = closeCommandPalette;
+    
+    // Expose export dialog function globally
+    window.showExportDialog = showExportDialog;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');

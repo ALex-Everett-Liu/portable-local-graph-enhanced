@@ -37,10 +37,10 @@
                 <div class="canvas-container">
                     <canvas id="graph-canvas" width="800" height="600"></canvas>
                     <!-- Dialogs will be loaded here -->
-                            </div>
+                </div>
                 <!-- Sidebar will be loaded here -->
-                        </div>
-                    </div>
+            </div>
+        </div>
 
         <!-- Fullscreen exit button -->
         <button id="fullscreen-exit-btn" class="fullscreen-exit-btn">
@@ -52,20 +52,31 @@
         <div id="selection-info-popup" class="selection-info-popup">
             <div class="selection-info-popup-header">
                 <h3>Node Details</h3>
-                <button class="selection-info-popup-close" id="selection-info-popup-close">×</button>
+                <button
+                    class="selection-info-popup-close"
+                    id="selection-info-popup-close"
+                >
+                    ×
+                </button>
             </div>
-            <div class="selection-info-popup-content" id="selection-info-popup-content">
+            <div
+                class="selection-info-popup-content"
+                id="selection-info-popup-content"
+            >
                 <p>Nothing selected</p>
             </div>
         </div>
 
         <!-- Load Template Loader -->
         <script type="module">
-            import { initializeTemplates } from './utils/templateLoader.js';
-            
+            import { initializeTemplates } from "./utils/templateLoader.js";
+
             // Initialize templates when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initializeTemplates);
+            if (document.readyState === "loading") {
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    initializeTemplates,
+                );
             } else {
                 initializeTemplates();
             }

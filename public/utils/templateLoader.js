@@ -60,6 +60,7 @@ export async function initializeTemplates() {
         { path: 'templates/dialogs/node-connections-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/edge-search-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/merge-dialog.html', target: '.canvas-container', mode: 'append' },
+        { path: 'templates/dialogs/export-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/layer-management-dialog.html', target: 'body', mode: 'append' },
         { path: 'templates/dialogs/layer-rename-dialog.html', target: 'body', mode: 'append' },
         { path: 'templates/dialogs/settings-dialog.html', target: 'body', mode: 'append' },

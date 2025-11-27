@@ -636,6 +636,26 @@ async function mergeFromDatabase(targetDb, sourceDbPath, conflictResolution = 's
   }
 }
 
+/**
+ * Export all database tables as raw data
+ * @param {Object} graphDb - Database connection
+ * @returns {Promise<Object>} All tables data
+ */
+async function exportAllTables(graphDb) {
+  const nodes = await graphDb.all("SELECT * FROM graph_nodes");
+  const edges = await graphDb.all("SELECT * FROM graph_edges");
+  const metadata = await graphDb.all("SELECT * FROM graph_metadata");
+  const filterState = await graphDb.all("SELECT * FROM filter_state");
+  
+  return {
+    graph_nodes: nodes,
+    graph_edges: edges,
+    graph_metadata: metadata,
+    filter_state: filterState,
+    exportedAt: new Date().toISOString()
+  };
+}
+
 module.exports = {
   getAllGraphData,
   createNode,
@@ -651,5 +671,6 @@ module.exports = {
   loadFilterState,
   exportGraphData,
   mergeFromDatabase,
+  exportAllTables,
 };
 
