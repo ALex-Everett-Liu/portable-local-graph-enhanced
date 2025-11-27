@@ -9,6 +9,7 @@ import { showSearchDialog } from './dialogs/searchDialog.js';
 import { showEdgeSearchDialog } from './dialogs/edgeSearchDialog.js';
 import { saveViewStateToDb } from '../services/databaseService.js';
 import { getGraph } from '../state/appState.js';
+import { createNewGraphTemplate } from './template.js';
 
 export function setupEventListeners() {
     // Mode buttons
@@ -47,6 +48,12 @@ export function setupEventListeners() {
     const mergeDbBtn = document.getElementById('merge-db-btn');
     if (mergeDbBtn) {
         mergeDbBtn.addEventListener('click', () => showMergeDialog());
+    }
+
+    // New Graph Template button
+    const newTemplateBtn = document.getElementById('new-template-btn');
+    if (newTemplateBtn) {
+        newTemplateBtn.addEventListener('click', () => createNewGraphTemplate());
     }
 
     // Save View State button

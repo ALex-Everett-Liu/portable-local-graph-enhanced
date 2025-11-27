@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
-## [0.3.2] - 2025-11-26
+## [0.3.2] - 2025-11-27
 
 ### Added
 - Manual view state save button in sidebar - save current zoom and pan position on demand
 - Change tracking for filter state (layer filters) - filter state changes are now tracked and can be saved/discarded with other changes
+- New Graph Template button in sidebar - start fresh with a template graph containing 1 centered node and scale set to 2
+- Template functionality (`public/ui/template.js`) - safer alternative to Clear button that creates a starting point instead of empty canvas
 
 ### Changed
 - Removed automatic view state tracking - pan/zoom no longer triggers change tracking
