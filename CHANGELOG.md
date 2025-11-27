@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.3.4] - 2025-11-27
+
+### Changed
+- **Major Refactoring:** Split `index.html` (1812 lines) into modular template system
+- **Major Refactoring:** Split `graph.js` (869 lines) into focused module structure
+- Reduced `index.html` from 1812 lines to ~150 lines by extracting templates
+- Reduced `graph.js` from 869 lines to ~280 lines by extracting specialized modules
+- Updated `ARCHITECTURE.md` with comprehensive documentation of new modular structure
+
+### Added
+- Template loading system (`public/utils/templateLoader.js`) - dynamic HTML template loading via fetch()
+- Template directory structure (`public/templates/`) with component templates:
+  - `toolbar.html` - Toolbar component
+  - `sidebar.html` - Sidebar component
+  - `dialogs/` - 11 dialog templates (weight, node, load, save-as, search, connections, edge-search, merge, layer-management, layer-rename, settings)
+- Graph module structure (`public/graph/`) with specialized modules:
+  - `operations/nodeOperations.js` - Node CRUD operations (~100 lines)
+  - `operations/edgeOperations.js` - Edge CRUD operations (~120 lines)
+  - `handlers/mouseHandlers.js` - Mouse interaction handlers (~260 lines)
+  - `layers/layerManager.js` - Layer management operations (~80 lines)
+  - `connections/nodeConnections.js` - Node connection queries (~150 lines)
+  - `utils/graphUtils.js` - Utility functions (~70 lines)
+- Template loading supports both 'replace' and 'append' modes for flexible DOM injection
+- Parallel template loading via Promise.all() for better performance
+
+### Technical Details
+- Templates load dynamically on page initialization via `templateLoader.js`
+- Graph class now acts as orchestrator, delegating to specialized modules
+- All modules maintain single responsibility principle
+- 100% backward compatible - same public API, no breaking changes
+- Improved maintainability: each component in separate file
+- Better testability: modules can be tested independently
+- Enhanced code organization: clear separation of concerns
+- Templates cached in DOM after initial load for performance
+
 ## [0.3.3] - 2025-11-27
 
 ### Added

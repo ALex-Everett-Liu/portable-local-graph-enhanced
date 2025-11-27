@@ -87,32 +87,61 @@ Graph App is a **local-first desktop application** built with Electron, designed
 **Module Structure:**
 ```
 public/
-├── app.js                    # Main orchestrator
-├── graph.js                  # Graph data model & event handling
-├── graph-renderer.js         # Canvas rendering engine
+├── index.html               # Main HTML skeleton (minimal, loads templates)
+├── app.js                   # Main orchestrator
+├── graph.js                 # Graph class (orchestrator, delegates to modules)
+├── graph-renderer.js        # Canvas rendering engine
+├── templates/               # HTML template fragments
+│   ├── toolbar.html        # Toolbar component
+│   ├── sidebar.html        # Sidebar component
+│   └── dialogs/            # Dialog templates
+│       ├── weight-dialog.html
+│       ├── node-dialog.html
+│       ├── load-dialog.html
+│       ├── save-as-dialog.html
+│       ├── node-search-dialog.html
+│       ├── node-connections-dialog.html
+│       ├── edge-search-dialog.html
+│       ├── merge-dialog.html
+│       ├── layer-management-dialog.html
+│       ├── layer-rename-dialog.html
+│       └── settings-dialog.html
+├── graph/                   # Graph module structure
+│   ├── operations/         # Node and edge operations
+│   │   ├── nodeOperations.js    # Node CRUD and queries
+│   │   └── edgeOperations.js    # Edge CRUD and queries
+│   ├── handlers/           # Event handlers
+│   │   └── mouseHandlers.js     # Mouse interaction handlers
+│   ├── layers/             # Layer management
+│   │   └── layerManager.js      # Layer operations
+│   ├── connections/         # Node connections
+│   │   └── nodeConnections.js   # Connection queries
+│   └── utils/              # Graph utilities
+│       └── graphUtils.js        # Tooltip, coordinate utils
 ├── state/
-│   └── appState.js          # Global state management
+│   └── appState.js         # Global state management
 ├── services/
-│   └── databaseService.js   # API communication layer
+│   └── databaseService.js  # API communication layer
 ├── managers/
-│   ├── changeTracker.js     # Change tracking logic
-│   ├── viewStateManager.js  # View state persistence
-│   └── modeManager.js       # Mode switching
+│   ├── changeTracker.js    # Change tracking logic
+│   ├── viewStateManager.js # View state persistence
+│   └── modeManager.js      # Mode switching
 ├── ui/
-│   ├── eventListeners.js    # Event binding
-│   ├── contextMenu.js       # Context menu
-│   ├── saveDiscardUI.js     # Save/discard UI
-│   ├── sidebarResizer.js    # Sidebar resizing
+│   ├── eventListeners.js   # Event binding
+│   ├── contextMenu.js      # Context menu
+│   ├── saveDiscardUI.js    # Save/discard UI
+│   ├── sidebarResizer.js   # Sidebar resizing
 │   └── dialogs/
-│       ├── loadDialog.js    # Load database dialog
-│       └── saveAsDialog.js  # Save As dialog
+│       ├── loadDialog.js   # Load database dialog
+│       └── saveAsDialog.js # Save As dialog
 ├── utils/
-│   ├── constants.js         # Application constants
-│   ├── geometry.js          # Coordinate transformations
-│   ├── algorithms.js        # Graph algorithms
-│   └── uuid.js              # UUID generation utility
-├── styles.js                # Style calculations
-└── ui-functions.js          # Legacy UI functions (non-module)
+│   ├── constants.js        # Application constants
+│   ├── geometry.js         # Coordinate transformations
+│   ├── algorithms.js       # Graph algorithms
+│   ├── uuid.js             # UUID generation utility
+│   └── templateLoader.js   # Template loading system
+├── styles.js               # Style calculations
+└── ui-functions.js         # Legacy UI functions (non-module)
 ```
 
 ### 3. Backend (Express Server)
@@ -142,11 +171,31 @@ server.js                    # Server initialization
 - Coordinates module initialization
 - Loads initial data from database
 
-#### `graph.js` - Graph Data Model
+#### `index.html` - HTML Skeleton
+- Minimal HTML structure (~150 lines)
+- Loads templates dynamically via `utils/templateLoader.js`
+- Contains only essential structure and script tags
+- Templates loaded in parallel on page initialization
+
+#### `utils/templateLoader.js` - Template Loading System
+- Loads HTML template fragments via `fetch()`
+- Injects templates into DOM at specified targets
+- Supports both 'replace' and 'append' modes
+- Handles template loading errors gracefully
+- Enables modular HTML organization
+
+#### `graph.js` - Graph Data Model (Orchestrator)
+- Main Graph class that coordinates all graph operations
 - Manages nodes and edges arrays
-- Handles user interactions (click, drag, pan, zoom)
+- Delegates operations to specialized modules:
+  - **`graph/operations/`** - Node and edge CRUD operations
+  - **`graph/handlers/`** - Mouse and interaction event handlers
+  - **`graph/layers/`** - Layer management operations
+  - **`graph/connections/`** - Node connection queries
+  - **`graph/utils/`** - Utility functions (tooltips, coordinates)
 - Delegates rendering to GraphRenderer
 - Triggers callbacks for database persistence
+- **Modular Design:** Reduced from 869 lines to ~280 lines by extracting specialized modules
 
 #### `graph-renderer.js` - Rendering Engine
 - **Single Responsibility:** All visual rendering
@@ -325,8 +374,10 @@ The application is designed to work **completely offline** without any internet 
 ## Key Design Decisions
 
 ### 1. **Separation of Concerns**
-- **Graph** class: Data management and event handling
+- **Graph** class: Orchestrator that delegates to specialized modules
+- **Graph Modules**: Focused modules for operations, handlers, layers, connections
 - **GraphRenderer** class: Pure rendering logic
+- **Template System**: HTML templates loaded dynamically, reducing main HTML file size
 - **Services**: API communication layer
 - **Managers**: Business logic (change tracking, view state)
 
@@ -335,6 +386,13 @@ The application is designed to work **completely offline** without any internet 
 - Single responsibility principle
 - Clear module boundaries
 - Easy to test and maintain
+- **Template System:** HTML templates loaded dynamically via `templateLoader.js`
+- **Graph Module Structure:** Graph operations split into focused modules:
+  - Operations (node/edge CRUD)
+  - Handlers (mouse interactions)
+  - Layers (layer management)
+  - Connections (node connection queries)
+  - Utils (helper functions)
 
 ### 3. **Local-First Design**
 - All dependencies bundled locally
@@ -411,10 +469,20 @@ The application is designed to work **completely offline** without any internet 
 
 ### Frontend (`/public`)
 ```
-├── index.html               # Main HTML file
+├── index.html               # Main HTML skeleton (loads templates dynamically)
 ├── app.js                   # Application orchestrator
-├── graph.js                 # Graph data model
+├── graph.js                 # Graph class (orchestrator)
 ├── graph-renderer.js        # Rendering engine
+├── templates/               # HTML template fragments
+│   ├── toolbar.html
+│   ├── sidebar.html
+│   └── dialogs/            # Dialog templates
+├── graph/                   # Graph module structure
+│   ├── operations/         # Node/edge operations
+│   ├── handlers/           # Event handlers
+│   ├── layers/             # Layer management
+│   ├── connections/        # Connection queries
+│   └── utils/              # Graph utilities
 ├── styles.css               # Stylesheet
 ├── styles.js                # Style calculations
 ├── ui-functions.js          # Legacy UI functions
@@ -422,7 +490,7 @@ The application is designed to work **completely offline** without any internet 
 ├── services/                # API layer
 ├── managers/                # Business logic managers
 ├── ui/                      # UI components
-└── utils/                   # Utility functions
+└── utils/                   # Utility functions (includes templateLoader)
 ```
 
 ## Database Schema
@@ -455,6 +523,122 @@ The application is designed to work **completely offline** without any internet 
 - `offset_x`, `offset_y` (REAL) - Canvas pan offset
 - `updated_at` (INTEGER) - Timestamp
 
+## Template System Architecture
+
+### Overview
+The application uses a dynamic template loading system to keep the main HTML file manageable. Instead of having all HTML in one large file, templates are split into focused component files.
+
+### Template Structure
+```
+templates/
+├── toolbar.html              # Toolbar with search, mode buttons, file operations
+├── sidebar.html              # Sidebar with graph info, instructions, controls
+└── dialogs/                  # Dialog templates
+    ├── weight-dialog.html
+    ├── node-dialog.html
+    ├── load-dialog.html
+    ├── save-as-dialog.html
+    ├── node-search-dialog.html
+    ├── node-connections-dialog.html
+    ├── edge-search-dialog.html
+    ├── merge-dialog.html
+    ├── layer-management-dialog.html
+    ├── layer-rename-dialog.html
+    └── settings-dialog.html
+```
+
+### Template Loading Flow
+```
+Page Load
+  ↓
+index.html (skeleton)
+  ↓
+templateLoader.js (initializeTemplates)
+  ↓
+Parallel fetch() requests for all templates
+  ↓
+Templates injected into DOM at target selectors
+  ↓
+Application initialization continues
+```
+
+### Benefits
+- **Maintainability:** Each component in its own file
+- **Organization:** Clear separation of concerns
+- **Reusability:** Templates can be reused or modified independently
+- **Performance:** Templates load in parallel
+- **Fallback:** If loading fails, app can still function (templates could be inline as fallback)
+
+## Graph Module Architecture
+
+### Overview
+The Graph class has been refactored into a modular structure, with specialized modules handling different aspects of graph operations.
+
+### Module Structure
+```
+graph/
+├── operations/
+│   ├── nodeOperations.js     # Node CRUD: addNode, deleteNode, getNodeAt, getNodesAt
+│   └── edgeOperations.js     # Edge CRUD: addEdge, deleteEdge, getEdgeAt, getEdgesAt, isPointOnLine
+├── handlers/
+│   └── mouseHandlers.js      # Mouse interactions: clicks, drags, panning, tooltips
+├── layers/
+│   └── layerManager.js       # Layer operations: getAllLayers, renameLayer, getLayerUsage
+├── connections/
+│   └── nodeConnections.js    # Connection queries: getNodeConnections (categorizes by direction)
+└── utils/
+    └── graphUtils.js         # Utilities: escapeHtml, updateTooltip, getMousePos
+```
+
+### Graph Class Responsibilities
+The main `graph.js` file (now ~280 lines) acts as an orchestrator:
+- Maintains graph state (nodes, edges, selection, view state)
+- Delegates operations to specialized modules
+- Coordinates rendering via GraphRenderer
+- Manages callbacks for database persistence
+- Provides public API (backward compatible)
+
+### Module Responsibilities
+
+#### `graph/operations/nodeOperations.js`
+- Node creation and deletion
+- Node selection queries (single and multiple)
+- Hit detection for nodes
+
+#### `graph/operations/edgeOperations.js`
+- Edge creation and deletion
+- Edge selection queries
+- Point-on-line geometry calculations
+
+#### `graph/handlers/mouseHandlers.js`
+- Factory function creates handlers bound to graph instance
+- Handles all mouse events (down, move, up, wheel, right-click)
+- Mode-specific behavior (select, node, edge)
+- Overlap cycling for smart selection
+- Tooltip management
+
+#### `graph/layers/layerManager.js`
+- Layer extraction from nodes
+- Layer renaming across all nodes
+- Layer usage statistics
+
+#### `graph/connections/nodeConnections.js`
+- Complex connection categorization
+- Handles incoming, outgoing, bidirectional connections
+- Detects bidirectional pairs (two edges in opposite directions)
+
+#### `graph/utils/graphUtils.js`
+- HTML escaping for XSS prevention
+- Tooltip content generation
+- Coordinate transformations (screen to world)
+
+### Benefits
+- **Single Responsibility:** Each module has one clear purpose
+- **Testability:** Modules can be tested independently
+- **Maintainability:** Smaller, focused files are easier to understand
+- **Reusability:** Operations can be reused across codebase
+- **Backward Compatibility:** Same public API, no breaking changes
+
 ## Performance Considerations
 
 ### 1. **Rendering Optimization**
@@ -473,6 +657,11 @@ The application is designed to work **completely offline** without any internet 
 - Map-based change tracking (efficient lookups)
 - Clear separation of data and rendering
 - No unnecessary object creation
+
+### 4. **Template Loading**
+- Parallel template loading via Promise.all()
+- Templates cached in DOM after initial load
+- Minimal main HTML file reduces initial parse time
 
 ## Security Considerations
 
@@ -532,5 +721,40 @@ npm run build
 
 ---
 
-**Last Updated:** 2025-11-22
+## Recent Refactoring
+
+### Template System (2025-11-27)
+- **Problem:** `index.html` was 1812 lines, difficult to maintain
+- **Solution:** Split into modular template files
+- **Implementation:**
+  - Created `templates/` directory with component templates
+  - Created `utils/templateLoader.js` for dynamic template loading
+  - Reduced `index.html` from 1812 lines to ~150 lines
+  - Templates load in parallel on page initialization
+- **Benefits:**
+  - Better maintainability (each component in separate file)
+  - Improved organization
+  - Easier to modify individual components
+  - Templates can be reused or modified independently
+
+### Graph Module Refactoring (2025-11-27)
+- **Problem:** `graph.js` was 869 lines, mixing multiple responsibilities
+- **Solution:** Split into focused modules by responsibility
+- **Implementation:**
+  - **`graph/operations/`** - Node and edge CRUD operations (~220 lines total)
+  - **`graph/handlers/`** - Mouse interaction handlers (~260 lines)
+  - **`graph/layers/`** - Layer management operations (~80 lines)
+  - **`graph/connections/`** - Node connection queries (~150 lines)
+  - **`graph/utils/`** - Utility functions (~70 lines)
+  - Reduced main `graph.js` from 869 lines to ~280 lines
+- **Benefits:**
+  - Single responsibility per module
+  - Easier to test individual components
+  - Better code organization
+  - Improved maintainability
+  - 100% backward compatible (same public API)
+
+---
+
+**Last Updated:** 2025-11-27
 **Version:** 0.1.10
