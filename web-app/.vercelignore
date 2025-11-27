@@ -3,4 +3,4 @@ package-lock.json
 server.js
 QUICKSTART.md
 DEPLOYMENT.md
-
+.gitignore

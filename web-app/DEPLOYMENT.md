@@ -21,11 +21,14 @@ This guide explains how to deploy the Graph Viewer Web App to Vercel.
    - Import your Git repository
    - Select the repository containing the `web-app` folder
 
-3. **Configure Project Settings**
-   - **Root Directory**: Set to `web-app` (if deploying just the web app)
+3. **Configure Project Settings** ⚠️ **CRITICAL**
+   - **Root Directory**: Set to `web-app` (MUST be set to web-app folder)
    - **Framework Preset**: Select "Other" or "Static Site"
-   - **Build Command**: Leave empty (no build needed for static files)
-   - **Output Directory**: Leave empty (files are in root)
+   - **Build Command**: Leave empty or set to `echo 'No build needed'`
+   - **Output Directory**: Leave empty (files are in root of web-app)
+   - **Install Command**: Leave empty (no dependencies needed for static site)
+   
+   **Important**: If you don't set Root Directory to `web-app`, Vercel will try to build the Electron app and fail!
 
 4. **Environment Variables**
    - None required for this app
@@ -126,6 +129,18 @@ Currently, no environment variables are needed. If you add features that require
 
 ## Troubleshooting
 
+### ⚠️ Build Error: "electron-builder" or "sqlite3" native dependencies
+
+**Problem**: Vercel is trying to build the Electron app instead of deploying the static web app.
+
+**Solution**: 
+1. Go to Vercel Dashboard → Your Project → Settings → General
+2. Scroll to "Root Directory"
+3. **Set Root Directory to `web-app`** (this is critical!)
+4. Save and redeploy
+
+**Why this happens**: Without setting Root Directory, Vercel uses the repository root which contains the Electron app's `package.json` with `electron-builder` build script.
+
 ### SQL.js Not Loading
 - Check browser console for errors
 - Ensure internet connection (SQL.js loads from CDN)
@@ -135,10 +150,16 @@ Currently, no environment variables are needed. If you add features that require
 - Ensure `vercel.json` is configured correctly
 - Check that all file paths are relative (not absolute)
 - Verify files are committed to Git
+- Make sure Root Directory is set to `web-app`
 
 ### CORS Issues
 - Vercel handles CORS automatically for static files
 - If loading JSON from external source, ensure CORS headers are set
+
+### Build Command Running Electron Builder
+- Verify Root Directory is set to `web-app` in project settings
+- Check that Build Command is empty or set to `echo 'No build needed'`
+- Verify Install Command is empty (no dependencies needed)
 
 ## Performance Optimization
 
