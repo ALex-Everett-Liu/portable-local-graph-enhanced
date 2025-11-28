@@ -404,16 +404,20 @@ function updateSelectionInfo() {
                 return { color, indicator };
             }
 
-            const degreeIndicator = getRankIndicator(degreeRank, graph.nodes.length);
-            const betweennessIndicator = getRankIndicator(betweennessRank, graph.nodes.length);
-            const closenessIndicator = getRankIndicator(closenessRank, graph.nodes.length);
-            const eigenvectorIndicator = getRankIndicator(eigenvectorRank, graph.nodes.length);
-            const pagerankIndicator = getRankIndicator(pagerankRank, graph.nodes.length);
+            // Use filtered nodes for rank indicators and display count
+            const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+            const filteredNodeCount = filteredNodes.length;
+
+            const degreeIndicator = getRankIndicator(degreeRank, filteredNodeCount);
+            const betweennessIndicator = getRankIndicator(betweennessRank, filteredNodeCount);
+            const closenessIndicator = getRankIndicator(closenessRank, filteredNodeCount);
+            const eigenvectorIndicator = getRankIndicator(eigenvectorRank, filteredNodeCount);
+            const pagerankIndicator = getRankIndicator(pagerankRank, filteredNodeCount);
 
             centralityDisplay = `
                 <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid #ddd;">
                     <p style="font-weight: bold; margin-bottom: 6px; font-size: 12px; color: #495057;">
-                        📊 Centrality Analysis (${graph.nodes.length} nodes total)
+                        📊 Centrality Analysis (${filteredNodeCount} nodes total)
                     </p>
                     <table style="width: 100%; font-size: 11px; border-collapse: collapse;">
                         <tr style="border-bottom: 1px solid #f0f0f0;">

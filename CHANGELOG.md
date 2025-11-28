@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All clustering algorithms support weighted graphs
 - Clustering dialog follows existing dialog patterns and integrates with current architecture
 
-## [0.4.0] - 2025-11-27
+## [0.4.0] - 2025-11-28
 
 ### Added
 - Graph Analysis Module - comprehensive graph analysis and centrality calculation functionality

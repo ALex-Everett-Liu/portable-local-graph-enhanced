@@ -11,6 +11,16 @@ import { createMouseHandlers } from "./graph/handlers/mouseHandlers.js";
 import { getAllLayers, renameLayer, getLayerUsage } from "./graph/layers/layerManager.js";
 import { getNodeConnections } from "./graph/connections/nodeConnections.js";
 import { GraphAnalysis } from "./utils/analysis/graph-analysis.js";
+import {
+  calculateCentralities as calcCentralities,
+  calculateCentralityRankings as calcCentralityRankings,
+  getCentralityRank as getCentralityRankForNode,
+  detectCommunitiesLouvain as detectLouvain,
+  detectCommunitiesLabelPropagation as detectLabelProp,
+  kCoreDecomposition as kCore,
+  applyClusteringColors as applyClustering,
+  restoreOriginalColors as restoreColors
+} from "./graph/analysis/graphAnalysisOperations.js";
 
 class Graph {
   constructor(canvas, callbacks = {}) {
@@ -338,35 +348,12 @@ class Graph {
     this.render();
   }
 
-  // Graph Analysis methods
+  // Graph Analysis methods - delegate to graphAnalysisOperations module
   /**
    * Calculate centralities for all nodes
    */
   calculateCentralities() {
-    // Use filtered nodes/edges for analysis
-    const filteredNodes = this.getFilteredNodes();
-    const filteredEdges = this.getFilteredEdges();
-    
-    if (filteredNodes.length === 0) {
-      return;
-    }
-
-    // Update graph analysis with filtered data
-    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
-    
-    // Calculate centralities
-    const centralities = this.graphAnalysis.calculateCentralities();
-    
-    // Update nodes with centrality data (only for filtered nodes)
-    filteredNodes.forEach(node => {
-      if (!node.centrality) node.centrality = {};
-      Object.keys(centralities).forEach(type => {
-        node.centrality[type] = centralities[type][node.id];
-      });
-    });
-    
-    // Calculate rankings using filtered nodes
-    this.calculateCentralityRankings(filteredNodes);
+    return calcCentralities(this);
   }
 
   /**
@@ -374,31 +361,7 @@ class Graph {
    * @param {Array} nodes - Nodes to rank (defaults to filtered nodes)
    */
   calculateCentralityRankings(nodes = null) {
-    const nodesToRank = nodes || this.getFilteredNodes();
-    
-    if (nodesToRank.length === 0) {
-      this.centralityRankings = null;
-      return;
-    }
-
-    this.centralityRankings = {};
-    const centralityTypes = ['degree', 'betweenness', 'closeness', 'eigenvector', 'pagerank'];
-
-    centralityTypes.forEach(type => {
-      const values = nodesToRank.map(node => ({
-        nodeId: node.id,
-        value: parseFloat(node.centrality?.[type]) || 0
-      }));
-
-      values.sort((a, b) => b.value - a.value);
-
-      const rankings = new Map();
-      values.forEach((item, index) => {
-        rankings.set(item.nodeId, index + 1);
-      });
-
-      this.centralityRankings[type] = rankings;
-    });
+    return calcCentralityRankings(this, nodes);
   }
 
   /**
@@ -408,24 +371,17 @@ class Graph {
    * @returns {number|null} Rank (1-based) or null if not available
    */
   getCentralityRank(nodeId, centralityType) {
-    if (!this.centralityRankings || !this.centralityRankings[centralityType]) {
-      return null;
-    }
-    return this.centralityRankings[centralityType].get(nodeId) || null;
+    return getCentralityRankForNode(this, nodeId, centralityType);
   }
 
-  // Clustering methods
+  // Clustering methods - delegate to graphAnalysisOperations module
   /**
    * Detect communities using Louvain algorithm
    * @param {number} resolution - Resolution parameter (default: 1.0)
    * @returns {Object} Clustering result
    */
   detectCommunitiesLouvain(resolution = 1.0) {
-    // Use filtered nodes/edges for clustering
-    const filteredNodes = this.getFilteredNodes();
-    const filteredEdges = this.getFilteredEdges();
-    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
-    return this.graphAnalysis.detectCommunitiesLouvain(resolution);
+    return detectLouvain(this, resolution);
   }
 
   /**
@@ -434,11 +390,7 @@ class Graph {
    * @returns {Object} Clustering result
    */
   detectCommunitiesLabelPropagation(maxIterations = 100) {
-    // Use filtered nodes/edges for clustering
-    const filteredNodes = this.getFilteredNodes();
-    const filteredEdges = this.getFilteredEdges();
-    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
-    return this.graphAnalysis.detectCommunitiesLabelPropagation(maxIterations);
+    return detectLabelProp(this, maxIterations);
   }
 
   /**
@@ -446,11 +398,7 @@ class Graph {
    * @returns {Object} K-core result
    */
   kCoreDecomposition() {
-    // Use filtered nodes/edges for clustering
-    const filteredNodes = this.getFilteredNodes();
-    const filteredEdges = this.getFilteredEdges();
-    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
-    return this.graphAnalysis.kCoreDecomposition();
+    return kCore(this);
   }
 
   /**
@@ -459,88 +407,14 @@ class Graph {
    * @param {boolean} preserveOriginalColors - Whether to save original colors
    */
   applyClusteringColors(communities, preserveOriginalColors = true) {
-    if (!communities || Object.keys(communities).length === 0) {
-      return;
-    }
-
-    // Generate distinct colors for communities
-    const communityIds = [...new Set(Object.values(communities))];
-    const colors = this.generateDistinctColors(communityIds.length);
-
-    // Save original colors if needed
-    if (preserveOriginalColors) {
-      this.nodes.forEach(node => {
-        if (!node.originalColor) {
-          node.originalColor = node.color;
-        }
-      });
-    }
-
-    // Apply colors based on community
-    this.nodes.forEach(node => {
-      const communityId = communities[node.id];
-      if (communityId !== undefined) {
-        const colorIndex = communityIds.indexOf(communityId);
-        node.color = colors[colorIndex % colors.length];
-        node.community = communityId;
-      }
-    });
-
-    this.render();
+    return applyClustering(this, communities, preserveOriginalColors);
   }
 
   /**
    * Restore original node colors
    */
   restoreOriginalColors() {
-    this.nodes.forEach(node => {
-      if (node.originalColor) {
-        node.color = node.originalColor;
-        delete node.originalColor;
-      }
-      delete node.community;
-    });
-    this.render();
-  }
-
-  /**
-   * Generate distinct colors for visualization
-   * @param {number} count - Number of colors needed
-   * @returns {Array<string>} Array of hex color codes
-   */
-  generateDistinctColors(count) {
-    const colors = [];
-    const hueStep = 360 / count;
-
-    for (let i = 0; i < count; i++) {
-      const hue = (i * hueStep) % 360;
-      // Use HSL to generate distinct colors with good saturation and lightness
-      const saturation = 70 + (i % 3) * 10; // 70-90%
-      const lightness = 50 + (Math.floor(i / 3) % 3) * 10; // 50-70%
-      colors.push(this.hslToHex(hue, saturation, lightness));
-    }
-
-    return colors;
-  }
-
-  /**
-   * Convert HSL to hex color
-   * @param {number} h - Hue (0-360)
-   * @param {number} s - Saturation (0-100)
-   * @param {number} l - Lightness (0-100)
-   * @returns {string} Hex color code
-   */
-  hslToHex(h, s, l) {
-    l /= 100;
-    const a = (s * Math.min(l, 1 - l)) / 100;
-    const f = (n) => {
-      const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color)
-        .toString(16)
-        .padStart(2, '0');
-    };
-    return `#${f(0)}${f(8)}${f(4)}`;
+    return restoreColors(this);
   }
 }
 
