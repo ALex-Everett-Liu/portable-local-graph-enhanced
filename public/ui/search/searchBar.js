@@ -334,11 +334,15 @@ function updateGraphInfo() {
     const nodeCountElement = document.getElementById('node-count');
     const edgeCountElement = document.getElementById('edge-count');
 
+    // Use filtered nodes/edges if filtering is active, otherwise use all
+    const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+    const filteredEdges = graph.getFilteredEdges ? graph.getFilteredEdges() : graph.edges;
+
     if (nodeCountElement) {
-        nodeCountElement.textContent = graph.nodes ? graph.nodes.length : 0;
+        nodeCountElement.textContent = filteredNodes ? filteredNodes.length : 0;
     }
     if (edgeCountElement) {
-        edgeCountElement.textContent = graph.edges ? graph.edges.length : 0;
+        edgeCountElement.textContent = filteredEdges ? filteredEdges.length : 0;
     }
     
     // Update selection info

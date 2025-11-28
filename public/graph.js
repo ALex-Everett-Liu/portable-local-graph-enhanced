@@ -250,12 +250,20 @@ class Graph {
   setActiveLayers(layers) {
     this.activeLayers = new Set(Array.isArray(layers) ? layers : []);
     this.render();
+    // Update graph info when filter changes
+    if (typeof window.updateGraphInfo === 'function') {
+      window.updateGraphInfo();
+    }
   }
 
   setLayerFilterMode(mode) {
     if (mode === "include" || mode === "exclude") {
       this.layerFilterMode = mode;
       this.render();
+      // Update graph info when filter changes
+      if (typeof window.updateGraphInfo === 'function') {
+        window.updateGraphInfo();
+      }
     }
   }
 
@@ -287,6 +295,35 @@ class Graph {
     return getLayerUsage(this.nodes, layerName);
   }
 
+  /**
+   * Get filtered nodes based on current layer filter state
+   * @returns {Array} Filtered nodes
+   */
+  getFilteredNodes() {
+    const filterState = {
+      layerFilterEnabled: this.activeLayers.size > 0,
+      activeLayers: this.activeLayers,
+      layerFilterMode: this.layerFilterMode,
+    };
+    return this.renderer.filterNodes(this.nodes, filterState);
+  }
+
+  /**
+   * Get filtered edges based on current layer filter state
+   * Only includes edges where both connected nodes are visible
+   * @returns {Array} Filtered edges
+   */
+  getFilteredEdges() {
+    const filteredNodes = this.getFilteredNodes();
+    const filteredNodeIds = new Set(filteredNodes.map(n => n.id));
+    
+    return this.edges.filter(edge => {
+      const fromId = edge.from || edge.from_node_id;
+      const toId = edge.to || edge.to_node_id;
+      return filteredNodeIds.has(fromId) && filteredNodeIds.has(toId);
+    });
+  }
+
   // Node connections - delegate to nodeConnections module
   getNodeConnections(nodeId) {
     return getNodeConnections(nodeId, this.nodes, this.edges);
@@ -306,33 +343,40 @@ class Graph {
    * Calculate centralities for all nodes
    */
   calculateCentralities() {
-    if (this.nodes.length === 0) {
+    // Use filtered nodes/edges for analysis
+    const filteredNodes = this.getFilteredNodes();
+    const filteredEdges = this.getFilteredEdges();
+    
+    if (filteredNodes.length === 0) {
       return;
     }
 
-    // Update graph analysis with current data
-    this.graphAnalysis.updateGraph(this.nodes, this.edges);
+    // Update graph analysis with filtered data
+    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
     
     // Calculate centralities
     const centralities = this.graphAnalysis.calculateCentralities();
     
-    // Update nodes with centrality data
-    this.nodes.forEach(node => {
+    // Update nodes with centrality data (only for filtered nodes)
+    filteredNodes.forEach(node => {
       if (!node.centrality) node.centrality = {};
       Object.keys(centralities).forEach(type => {
         node.centrality[type] = centralities[type][node.id];
       });
     });
     
-    // Calculate rankings
-    this.calculateCentralityRankings();
+    // Calculate rankings using filtered nodes
+    this.calculateCentralityRankings(filteredNodes);
   }
 
   /**
    * Calculate centrality rankings for all centrality types
+   * @param {Array} nodes - Nodes to rank (defaults to filtered nodes)
    */
-  calculateCentralityRankings() {
-    if (this.nodes.length === 0) {
+  calculateCentralityRankings(nodes = null) {
+    const nodesToRank = nodes || this.getFilteredNodes();
+    
+    if (nodesToRank.length === 0) {
       this.centralityRankings = null;
       return;
     }
@@ -341,7 +385,7 @@ class Graph {
     const centralityTypes = ['degree', 'betweenness', 'closeness', 'eigenvector', 'pagerank'];
 
     centralityTypes.forEach(type => {
-      const values = this.nodes.map(node => ({
+      const values = nodesToRank.map(node => ({
         nodeId: node.id,
         value: parseFloat(node.centrality?.[type]) || 0
       }));
@@ -377,6 +421,10 @@ class Graph {
    * @returns {Object} Clustering result
    */
   detectCommunitiesLouvain(resolution = 1.0) {
+    // Use filtered nodes/edges for clustering
+    const filteredNodes = this.getFilteredNodes();
+    const filteredEdges = this.getFilteredEdges();
+    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
     return this.graphAnalysis.detectCommunitiesLouvain(resolution);
   }
 
@@ -386,6 +434,10 @@ class Graph {
    * @returns {Object} Clustering result
    */
   detectCommunitiesLabelPropagation(maxIterations = 100) {
+    // Use filtered nodes/edges for clustering
+    const filteredNodes = this.getFilteredNodes();
+    const filteredEdges = this.getFilteredEdges();
+    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
     return this.graphAnalysis.detectCommunitiesLabelPropagation(maxIterations);
   }
 
@@ -394,6 +446,10 @@ class Graph {
    * @returns {Object} K-core result
    */
   kCoreDecomposition() {
+    // Use filtered nodes/edges for clustering
+    const filteredNodes = this.getFilteredNodes();
+    const filteredEdges = this.getFilteredEdges();
+    this.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
     return this.graphAnalysis.kCoreDecomposition();
   }
 

@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Selection info panel now displays community/cluster information for selected nodes
 - GraphAnalysis module integrated with ClusteringEngine for community detection
 
+### Fixed
+- Fixed Graph Info section showing total node/edge counts instead of filtered counts when layers are filtered
+- Fixed graph analysis (centralities and clustering) using all nodes/edges instead of filtered nodes/edges
+- Fixed tooltips appearing for filtered-out (hidden) nodes when hovering over canvas
+- Fixed mouse interactions (clicking, edge creation) working on filtered-out nodes
+
 ### Technical Details
 - Louvain algorithm implements modularity optimization with configurable resolution parameter
 - Label Propagation algorithm supports weighted graphs with configurable max iterations

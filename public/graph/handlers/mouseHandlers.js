@@ -76,12 +76,15 @@ export function createMouseHandlers(graph) {
           return;
         }
 
-        // New click - find all candidates
-        const nodes = getNodesAt(graph.nodes, pos.x, pos.y, graph.scale);
+        // New click - find all candidates (only check filtered/visible nodes)
+        const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+        const nodes = getNodesAt(filteredNodes, pos.x, pos.y, graph.scale);
         // Check edges if modifier pressed OR if no nodes found (standard behavior)
+        // Only check edges between filtered nodes
+        const filteredEdges = graph.getFilteredEdges ? graph.getFilteredEdges() : graph.edges;
         const edges =
           modifierPressed || nodes.length === 0
-            ? getEdgesAt(graph.edges, graph.nodes, pos.x, pos.y)
+            ? getEdgesAt(filteredEdges, filteredNodes, pos.x, pos.y)
             : [];
 
         // Build candidates list: nodes first (priority), then edges
@@ -158,7 +161,9 @@ export function createMouseHandlers(graph) {
           }
         }
       } else if (window.appMode === "node") {
-        const node = getNodeAt(graph.nodes, pos.x, pos.y, graph.scale);
+        // Only check filtered/visible nodes for interaction
+        const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+        const node = getNodeAt(filteredNodes, pos.x, pos.y, graph.scale);
         if (!node) {
           addNode(
             graph.nodes,
@@ -171,7 +176,9 @@ export function createMouseHandlers(graph) {
           graph.render();
         }
       } else if (window.appMode === "edge") {
-        const node = getNodeAt(graph.nodes, pos.x, pos.y, graph.scale);
+        // Only check filtered/visible nodes for edge creation
+        const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+        const node = getNodeAt(filteredNodes, pos.x, pos.y, graph.scale);
         if (node) {
           if (!graph.tempEdgeStart) {
             graph.tempEdgeStart = node;
@@ -211,8 +218,9 @@ export function createMouseHandlers(graph) {
         graph.lastPanPoint = { x: e.clientX, y: e.clientY };
         graph.render();
       } else {
-        // Show tooltip for node under cursor
-        const node = getNodeAt(graph.nodes, pos.x, pos.y, graph.scale);
+        // Show tooltip for node under cursor (only check filtered/visible nodes)
+        const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+        const node = getNodeAt(filteredNodes, pos.x, pos.y, graph.scale);
         if (node && node.label) {
           updateTooltip(graph.tooltip, node, e.clientX, e.clientY);
         } else {
@@ -254,8 +262,11 @@ export function createMouseHandlers(graph) {
       e.preventDefault();
       const pos = getMousePos(graph.canvas, e, graph.offset, graph.scale);
 
-      const node = getNodeAt(graph.nodes, pos.x, pos.y, graph.scale);
-      const edge = getEdgeAt(graph.edges, graph.nodes, pos.x, pos.y);
+      // Only check filtered/visible nodes and edges
+      const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+      const filteredEdges = graph.getFilteredEdges ? graph.getFilteredEdges() : graph.edges;
+      const node = getNodeAt(filteredNodes, pos.x, pos.y, graph.scale);
+      const edge = getEdgeAt(filteredEdges, filteredNodes, pos.x, pos.y);
 
       if (node || edge) {
         graph.selectedNode = node;

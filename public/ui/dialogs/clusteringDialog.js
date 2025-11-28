@@ -74,9 +74,18 @@ function handleAlgorithmChange() {
  */
 function runClustering() {
     const graph = getGraph();
-    if (!graph || graph.nodes.length === 0) {
+    if (!graph) {
         if (window.showNotification) {
             window.showNotification('No nodes to cluster', 'error');
+        }
+        return;
+    }
+    
+    // Check filtered nodes instead of all nodes
+    const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+    if (filteredNodes.length === 0) {
+        if (window.showNotification) {
+            window.showNotification('No visible nodes to cluster (all nodes are filtered)', 'error');
         }
         return;
     }
@@ -112,6 +121,10 @@ function runClustering() {
                     result = graph.kCoreDecomposition();
                     break;
                 case 'components':
+                    // Use filtered nodes/edges for connected components clustering
+                    const filteredNodes = graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes;
+                    const filteredEdges = graph.getFilteredEdges ? graph.getFilteredEdges() : graph.edges;
+                    graph.graphAnalysis.updateGraph(filteredNodes, filteredEdges);
                     result = graph.graphAnalysis.getConnectedComponentsClustering();
                     break;
                 default:
