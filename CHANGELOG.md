@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.0] - 2025-11-27
+
+### Added
+- Graph Analysis Module - comprehensive graph analysis and centrality calculation functionality
+- Centrality calculation algorithms: degree, betweenness, closeness, eigenvector, and PageRank centrality measures
+- Per-component centrality calculation for disconnected graphs - each connected component analyzed independently
+- Centrality analysis display in node selection info panel - shows all 5 centrality measures with rankings
+- Visual ranking indicators: 🔥 Top 10%, ⭐ Top 25%, 👍 Top 50%, ⚪ Others
+- Calculate Centralities button in sidebar under "Graph Analysis" section
+- Graph analysis modules (`public/utils/analysis/`):
+  - `graph-analysis.js` - Main analysis coordinator with caching support
+  - `centrality-calculator.js` - Centrality measure calculations
+  - `pathfinding-engine.js` - Pathfinding and graph traversal algorithms
+- Graph analysis algorithms added to `algorithms.js`: Dijkstra's algorithm, BFS, connected components detection
+- Centrality rankings system - tracks and displays node rankings for each centrality type
+- Automatic analysis updates when graph structure changes (nodes/edges added/removed)
+
+### Changed
+- Updated `algorithms.js` to include graph analysis algorithms (dijkstra, bfs, getConnectedComponents, calculateGraphDensity)
+- Graph class now includes GraphAnalysis instance for centralized analysis operations
+- Selection info panel enhanced to display comprehensive centrality analysis when node is selected
+- Calculate Centralities button moved from toolbar to sidebar for better organization
+
+### Technical Details
+- GraphAnalysis module provides unified interface for all graph analysis operations
+- Centrality calculations support weighted graphs with per-component normalization
+- Caching system with 5-second timeout for performance optimization
+- Rankings calculated and cached for efficient display in selection panel
+- Analysis modules handle both edge formats (`from/to` and `from_node_id/to_node_id`) for compatibility
+- Centrality values normalized to [0,1] range within each connected component
+- PageRank uses damping factor (0.85) and convergence threshold (1e-6) from constants
+- Eigenvector centrality uses power iteration with max 100 iterations
+- Betweenness centrality uses Brandes algorithm for efficient calculation
+- All analysis operations integrated with existing graph state management
+
 ## [0.3.6] - 2025-11-27
 
 ### Added
