@@ -4,6 +4,7 @@
  */
 import { CentralityCalculator } from './centrality-calculator.js';
 import { PathfindingEngine } from './pathfinding-engine.js';
+import { ClusteringEngine } from './clustering-engine.js';
 
 export class GraphAnalysis {
     constructor(nodes = [], edges = []) {
@@ -11,6 +12,7 @@ export class GraphAnalysis {
         this.edges = edges;
         this.centralityCalculator = new CentralityCalculator(nodes, edges);
         this.pathfindingEngine = new PathfindingEngine(nodes, edges);
+        this.clusteringEngine = new ClusteringEngine(nodes, edges);
         
         // Cache for computed results
         this.cache = new Map();
@@ -27,6 +29,7 @@ export class GraphAnalysis {
         this.edges = edges;
         this.centralityCalculator.updateGraph(nodes, edges);
         this.pathfindingEngine.updateGraph(nodes, edges);
+        this.clusteringEngine.updateGraph(nodes, edges);
         this.cache.clear();
     }
 
@@ -285,6 +288,88 @@ export class GraphAnalysis {
             keys: Array.from(this.cache.keys()),
             timeout: this.cacheTimeout
         };
+    }
+
+    /**
+     * Detect communities using Louvain algorithm
+     * @param {number} resolution - Resolution parameter (default: 1.0)
+     * @returns {Object} Communities and modularity score
+     */
+    detectCommunitiesLouvain(resolution = 1.0) {
+        const cacheKey = `louvain_${resolution}`;
+        
+        if (this.cache.has(cacheKey)) {
+            const cached = this.cache.get(cacheKey);
+            if (Date.now() - cached.timestamp < this.cacheTimeout) {
+                return cached.data;
+            }
+        }
+
+        const result = this.clusteringEngine.louvain(resolution);
+        
+        this.cache.set(cacheKey, {
+            data: result,
+            timestamp: Date.now()
+        });
+
+        return result;
+    }
+
+    /**
+     * Detect communities using Label Propagation algorithm
+     * @param {number} maxIterations - Maximum iterations (default: 100)
+     * @returns {Object} Communities and statistics
+     */
+    detectCommunitiesLabelPropagation(maxIterations = 100) {
+        const cacheKey = `labelprop_${maxIterations}`;
+        
+        if (this.cache.has(cacheKey)) {
+            const cached = this.cache.get(cacheKey);
+            if (Date.now() - cached.timestamp < this.cacheTimeout) {
+                return cached.data;
+            }
+        }
+
+        const result = this.clusteringEngine.labelPropagation(maxIterations);
+        
+        this.cache.set(cacheKey, {
+            data: result,
+            timestamp: Date.now()
+        });
+
+        return result;
+    }
+
+    /**
+     * Perform K-core decomposition
+     * @returns {Object} K-core assignments and max core number
+     */
+    kCoreDecomposition() {
+        const cacheKey = 'kcore';
+        
+        if (this.cache.has(cacheKey)) {
+            const cached = this.cache.get(cacheKey);
+            if (Date.now() - cached.timestamp < this.cacheTimeout) {
+                return cached.data;
+            }
+        }
+
+        const result = this.clusteringEngine.kCoreDecomposition();
+        
+        this.cache.set(cacheKey, {
+            data: result,
+            timestamp: Date.now()
+        });
+
+        return result;
+    }
+
+    /**
+     * Get communities based on connected components
+     * @returns {Object} Communities from connected components
+     */
+    getConnectedComponentsClustering() {
+        return this.clusteringEngine.connectedComponentsClustering();
     }
 
     /**
