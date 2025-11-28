@@ -742,6 +742,24 @@ function displayPathResults(results, startNode, options) {
   const allNodes = graph ? (graph.getFilteredNodes ? graph.getFilteredNodes() : graph.nodes) : [];
   const nodeMap = new Map(allNodes.map(n => [n.id, n]));
 
+  // Calculate start node coordinates for Euclidean distance calculation
+  const startX = typeof startNode.x === 'number' ? startNode.x : 0;
+  const startY = typeof startNode.y === 'number' ? startNode.y : 0;
+
+  // Pre-calculate Euclidean distances for all results (needed for CSV export)
+  const resultsWithEuclidean = results.map(result => {
+    let euclideanDistance = 'N/A';
+    if (typeof result.node.x === 'number' && typeof result.node.y === 'number') {
+      const dx = result.node.x - startX;
+      const dy = result.node.y - startY;
+      euclideanDistance = Math.sqrt(dx * dx + dy * dy).toFixed(2);
+    }
+    return {
+      ...result,
+      euclideanDistance
+    };
+  });
+
   // Build HTML content
   let html = `<!DOCTYPE html>
 <html lang="en">
@@ -875,25 +893,14 @@ function displayPathResults(results, startNode, options) {
         </thead>
         <tbody>`;
 
-    // Calculate start node coordinates for Euclidean distance calculation
-    const startX = typeof startNode.x === 'number' ? startNode.x : 0;
-    const startY = typeof startNode.y === 'number' ? startNode.y : 0;
-
-    results.forEach((result, index) => {
+    resultsWithEuclidean.forEach((result, index) => {
       const node = result.node;
       const nodeLabel = escapeHtml(node.label || "Unnamed Node");
       const chineseLabel = node.chineseLabel ? ` (${escapeHtml(node.chineseLabel)})` : "";
       const x = typeof node.x === 'number' ? Math.round(node.x) : 'N/A';
       const y = typeof node.y === 'number' ? Math.round(node.y) : 'N/A';
       const radius = typeof node.radius === 'number' ? node.radius : 'N/A';
-      
-      // Calculate Euclidean distance
-      let euclideanDistance = 'N/A';
-      if (typeof node.x === 'number' && typeof node.y === 'number') {
-        const dx = node.x - startX;
-        const dy = node.y - startY;
-        euclideanDistance = Math.sqrt(dx * dx + dy * dy).toFixed(2);
-      }
+      const euclideanDistance = result.euclideanDistance;
       
       const pathStr = result.path.map(id => {
         if (id === startNode.id) {
@@ -934,21 +941,10 @@ function displayPathResults(results, startNode, options) {
         }
         
         function exportToCSV() {
-            const startX = ${typeof startNode.x === 'number' ? startNode.x : 0};
-            const startY = ${typeof startNode.y === 'number' ? startNode.y : 0};
-            
-            const data = ${JSON.stringify(results.map((r, i) => {
+            const data = ${JSON.stringify(resultsWithEuclidean.map((r, i) => {
                 const x = typeof r.node.x === 'number' ? Math.round(r.node.x) : 'N/A';
                 const y = typeof r.node.y === 'number' ? Math.round(r.node.y) : 'N/A';
                 const radius = typeof r.node.radius === 'number' ? r.node.radius : 'N/A';
-                
-                // Calculate Euclidean distance
-                let euclideanDistance = 'N/A';
-                if (typeof r.node.x === 'number' && typeof r.node.y === 'number') {
-                    const dx = r.node.x - startX;
-                    const dy = r.node.y - startY;
-                    euclideanDistance = Math.sqrt(dx * dx + dy * dy).toFixed(2);
-                }
                 
                 return {
                     index: i + 1,
@@ -959,7 +955,7 @@ function displayPathResults(results, startNode, options) {
                     radius: radius,
                     depth: r.depth,
                     distance: r.distance.toFixed(2),
-                    euclideanDistance: euclideanDistance,
+                    euclideanDistance: r.euclideanDistance,
                     path: r.path.join(' → ')
                 };
             }))};
