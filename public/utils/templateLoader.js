@@ -64,6 +64,7 @@ export async function initializeTemplates() {
         { path: 'templates/dialogs/layer-management-dialog.html', target: 'body', mode: 'append' },
         { path: 'templates/dialogs/layer-rename-dialog.html', target: 'body', mode: 'append' },
         { path: 'templates/dialogs/settings-dialog.html', target: 'body', mode: 'append' },
+        { path: 'templates/dialogs/clustering-dialog.html', target: 'body', mode: 'append' },
     ];
 
     try {

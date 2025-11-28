@@ -464,6 +464,7 @@ function updateSelectionInfo() {
                 <div><strong>Size:</strong> ${node.radius || 20}px</div>
                 ${node.category ? `<div><strong>Category:</strong> ${escapeHtml(node.category)}</div>` : ''}
                 <div><strong>Layers:</strong> ${escapeHtml(layers)}</div>
+                ${node.community ? `<div><strong>Community:</strong> ${escapeHtml(node.community)}</div>` : ''}
                 <div><strong>Created:</strong> ${createdAt}</div>
                 <div><strong>Modified:</strong> ${modifiedAt}</div>
                 ${centralityDisplay}

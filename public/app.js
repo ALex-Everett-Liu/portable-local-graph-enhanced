@@ -32,6 +32,7 @@ import { initializeSettingsDialog } from './ui/dialogs/settingsDialog.js';
 import { initializeFontSettings } from './managers/fontSettingsManager.js';
 import { initializeFullscreen } from './managers/fullscreenManager.js';
 import { initializeExportDialog, showExportDialog } from './ui/dialogs/exportDialog.js';
+import { initializeClusteringDialog, showClusteringDialog } from './ui/dialogs/clusteringDialog.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -90,6 +91,9 @@ function init() {
     
     // Setup export dialog
     initializeExportDialog();
+    
+    // Setup clustering dialog
+    initializeClusteringDialog();
     
     // Initialize and apply font settings
     initializeFontSettings();

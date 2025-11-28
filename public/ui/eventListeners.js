@@ -97,6 +97,14 @@ export function setupEventListeners() {
       calculateCentralities();
     });
   }
+
+  // Clustering button
+  const clusteringBtn = document.getElementById("clustering-btn");
+  if (clusteringBtn) {
+    clusteringBtn.addEventListener("click", () => {
+      showClusteringDialog();
+    });
+  }
 }
 
 /**
