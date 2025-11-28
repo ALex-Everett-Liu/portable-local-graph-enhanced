@@ -111,6 +111,83 @@ Normalize layer input to treat variations as equivalent:
 
 ## Technical Debt
 
+### Graph Analysis Architecture Reorganization
+
+**Status:** 📋 Planned  
+**Priority:** Medium  
+**Estimated Effort:** Medium
+
+**Problem:**
+Current graph analysis code structure is confusing with overlapping responsibilities and unclear naming:
+
+1. **`public/utils/analysis/graph-analysis.js`** (GraphAnalysis class):
+   - Low-level analysis engine/coordinator class
+   - Wraps `CentralityCalculator`, `PathfindingEngine`, `ClusteringEngine`
+   - Provides algorithm implementations
+   - Located in `utils/analysis/` (utility/algorithm library)
+   - Instantiated as `this.graphAnalysis` in Graph class
+
+2. **`public/graph/analysis/graphAnalysisOperations.js`**:
+   - Graph class operations module (similar to `nodeOperations.js`, `edgeOperations.js`)
+   - Wraps GraphAnalysis with Graph-specific logic (filtering, updating nodes, rendering)
+   - Located in `graph/analysis/` (part of Graph class modular structure)
+   - Provides methods that delegate to GraphAnalysis instance
+
+**Issues:**
+- Both files have "analysis" in the name, causing confusion
+- Both are in "analysis" directories with different purposes
+- Inconsistent naming conventions (kebab-case vs camelCase)
+- Unclear separation of concerns between algorithm library and Graph class operations
+- The relationship between the two is not immediately obvious
+
+**Current Structure:**
+```
+public/
+├── utils/
+│   └── analysis/
+│       ├── graph-analysis.js          # GraphAnalysis class (algorithm library)
+│       ├── centrality-calculator.js
+│       ├── pathfinding-engine.js
+│       └── clustering-engine.js
+└── graph/
+    └── analysis/
+        └── graphAnalysisOperations.js  # Graph class operations wrapper
+```
+
+**Considerations:**
+- Should `graphAnalysisOperations.js` be renamed to match other operation modules? (`analysisOperations.js`)
+- Should the `graph/analysis/` directory be renamed to avoid confusion with `utils/analysis/`?
+- Should GraphAnalysis operations be consolidated differently?
+- Is the current separation of concerns appropriate, or should it be restructured?
+- How can we make the relationship between these files clearer?
+
+**Potential Solutions to Consider:**
+1. **Rename approach**: Rename `graphAnalysisOperations.js` → `analysisOperations.js` to match naming pattern
+2. **Directory reorganization**: Move or rename directories to clarify purpose
+3. **Consolidation**: Merge some functionality if separation is unnecessary
+4. **Documentation**: Add clear comments/docs explaining the relationship
+5. **Hybrid**: Combination of above approaches
+
+**Files Affected:**
+- `public/utils/analysis/graph-analysis.js`
+- `public/graph/analysis/graphAnalysisOperations.js`
+- `public/graph.js` (imports)
+- Any files that import or use these modules
+
+**Related Files:**
+- `public/graph/operations/nodeOperations.js` (naming pattern reference)
+- `public/graph/operations/edgeOperations.js` (naming pattern reference)
+- `docs/ARCHITECTURE.md` (should be updated after reorganization)
+
+**Next Steps:**
+1. Review current usage patterns of both files
+2. Analyze dependencies and relationships
+3. Propose concrete reorganization plan
+4. Get feedback before implementing changes
+5. Update documentation after reorganization
+
+---
+
 ### Code Cleanup
 
 **Status:** 📋 Planned  
@@ -186,6 +263,6 @@ Add notes/descriptions to layers for documentation purposes
 
 ---
 
-**Last Updated:** 2025-11-24  
-**Version:** 0.2.2
+**Last Updated:** 2025-11-28  
+**Version:** 0.4.1
 
