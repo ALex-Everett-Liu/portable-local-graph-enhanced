@@ -7,6 +7,52 @@
             <strong id="connections-total-count">0</strong>
             connection(s)
         </div>
+        
+        <!-- Depth/Distance Filter Section -->
+        <div id="connections-filter-section" style="margin-bottom: 16px; padding: 12px; background: #f5f5f5; border-radius: 4px;">
+            <div style="font-weight: 600; margin-bottom: 8px; font-size: 13px;">Path-Based Filtering</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 12px; min-width: 80px;">Max Depth:</label>
+                    <input 
+                        type="number" 
+                        id="connections-max-depth" 
+                        min="1" 
+                        placeholder="No limit"
+                        style="flex: 1; padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px;"
+                    />
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 12px; min-width: 80px;">Max Distance:</label>
+                    <input 
+                        type="number" 
+                        id="connections-max-distance" 
+                        min="0" 
+                        step="0.1"
+                        placeholder="No limit"
+                        style="flex: 1; padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px;"
+                    />
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 12px; min-width: 80px;">Condition:</label>
+                    <select 
+                        id="connections-condition" 
+                        style="flex: 1; padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; font-size: 12px;"
+                    >
+                        <option value="AND">AND (both must be satisfied)</option>
+                        <option value="OR">OR (either can be satisfied)</option>
+                    </select>
+                </div>
+                <button 
+                    id="connections-calculate-paths-btn" 
+                    class="tool-btn"
+                    style="margin-top: 4px; width: 100%;"
+                >
+                    Calculate & Show Results
+                </button>
+            </div>
+        </div>
+        
         <div
             id="connections-list"
             style="

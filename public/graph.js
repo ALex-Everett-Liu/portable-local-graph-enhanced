@@ -9,7 +9,7 @@ import { addNode, deleteNode, getNodeAt, getNodesAt } from "./graph/operations/n
 import { addEdge, deleteEdge, getEdgeAt, getEdgesAt } from "./graph/operations/edgeOperations.js";
 import { createMouseHandlers } from "./graph/handlers/mouseHandlers.js";
 import { getAllLayers, renameLayer, getLayerUsage } from "./graph/layers/layerManager.js";
-import { getNodeConnections } from "./graph/connections/nodeConnections.js";
+import { getNodeConnections, getNodesWithinConstraints } from "./graph/connections/nodeConnections.js";
 import { GraphAnalysis } from "./utils/analysis/graph-analysis.js";
 import {
   calculateCentralities as calcCentralities,
@@ -337,6 +337,22 @@ class Graph {
   // Node connections - delegate to nodeConnections module
   getNodeConnections(nodeId) {
     return getNodeConnections(nodeId, this.nodes, this.edges);
+  }
+
+  /**
+   * Get nodes within depth/distance constraints using shortest paths
+   * @param {string} nodeId - Starting node ID
+   * @param {Object} options - Filter options
+   * @param {number|null} options.maxDepth - Maximum depth (hops) allowed
+   * @param {number|null} options.maxDistance - Maximum distance (sum of edge weights) allowed
+   * @param {string} options.condition - 'AND' or 'OR' condition for depth/distance
+   * @returns {Array} Array of nodes with path information that meet the criteria
+   */
+  getNodesWithinConstraints(nodeId, options = {}) {
+    // Use filtered nodes/edges if filter is active
+    const nodes = this.getFilteredNodes();
+    const edges = this.getFilteredEdges();
+    return getNodesWithinConstraints(nodeId, nodes, edges, options);
   }
 
   /**

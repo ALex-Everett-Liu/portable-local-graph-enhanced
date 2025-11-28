@@ -4,6 +4,160 @@
  */
 
 /**
+ * Calculate shortest paths to all nodes and filter by depth/distance constraints
+ * @param {string} startNodeId - Starting node ID
+ * @param {Array} nodes - Array of all nodes
+ * @param {Array} edges - Array of all edges
+ * @param {Object} options - Filter options
+ * @param {number|null} options.maxDepth - Maximum depth (hops) allowed
+ * @param {number|null} options.maxDistance - Maximum distance (sum of edge weights) allowed
+ * @param {string} options.condition - 'AND' or 'OR' condition for depth/distance
+ * @returns {Array} Array of nodes with path information that meet the criteria
+ */
+export function getNodesWithinConstraints(startNodeId, nodes, edges, options = {}) {
+  const { maxDepth = null, maxDistance = null, condition = 'AND' } = options;
+  
+  // If no constraints, return empty array
+  if (maxDepth === null && maxDistance === null) {
+    return [];
+  }
+
+  // Build edge map for efficient lookup
+  const edgeMap = new Map();
+  nodes.forEach(node => {
+    edgeMap.set(node.id, []);
+  });
+
+  edges.forEach(edge => {
+    const fromId = edge.from || edge.from_node_id;
+    const toId = edge.to || edge.to_node_id;
+    const weight = edge.weight || 1;
+    
+    // Only add edges if both nodes exist in the filtered nodes
+    if (edgeMap.has(fromId) && edgeMap.has(toId)) {
+      edgeMap.get(fromId).push({ to: toId, weight, edge });
+      // Add reverse direction for undirected graph traversal
+      if (fromId !== toId) {
+        edgeMap.get(toId).push({ to: fromId, weight, edge });
+      }
+    }
+  });
+
+  // Dijkstra-like algorithm tracking both depth and distance
+  const distances = new Map(); // Total weight distance
+  const depths = new Map(); // Number of hops
+  const previous = new Map(); // For path reconstruction
+  const visited = new Set();
+  const queue = [];
+
+  // Initialize
+  nodes.forEach(node => {
+    if (node.id === startNodeId) {
+      distances.set(node.id, 0);
+      depths.set(node.id, 0);
+    } else {
+      distances.set(node.id, Infinity);
+      depths.set(node.id, Infinity);
+    }
+    previous.set(node.id, null);
+  });
+
+  queue.push({ nodeId: startNodeId, distance: 0, depth: 0 });
+
+  while (queue.length > 0) {
+    queue.sort((a, b) => a.distance - b.distance);
+    const current = queue.shift();
+
+    if (visited.has(current.nodeId)) continue;
+    visited.add(current.nodeId);
+
+    const connections = edgeMap.get(current.nodeId) || [];
+    connections.forEach(conn => {
+      if (visited.has(conn.to)) return;
+
+      const newDistance = current.distance + conn.weight;
+      const newDepth = current.depth + 1;
+
+      // Check if this path is better (shorter distance)
+      if (newDistance < distances.get(conn.to)) {
+        distances.set(conn.to, newDistance);
+        depths.set(conn.to, newDepth);
+        previous.set(conn.to, { 
+          node: current.nodeId, 
+          edge: conn.edge,
+          distance: newDistance,
+          depth: newDepth
+        });
+        queue.push({ nodeId: conn.to, distance: newDistance, depth: newDepth });
+      }
+    });
+  }
+
+  // Filter nodes based on constraints
+  const results = [];
+  const startNode = nodes.find(n => n.id === startNodeId);
+  if (!startNode) return results;
+
+  nodes.forEach(node => {
+    if (node.id === startNodeId) return; // Skip start node
+
+    const distance = distances.get(node.id);
+    const depth = depths.get(node.id);
+
+    if (distance === Infinity || depth === Infinity) return; // Unreachable
+
+    // Check constraints
+    let meetsCriteria = false;
+    if (condition === 'AND') {
+      // Both constraints must be satisfied (if specified)
+      const depthOK = maxDepth === null || depth <= maxDepth;
+      const distanceOK = maxDistance === null || distance <= maxDistance;
+      meetsCriteria = depthOK && distanceOK;
+    } else { // OR
+      // At least one constraint must be satisfied (if specified)
+      const depthOK = maxDepth === null || depth <= maxDepth;
+      const distanceOK = maxDistance === null || distance <= maxDistance;
+      meetsCriteria = depthOK || distanceOK;
+    }
+
+    if (meetsCriteria) {
+      // Reconstruct path
+      const path = [];
+      const pathEdges = [];
+      let current = node.id;
+
+      while (current !== startNodeId && previous.get(current)) {
+        path.unshift(current);
+        const prev = previous.get(current);
+        if (prev.edge) {
+          pathEdges.unshift(prev.edge);
+        }
+        current = prev.node;
+      }
+      path.unshift(startNodeId);
+
+      results.push({
+        node,
+        distance,
+        depth,
+        path,
+        pathEdges
+      });
+    }
+  });
+
+  // Sort by distance, then by depth
+  results.sort((a, b) => {
+    if (a.distance !== b.distance) {
+      return a.distance - b.distance;
+    }
+    return a.depth - b.depth;
+  });
+
+  return results;
+}
+
+/**
  * Get all connections for a node, categorized by direction
  * @param {string} nodeId - Node ID
  * @param {Array} nodes - Array of all nodes

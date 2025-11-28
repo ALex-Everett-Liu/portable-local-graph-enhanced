@@ -378,4 +378,13 @@ export function setupDialogs() {
       }
     });
   }
+
+  const connectionsCalculatePathsBtn = document.getElementById("connections-calculate-paths-btn");
+  if (connectionsCalculatePathsBtn) {
+    connectionsCalculatePathsBtn.addEventListener("click", () => {
+      if (window.calculatePathBasedConnections) {
+        window.calculatePathBasedConnections();
+      }
+    });
+  }
 }
