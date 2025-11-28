@@ -52,6 +52,8 @@ function setupSettingsDialogEvents() {
     const canvasChineseFontSelect = document.getElementById("canvas-chinese-font-family");
     const canvasFontSizeSlider = document.getElementById("canvas-font-size");
     const canvasFontSizeValue = document.getElementById("canvas-font-size-value");
+    const selectionInfoFontSizeSlider = document.getElementById("selection-info-font-size");
+    const selectionInfoFontSizeValue = document.getElementById("selection-info-font-size-value");
 
     if (uiFontSelect) {
         uiFontSelect.addEventListener("change", updateUIFontPreview);
@@ -65,6 +67,11 @@ function setupSettingsDialogEvents() {
     if (canvasFontSizeSlider && canvasFontSizeValue) {
         canvasFontSizeSlider.addEventListener("input", (e) => {
             canvasFontSizeValue.textContent = `${e.target.value}px`;
+        });
+    }
+    if (selectionInfoFontSizeSlider && selectionInfoFontSizeValue) {
+        selectionInfoFontSizeSlider.addEventListener("input", (e) => {
+            selectionInfoFontSizeValue.textContent = `${e.target.value}px`;
         });
     }
 
@@ -105,6 +112,8 @@ function loadCurrentSettings() {
     const canvasChineseFontSelect = document.getElementById("canvas-chinese-font-family");
     const canvasFontSizeSlider = document.getElementById("canvas-font-size");
     const canvasFontSizeValue = document.getElementById("canvas-font-size-value");
+    const selectionInfoFontSizeSlider = document.getElementById("selection-info-font-size");
+    const selectionInfoFontSizeValue = document.getElementById("selection-info-font-size-value");
 
     if (uiFontSelect) {
         uiFontSelect.value = currentSettings.uiFontFamily;
@@ -121,6 +130,10 @@ function loadCurrentSettings() {
     if (canvasFontSizeSlider && canvasFontSizeValue) {
         canvasFontSizeSlider.value = currentSettings.canvasFontSize;
         canvasFontSizeValue.textContent = `${currentSettings.canvasFontSize}px`;
+    }
+    if (selectionInfoFontSizeSlider && selectionInfoFontSizeValue) {
+        selectionInfoFontSizeSlider.value = currentSettings.selectionInfoFontSize || 13;
+        selectionInfoFontSizeValue.textContent = `${currentSettings.selectionInfoFontSize || 13}px`;
     }
 }
 
@@ -227,12 +240,14 @@ function applySettings() {
     const canvasFontSelect = document.getElementById("canvas-font-family");
     const canvasChineseFontSelect = document.getElementById("canvas-chinese-font-family");
     const canvasFontSizeSlider = document.getElementById("canvas-font-size");
+    const selectionInfoFontSizeSlider = document.getElementById("selection-info-font-size");
 
     currentSettings = {
         uiFontFamily: uiFontSelect ? uiFontSelect.value : currentSettings.uiFontFamily,
         canvasFontFamily: canvasFontSelect ? canvasFontSelect.value : currentSettings.canvasFontFamily,
         canvasChineseFontFamily: canvasChineseFontSelect ? canvasChineseFontSelect.value : currentSettings.canvasChineseFontFamily,
-        canvasFontSize: canvasFontSizeSlider ? parseInt(canvasFontSizeSlider.value) : currentSettings.canvasFontSize
+        canvasFontSize: canvasFontSizeSlider ? parseInt(canvasFontSizeSlider.value) : currentSettings.canvasFontSize,
+        selectionInfoFontSize: selectionInfoFontSizeSlider ? parseInt(selectionInfoFontSizeSlider.value) : (currentSettings.selectionInfoFontSize || 13)
     };
 
     // Save and apply

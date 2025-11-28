@@ -8,7 +8,8 @@ export const DEFAULT_SETTINGS = {
     uiFontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif",
     canvasFontFamily: "Arial",
     canvasChineseFontFamily: "Arial",
-    canvasFontSize: 14
+    canvasFontSize: 14,
+    selectionInfoFontSize: 13
 };
 
 /**
@@ -80,6 +81,23 @@ export function updateCanvasFontSize(fontSize) {
 }
 
 /**
+ * Update selection info font size
+ * @param {number} fontSize - Font size in pixels
+ */
+export function updateSelectionInfoFontSize(fontSize) {
+    // Store in a global variable for access by other modules
+    if (!window.GRAPH_CONSTANTS) {
+        window.GRAPH_CONSTANTS = {};
+    }
+    window.GRAPH_CONSTANTS.SELECTION_INFO_FONT_SIZE = fontSize;
+    
+    // Trigger update of selection info display if it exists
+    if (window.updateGraphInfo && typeof window.updateGraphInfo === 'function') {
+        window.updateGraphInfo();
+    }
+}
+
+/**
  * Apply all font settings
  * @param {Object} settings - Font settings object
  */
@@ -88,6 +106,7 @@ export function applyFontSettings(settings) {
     updateCanvasFont(settings.canvasFontFamily);
     updateCanvasChineseFont(settings.canvasChineseFontFamily);
     updateCanvasFontSize(settings.canvasFontSize);
+    updateSelectionInfoFontSize(settings.selectionInfoFontSize || DEFAULT_SETTINGS.selectionInfoFontSize);
     
     // Trigger graph redraw if available
     if (window.graph && typeof window.graph.render === 'function') {

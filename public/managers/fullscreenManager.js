@@ -191,17 +191,23 @@ export function showSelectionInfoPopup(node, x, y) {
         const createdAt = formatTimestamp(node.created_at || node.createdAt);
         const modifiedAt = formatTimestamp(node.updated_at || node.updatedAt || node.modifiedAt);
         
+        // Get font size from settings
+        const fontSize = (window.GRAPH_CONSTANTS && window.GRAPH_CONSTANTS.SELECTION_INFO_FONT_SIZE) || 13;
+        
         popupContent.innerHTML = `
-            <div><strong>English:</strong> ${escapeHtml(node.label || 'Unnamed Node')}</div>
-            ${node.chineseLabel ? `<div><strong>中文:</strong> ${escapeHtml(node.chineseLabel)}</div>` : ''}
-            <div><strong>Position:</strong> (${Math.round(node.x)}, ${Math.round(node.y)})</div>
-            <div><strong>Color:</strong> <span style="display: inline-block; width: 14px; height: 14px; background: ${node.color || '#3b82f6'}; border: 1px solid #ccc; border-radius: 2px; vertical-align: middle; margin-right: 4px;"></span>${node.color || '#3b82f6'}</div>
-            <div><strong>Size:</strong> ${node.radius || 20}px</div>
-            ${node.category ? `<div><strong>Category:</strong> ${escapeHtml(node.category)}</div>` : ''}
-            <div><strong>Layers:</strong> ${escapeHtml(layers)}</div>
-            <div><strong>Created:</strong> ${createdAt}</div>
-            <div><strong>Modified:</strong> ${modifiedAt}</div>
+            <div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>English:</strong> ${escapeHtml(node.label || 'Unnamed Node')}</div>
+            ${node.chineseLabel ? `<div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>中文:</strong> ${escapeHtml(node.chineseLabel)}</div>` : ''}
+            <div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>Position:</strong> (${Math.round(node.x)}, ${Math.round(node.y)})</div>
+            <div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>Color:</strong> <span style="display: inline-block; width: 14px; height: 14px; background: ${node.color || '#3b82f6'}; border: 1px solid #ccc; border-radius: 2px; vertical-align: middle; margin-right: 4px;"></span>${node.color || '#3b82f6'}</div>
+            <div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>Size:</strong> ${node.radius || 20}px</div>
+            ${node.category ? `<div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>Category:</strong> ${escapeHtml(node.category)}</div>` : ''}
+            <div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>Layers:</strong> ${escapeHtml(layers)}</div>
+            <div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>Created:</strong> ${createdAt}</div>
+            <div style="font-size: ${fontSize}px; line-height: 1.6;"><strong>Modified:</strong> ${modifiedAt}</div>
         `;
+        
+        // Also update popup container font size
+        popup.style.fontSize = fontSize + 'px';
     } else {
         popupContent.innerHTML = '<p>Nothing selected</p>';
     }

@@ -463,8 +463,11 @@ function updateSelectionInfo() {
             `;
         }
         
+        // Get font size from settings
+        const fontSize = (window.GRAPH_CONSTANTS && window.GRAPH_CONSTANTS.SELECTION_INFO_FONT_SIZE) || 13;
+        
         selectionInfoElement.innerHTML = `
-            <div style="font-size: 13px; line-height: 1.6;">
+            <div style="font-size: ${fontSize}px; line-height: 1.6;">
                 <div><strong>English:</strong> ${escapeHtml(node.label || 'Unnamed Node')}</div>
                 ${node.chineseLabel ? `<div><strong>中文:</strong> ${escapeHtml(node.chineseLabel)}</div>` : ''}
                 <div><strong>Position:</strong> (${Math.round(node.x)}, ${Math.round(node.y)})</div>
@@ -485,8 +488,11 @@ function updateSelectionInfo() {
         const fromLabel = fromNode ? (fromNode.label || 'Unnamed Node') : 'Unknown';
         const toLabel = toNode ? (toNode.label || 'Unnamed Node') : 'Unknown';
         
+        // Get font size from settings
+        const fontSize = (window.GRAPH_CONSTANTS && window.GRAPH_CONSTANTS.SELECTION_INFO_FONT_SIZE) || 13;
+        
         selectionInfoElement.innerHTML = `
-            <div style="font-size: 13px; line-height: 1.6;">
+            <div style="font-size: ${fontSize}px; line-height: 1.6;">
                 <div><strong>From:</strong> ${escapeHtml(fromLabel)}</div>
                 <div><strong>To:</strong> ${escapeHtml(toLabel)}</div>
                 <div><strong>Weight:</strong> ${edge.weight || 1}</div>
