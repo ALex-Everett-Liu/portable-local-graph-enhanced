@@ -13,6 +13,7 @@ import { openLayerDialog } from '../ui/dialogs/layerDialog.js';
 import { createNewGraphTemplate } from '../ui/template.js';
 import { openSettingsDialog } from '../ui/dialogs/settingsDialog.js';
 import { showExportDialog } from '../ui/dialogs/exportDialog.js';
+import { showClusteringDialog } from '../ui/dialogs/clusteringDialog.js';
 
 let hotkeyModeActive = false;
 let sequenceBuffer = '';
@@ -193,6 +194,24 @@ const COMMANDS = {
     'ex': { 
         action: () => showExportDialog(), 
         description: 'Export database',
+        requiresCount: false 
+    },
+    
+    // Graph analysis
+    'ca': { 
+        action: () => {
+            if (window.calculateCentralities) {
+                window.calculateCentralities();
+            } else {
+                showNotification('Calculate centralities function not available', 'error');
+            }
+        }, 
+        description: 'Calculate centralities',
+        requiresCount: false 
+    },
+    'cl': { 
+        action: () => showClusteringDialog(), 
+        description: 'Graph clustering',
         requiresCount: false 
     },
     
@@ -471,6 +490,7 @@ function showHelpOverlay() {
         'Display Options': ['ea'],
         'View Operations': ['fs', 'sv'],
         'Database Operations': ['md', 'ex'],
+        'Graph Analysis': ['ca', 'cl'],
         'Layer Management': ['ml'],
         'Template Operations': ['nt'],
         'Settings': ['st'],

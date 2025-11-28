@@ -171,6 +171,7 @@ function getCommandCategory(key) {
     if (key === 'ea') return 'Display Options';
     if (['fs', 'sv'].includes(key)) return 'View Operations';
     if (['md', 'ex'].includes(key)) return 'Database Operations';
+    if (['ca', 'cl'].includes(key)) return 'Graph Analysis';
     if (key === 'ml') return 'Layer Management';
     if (key === 'nt') return 'Template Operations';
     if (key === 'st') return 'Settings';
