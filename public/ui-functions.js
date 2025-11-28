@@ -388,47 +388,41 @@ function showNotification(message, type = "success") {
 // Node connections functions are now in nodeConnectionsDialog.js module
 // Imported and exposed on window for backward compatibility
 
-// Export for module system
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    showNodeDialog,
-    showEdgeDialog,
-    handleNodeOK,
-    handleNodeCancel,
-    handleNodeDelete,
-    handleWeightOK,
-    handleWeightCancel,
-    handleWeightDelete,
-    handleReverseEdgeDirection,
-    showNotification,
-    isValidHex,
-    hexToRgb,
-    rgbToHex,
-    showNodeConnections,
-    highlightAllConnections,
-    focusOnConnectionsNode,
-    closeConnectionsDialog,
-    calculatePathBasedConnections,
-  };
-} else {
-  Object.assign(window, {
-    showNodeDialog,
-    showEdgeDialog,
-    handleNodeOK,
-    handleNodeCancel,
-    handleNodeDelete,
-    handleWeightOK,
-    handleWeightCancel,
-    handleWeightDelete,
-    handleReverseEdgeDirection,
-    showNotification,
-    isValidHex,
-    hexToRgb,
-    rgbToHex,
-    showNodeConnections,
-    highlightAllConnections,
-    focusOnConnectionsNode,
-    closeConnectionsDialog,
-    calculatePathBasedConnections,
-  });
-}
+// Export functions for ES modules
+export {
+  showNodeDialog,
+  showEdgeDialog,
+  handleNodeOK,
+  handleNodeCancel,
+  handleNodeDelete,
+  handleWeightOK,
+  handleWeightCancel,
+  handleWeightDelete,
+  handleReverseEdgeDirection,
+  showNotification,
+  isValidHex,
+  hexToRgb,
+  rgbToHex,
+};
+
+// Also expose on window for backward compatibility with non-module scripts
+Object.assign(window, {
+  showNodeDialog,
+  showEdgeDialog,
+  handleNodeOK,
+  handleNodeCancel,
+  handleNodeDelete,
+  handleWeightOK,
+  handleWeightCancel,
+  handleWeightDelete,
+  handleReverseEdgeDirection,
+  showNotification,
+  isValidHex,
+  hexToRgb,
+  rgbToHex,
+  showNodeConnections,
+  highlightAllConnections,
+  focusOnConnectionsNode,
+  closeConnectionsDialog,
+  calculatePathBasedConnections,
+});

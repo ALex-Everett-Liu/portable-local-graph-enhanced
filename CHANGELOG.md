@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dialog max-height set to 85vh with custom scrollbar styling for better UX
 - Path-based results table displays node coordinates and radius instead of Node ID for better readability
 - CSV export includes coordinates and radius instead of Node ID
+- Refactored node connections functionality into separate module (`public/ui/dialogs/nodeConnectionsDialog.js`) - improved code organization and maintainability
+- Reduced `ui-functions.js` from 1056 to 429 lines (59% reduction) by extracting connection-related functions
+- Updated `ui-functions.js` to ES module format for better module system integration
 
 ### Fixed
 - Fixed node-connections-dialog becoming too tall when node has many connections - dialog now has max-height constraint with scrollable content area
@@ -40,6 +43,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Path reconstruction includes full node sequence from start node to target node
 - Dialog follows same flexbox pattern as edge search dialog for consistency
 - Custom scrollbar styling matches edge dialog for unified UX
+- Node connections module follows same pattern as other dialog modules (edgeSearchDialog.js) for consistency
+- Functions exported as ES modules and also exposed on window for backward compatibility
+- Euclidean distance calculation added to results table for comparing graph-theoretic vs geometric distances
 
 ## [0.4.1] - 2025-11-28
 

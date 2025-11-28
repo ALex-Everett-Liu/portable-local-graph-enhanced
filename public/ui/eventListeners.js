@@ -28,6 +28,17 @@ import { saveViewStateToDb } from "../services/databaseService.js";
 import { getGraph } from "../state/appState.js";
 import { createNewGraphTemplate } from "./template.js";
 import { updateGraphInfo } from "./search/searchBar.js";
+import {
+  handleNodeOK,
+  handleNodeCancel,
+  handleNodeDelete,
+  handleWeightOK,
+  handleWeightCancel,
+  handleWeightDelete,
+  handleReverseEdgeDirection,
+  showNodeDialog,
+  showEdgeDialog,
+} from "../ui-functions.js";
 import { showClusteringDialog } from "./dialogs/clusteringDialog.js";
 
 export function setupEventListeners() {
