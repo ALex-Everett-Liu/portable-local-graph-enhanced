@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CSV export functionality for path-based connection results
 - `getNodesWithinConstraints()` function in nodeConnections module - calculates shortest paths and filters by constraints
 - Graph class method `getNodesWithinConstraints()` - automatically uses filtered nodes/edges when layer filters are active
+- Selection info font size control - adjustable font size slider (10-20px, default: 13px) for selection info display in sidebar and popup
 
 ### Changed
 - Node connections dialog restructured with flexbox layout - content wrapped in scrollable container while buttons remain fixed at bottom
@@ -33,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed node-connections-dialog becoming too tall when node has many connections - dialog now has max-height constraint with scrollable content area
 - Fixed connection list buttons becoming inaccessible when many connections are displayed - buttons now remain fixed at bottom of dialog
+- Fixed settings dialog becoming too tall when adding new font settings - dialog now has max-height constraint (85vh) with scrollable content area
+- Fixed settings dialog buttons becoming inaccessible when content expands - buttons now remain fixed at bottom of dialog
 
 ### Technical Details
 - Path calculation uses Dijkstra's algorithm to find shortest paths to all nodes
@@ -46,6 +49,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Node connections module follows same pattern as other dialog modules (edgeSearchDialog.js) for consistency
 - Functions exported as ES modules and also exposed on window for backward compatibility
 - Euclidean distance calculation added to results table for comparing graph-theoretic vs geometric distances
+- Selection info font size setting stored in localStorage and applied to both sidebar and fullscreen popup versions
+- Settings dialog restructured with flexbox layout - content wrapped in scrollable container (`settings-dialog-body`) while buttons remain fixed at bottom
+- Settings dialog max-height set to 85vh with custom scrollbar styling matching other dialogs for consistent UX
 
 ## [0.4.1] - 2025-11-28
 
