@@ -116,6 +116,9 @@ function init() {
     
     // Expose export dialog function globally
     window.showExportDialog = showExportDialog;
+    
+    // Expose clustering dialog function globally
+    window.showClusteringDialog = showClusteringDialog;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');

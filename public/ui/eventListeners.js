@@ -28,6 +28,7 @@ import { saveViewStateToDb } from "../services/databaseService.js";
 import { getGraph } from "../state/appState.js";
 import { createNewGraphTemplate } from "./template.js";
 import { updateGraphInfo } from "./search/searchBar.js";
+import { showClusteringDialog } from "./dialogs/clusteringDialog.js";
 
 export function setupEventListeners() {
   // Mode buttons
@@ -102,7 +103,14 @@ export function setupEventListeners() {
   const clusteringBtn = document.getElementById("clustering-btn");
   if (clusteringBtn) {
     clusteringBtn.addEventListener("click", () => {
-      showClusteringDialog();
+      // Use window function if available (for compatibility), otherwise use imported function
+      if (typeof window !== "undefined" && window.showClusteringDialog) {
+        window.showClusteringDialog();
+      } else if (typeof showClusteringDialog !== "undefined") {
+        showClusteringDialog();
+      } else {
+        console.error("showClusteringDialog is not available");
+      }
     });
   }
 }

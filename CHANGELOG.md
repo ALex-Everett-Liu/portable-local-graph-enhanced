@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.1] - 2025-11-28
+
+### Added
+- Graph clustering and community detection functionality
+- Clustering algorithms: Louvain (modularity optimization), Label Propagation, K-core decomposition, and Connected Components clustering
+- Clustering dialog UI with algorithm selection and parameter configuration
+- Visual community coloring - nodes colored by community/cluster assignment
+- Community information display in node selection info panel
+- Clustering results statistics display (modularity scores, community counts, core distributions)
+- Color restoration functionality - restore original node colors after clustering visualization
+- Clustering engine module (`public/utils/analysis/clustering-engine.js`) with multiple algorithms
+- Graph Clustering button in sidebar under "Graph Analysis" section
+
+### Changed
+- Graph class enhanced with clustering methods and color visualization support
+- Selection info panel now displays community/cluster information for selected nodes
+- GraphAnalysis module integrated with ClusteringEngine for community detection
+
+### Technical Details
+- Louvain algorithm implements modularity optimization with configurable resolution parameter
+- Label Propagation algorithm supports weighted graphs with configurable max iterations
+- K-core decomposition identifies core/periphery structure with core number assignments
+- Distinct color generation algorithm creates visually distinct colors for communities
+- Original node colors preserved when applying clustering colors for easy restoration
+- Clustering results cached for performance optimization
+- All clustering algorithms support weighted graphs
+- Clustering dialog follows existing dialog patterns and integrates with current architecture
+
 ## [0.4.0] - 2025-11-27
 
 ### Added
