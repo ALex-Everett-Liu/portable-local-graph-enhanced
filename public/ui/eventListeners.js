@@ -10,6 +10,7 @@ import { showEdgeSearchDialog } from './dialogs/edgeSearchDialog.js';
 import { saveViewStateToDb } from '../services/databaseService.js';
 import { getGraph } from '../state/appState.js';
 import { createNewGraphTemplate } from './template.js';
+import { updateGraphInfo } from './search/searchBar.js';
 
 export function setupEventListeners() {
     // Mode buttons
@@ -59,6 +60,77 @@ export function setupEventListeners() {
             }
         });
     }
+
+    // Calculate Centralities button
+    const calculateCentralitiesBtn = document.getElementById('calculate-centralities-btn');
+    if (calculateCentralitiesBtn) {
+        calculateCentralitiesBtn.addEventListener('click', () => {
+            calculateCentralities();
+        });
+    }
+}
+
+/**
+ * Calculate centralities for all nodes
+ */
+function calculateCentralities() {
+    const graph = getGraph();
+    if (!graph || graph.nodes.length === 0) {
+        if (window.showNotification) {
+            window.showNotification('No nodes to analyze', 'error');
+        }
+        return;
+    }
+    
+    // Show loading state
+    const btn = document.getElementById('calculate-centralities-btn');
+    const originalText = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2" class="icon"></i><span>Calculating...</span>';
+        // Reinitialize lucide icons for the spinner
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    }
+    
+    // Use setTimeout to allow UI to update before heavy computation
+    setTimeout(() => {
+        try {
+            graph.calculateCentralities();
+            
+            // Update selection info to show centrality data
+            updateGraphInfo();
+            
+            if (window.showNotification) {
+                window.showNotification(`Centralities calculated for ${graph.nodes.length} nodes`);
+            }
+        } catch (error) {
+            console.error('Error calculating centralities:', error);
+            if (window.showNotification) {
+                window.showNotification('Error calculating centralities', 'error');
+            }
+        } finally {
+            // Restore button state
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                // Reinitialize lucide icons
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }
+        }
+    }, 10);
+}
+
+// Export for use in other modules
+export { calculateCentralities };
+
+// Expose on window for backward compatibility
+if (typeof window !== 'undefined') {
+    window.calculateCentralities = calculateCentralities;
+}
 
     // New Graph Template button
     const newTemplateBtn = document.getElementById('new-template-btn');

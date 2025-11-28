@@ -10,6 +10,7 @@ import { addEdge, deleteEdge, getEdgeAt, getEdgesAt } from "./graph/operations/e
 import { createMouseHandlers } from "./graph/handlers/mouseHandlers.js";
 import { getAllLayers, renameLayer, getLayerUsage } from "./graph/layers/layerManager.js";
 import { getNodeConnections } from "./graph/connections/nodeConnections.js";
+import { GraphAnalysis } from "./utils/analysis/graph-analysis.js";
 
 class Graph {
   constructor(canvas, callbacks = {}) {
@@ -45,6 +46,10 @@ class Graph {
 
     // Initialize GraphRenderer - handles ALL rendering
     this.renderer = new GraphRenderer(canvas);
+
+    // Initialize GraphAnalysis for centrality calculations
+    this.graphAnalysis = new GraphAnalysis(this.nodes, this.edges);
+    this.centralityRankings = null; // Cache for centrality rankings
 
     this.setupCanvas();
     this.bindEvents();
@@ -113,6 +118,9 @@ class Graph {
     );
     this.nodes = result.nodes;
     this.edges = result.edges;
+    // Update graph analysis
+    this.graphAnalysis.updateGraph(this.nodes, this.edges);
+    this.centralityRankings = null;
     this.render();
   }
 
@@ -143,6 +151,9 @@ class Graph {
       edge,
       this.callbacks.onEdgeDelete
     );
+    // Update graph analysis
+    this.graphAnalysis.updateGraph(this.nodes, this.edges);
+    this.centralityRankings = null;
     this.render();
   }
 
@@ -194,6 +205,9 @@ class Graph {
     this.overlapIndex = 0;
     this.lastClickPos = null;
     this.lastClickTime = 0;
+    // Clear analysis
+    this.graphAnalysis.updateGraph(this.nodes, this.edges);
+    this.centralityRankings = null;
     this.render();
   }
 
@@ -217,6 +231,10 @@ class Graph {
     // Clear active layers when importing new data - they will be restored from filterState if available
     // This ensures we don't have stale layers from previous database
     this.activeLayers = new Set();
+    
+    // Update graph analysis with new data
+    this.graphAnalysis.updateGraph(this.nodes, this.edges);
+    this.centralityRankings = null; // Clear rankings cache
     
     this.render();
 
@@ -281,6 +299,75 @@ class Graph {
   setHighlightedNodes(nodeIds) {
     this.highlightedNodes = Array.isArray(nodeIds) ? [...nodeIds] : [];
     this.render();
+  }
+
+  // Graph Analysis methods
+  /**
+   * Calculate centralities for all nodes
+   */
+  calculateCentralities() {
+    if (this.nodes.length === 0) {
+      return;
+    }
+
+    // Update graph analysis with current data
+    this.graphAnalysis.updateGraph(this.nodes, this.edges);
+    
+    // Calculate centralities
+    const centralities = this.graphAnalysis.calculateCentralities();
+    
+    // Update nodes with centrality data
+    this.nodes.forEach(node => {
+      if (!node.centrality) node.centrality = {};
+      Object.keys(centralities).forEach(type => {
+        node.centrality[type] = centralities[type][node.id];
+      });
+    });
+    
+    // Calculate rankings
+    this.calculateCentralityRankings();
+  }
+
+  /**
+   * Calculate centrality rankings for all centrality types
+   */
+  calculateCentralityRankings() {
+    if (this.nodes.length === 0) {
+      this.centralityRankings = null;
+      return;
+    }
+
+    this.centralityRankings = {};
+    const centralityTypes = ['degree', 'betweenness', 'closeness', 'eigenvector', 'pagerank'];
+
+    centralityTypes.forEach(type => {
+      const values = this.nodes.map(node => ({
+        nodeId: node.id,
+        value: parseFloat(node.centrality?.[type]) || 0
+      }));
+
+      values.sort((a, b) => b.value - a.value);
+
+      const rankings = new Map();
+      values.forEach((item, index) => {
+        rankings.set(item.nodeId, index + 1);
+      });
+
+      this.centralityRankings[type] = rankings;
+    });
+  }
+
+  /**
+   * Get centrality rank for a node
+   * @param {string} nodeId - Node ID
+   * @param {string} centralityType - Type of centrality
+   * @returns {number|null} Rank (1-based) or null if not available
+   */
+  getCentralityRank(nodeId, centralityType) {
+    if (!this.centralityRankings || !this.centralityRankings[centralityType]) {
+      return null;
+    }
+    return this.centralityRankings[centralityType].get(nodeId) || null;
   }
 }
 
