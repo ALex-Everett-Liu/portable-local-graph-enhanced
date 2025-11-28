@@ -1,47 +1,47 @@
 /* LXGW Bright Font Face Declarations */
 @font-face {
-    font-family: 'LXGW Bright';
-    src: url('fonts/LXGWBright-Regular.ttf') format('truetype');
+    font-family: "LXGW Bright";
+    src: url("fonts/LXGWBright-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'LXGW Bright';
-    src: url('fonts/LXGWBright-Italic.ttf') format('truetype');
+    font-family: "LXGW Bright";
+    src: url("fonts/LXGWBright-Italic.ttf") format("truetype");
     font-weight: 400;
     font-style: italic;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'LXGW Bright';
-    src: url('fonts/LXGWBright-Light.ttf') format('truetype');
+    font-family: "LXGW Bright";
+    src: url("fonts/LXGWBright-Light.ttf") format("truetype");
     font-weight: 300;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'LXGW Bright';
-    src: url('fonts/LXGWBright-LightItalic.ttf') format('truetype');
+    font-family: "LXGW Bright";
+    src: url("fonts/LXGWBright-LightItalic.ttf") format("truetype");
     font-weight: 300;
     font-style: italic;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'LXGW Bright';
-    src: url('fonts/LXGWBright-Medium.ttf') format('truetype');
+    font-family: "LXGW Bright";
+    src: url("fonts/LXGWBright-Medium.ttf") format("truetype");
     font-weight: 500;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'LXGW Bright';
-    src: url('fonts/LXGWBright-MediumItalic.ttf') format('truetype');
+    font-family: "LXGW Bright";
+    src: url("fonts/LXGWBright-MediumItalic.ttf") format("truetype");
     font-weight: 500;
     font-style: italic;
     font-display: swap;
@@ -54,7 +54,8 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #333;
     overflow: hidden;
@@ -98,7 +99,7 @@ body {
     color: #495057;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 14px;
+    font-size: 16px;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -241,7 +242,7 @@ body.local-graph-resizing .resize-handle {
 
 .sidebar-section p {
     margin: 4px 0;
-    font-size: 14px;
+    font-size: 18px;
     color: #6c757d;
 }
 
@@ -286,7 +287,7 @@ body.local-graph-resizing .resize-handle {
     padding: 12px;
     border: 1px solid #ced4da;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 16px;
 }
 
@@ -506,7 +507,7 @@ body.local-graph-resizing .resize-handle {
 }
 
 .edge.selected {
-    stroke: #00FA9A;
+    stroke: #00fa9a;
     stroke-width: 3;
 }
 
@@ -529,12 +530,12 @@ body.local-graph-resizing .resize-handle {
     .sidebar {
         width: 200px;
     }
-    
+
     .toolbar {
         flex-wrap: wrap;
         padding: 4px 8px;
     }
-    
+
     .tool-btn span:not(.icon) {
         display: none;
     }
@@ -835,7 +836,7 @@ body.local-graph-resizing .resize-handle {
 
 .search-result-item:hover {
     transform: translateX(2px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #selected-node-info {
@@ -942,7 +943,7 @@ body.fullscreen-mode .fullscreen-exit-btn {
     max-width: 400px;
     z-index: 10002;
     display: none;
-    font-size: 13px;
+    font-size: 16px;
     line-height: 1.6;
 }
 
@@ -999,4 +1000,3 @@ body.fullscreen-mode .fullscreen-exit-btn {
     color: #495057;
     margin-right: 8px;
 }
-
