@@ -865,7 +865,8 @@ function displayPathResults(results, startNode, options) {
             <tr>
                 <th>#</th>
                 <th>Node Label</th>
-                <th>Node ID</th>
+                <th>Coordinates (X, Y)</th>
+                <th>Radius</th>
                 <th>Depth (Hops)</th>
                 <th>Distance (Weight Sum)</th>
                 <th>Path</th>
@@ -877,6 +878,9 @@ function displayPathResults(results, startNode, options) {
       const node = result.node;
       const nodeLabel = escapeHtml(node.label || "Unnamed Node");
       const chineseLabel = node.chineseLabel ? ` (${escapeHtml(node.chineseLabel)})` : "";
+      const x = typeof node.x === 'number' ? Math.round(node.x) : 'N/A';
+      const y = typeof node.y === 'number' ? Math.round(node.y) : 'N/A';
+      const radius = typeof node.radius === 'number' ? node.radius : 'N/A';
       const pathStr = result.path.map(id => {
         if (id === startNode.id) {
           return startNode.label || startNode.chineseLabel || id;
@@ -894,7 +898,8 @@ function displayPathResults(results, startNode, options) {
               <span class="node-label">${nodeLabel}</span>
               ${chineseLabel ? `<span class="chinese-label">${chineseLabel}</span>` : ''}
           </td>
-          <td><code>${escapeHtml(node.id)}</code></td>
+          <td>(${x}, ${y})</td>
+          <td>${radius}</td>
           <td>${result.depth}</td>
           <td>${result.distance.toFixed(2)}</td>
           <td class="path-cell">${escapeHtml(pathStr)}</td>
@@ -914,24 +919,33 @@ function displayPathResults(results, startNode, options) {
         }
         
         function exportToCSV() {
-            const data = ${JSON.stringify(results.map((r, i) => ({
-                index: i + 1,
-                nodeLabel: r.node.label || 'Unnamed Node',
-                chineseLabel: r.node.chineseLabel || '',
-                nodeId: r.node.id,
-                depth: r.depth,
-                distance: r.distance.toFixed(2),
-                path: r.path.join(' → ')
-            })))};
+            const data = ${JSON.stringify(results.map((r, i) => {
+                const x = typeof r.node.x === 'number' ? Math.round(r.node.x) : 'N/A';
+                const y = typeof r.node.y === 'number' ? Math.round(r.node.y) : 'N/A';
+                const radius = typeof r.node.radius === 'number' ? r.node.radius : 'N/A';
+                return {
+                    index: i + 1,
+                    nodeLabel: r.node.label || 'Unnamed Node',
+                    chineseLabel: r.node.chineseLabel || '',
+                    x: x,
+                    y: y,
+                    radius: radius,
+                    depth: r.depth,
+                    distance: r.distance.toFixed(2),
+                    path: r.path.join(' → ')
+                };
+            }))};
             
-            const headers = ['#', 'Node Label', 'Chinese Label', 'Node ID', 'Depth', 'Distance', 'Path'];
+            const headers = ['#', 'Node Label', 'Chinese Label', 'X', 'Y', 'Radius', 'Depth', 'Distance', 'Path'];
             const csv = [
                 headers.join(','),
                 ...data.map(row => [
                     row.index,
                     '"' + (row.nodeLabel || '').replace(/"/g, '""') + '"',
                     '"' + (row.chineseLabel || '').replace(/"/g, '""') + '"',
-                    row.nodeId,
+                    row.x,
+                    row.y,
+                    row.radius,
                     row.depth,
                     row.distance,
                     '"' + row.path.replace(/"/g, '""') + '"'

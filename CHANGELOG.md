@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.2] - 2025-11-28
+
+### Added
+- Path-based node connections feature - find nodes within depth/distance constraints using shortest paths
+- Depth constraint filtering - filter nodes by maximum number of hops (edges) through shortest path
+- Distance constraint filtering - filter nodes by maximum sum of edge weights through shortest path
+- AND/OR condition support - combine depth and distance constraints with AND (both must be satisfied) or OR (either can be satisfied) logic
+- Path-based filtering UI in node connections dialog - input fields for max depth, max distance, and condition selector
+- Results display in new window/tab - path-based connection results shown in formatted table with comprehensive information
+- Results table columns: Node Label, Coordinates (X, Y), Radius, Depth (Hops), Distance (Weight Sum), and Path
+- CSV export functionality for path-based connection results
+- `getNodesWithinConstraints()` function in nodeConnections module - calculates shortest paths and filters by constraints
+- Graph class method `getNodesWithinConstraints()` - automatically uses filtered nodes/edges when layer filters are active
+
+### Changed
+- Node connections dialog restructured with flexbox layout - content wrapped in scrollable container while buttons remain fixed at bottom
+- Dialog max-height set to 85vh with custom scrollbar styling for better UX
+- Path-based results table displays node coordinates and radius instead of Node ID for better readability
+- CSV export includes coordinates and radius instead of Node ID
+
+### Fixed
+- Fixed node-connections-dialog becoming too tall when node has many connections - dialog now has max-height constraint with scrollable content area
+- Fixed connection list buttons becoming inaccessible when many connections are displayed - buttons now remain fixed at bottom of dialog
+
+### Technical Details
+- Path calculation uses Dijkstra's algorithm to find shortest paths to all nodes
+- Algorithm tracks both depth (number of hops) and distance (sum of edge weights) simultaneously
+- Graph treated as undirected for path calculation - edges can be traversed in either direction
+- Filtered nodes/edges automatically used when layer filters are active
+- Results sorted by distance, then by depth for consistent ordering
+- Path reconstruction includes full node sequence from start node to target node
+- Dialog follows same flexbox pattern as edge search dialog for consistency
+- Custom scrollbar styling matches edge dialog for unified UX
+
 ## [0.4.1] - 2025-11-28
 
 ### Added
