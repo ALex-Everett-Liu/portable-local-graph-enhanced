@@ -869,10 +869,15 @@ function displayPathResults(results, startNode, options) {
                 <th>Radius</th>
                 <th>Depth (Hops)</th>
                 <th>Distance (Weight Sum)</th>
+                <th>Euclidean Distance</th>
                 <th>Path</th>
             </tr>
         </thead>
         <tbody>`;
+
+    // Calculate start node coordinates for Euclidean distance calculation
+    const startX = typeof startNode.x === 'number' ? startNode.x : 0;
+    const startY = typeof startNode.y === 'number' ? startNode.y : 0;
 
     results.forEach((result, index) => {
       const node = result.node;
@@ -881,6 +886,15 @@ function displayPathResults(results, startNode, options) {
       const x = typeof node.x === 'number' ? Math.round(node.x) : 'N/A';
       const y = typeof node.y === 'number' ? Math.round(node.y) : 'N/A';
       const radius = typeof node.radius === 'number' ? node.radius : 'N/A';
+      
+      // Calculate Euclidean distance
+      let euclideanDistance = 'N/A';
+      if (typeof node.x === 'number' && typeof node.y === 'number') {
+        const dx = node.x - startX;
+        const dy = node.y - startY;
+        euclideanDistance = Math.sqrt(dx * dx + dy * dy).toFixed(2);
+      }
+      
       const pathStr = result.path.map(id => {
         if (id === startNode.id) {
           return startNode.label || startNode.chineseLabel || id;
@@ -902,6 +916,7 @@ function displayPathResults(results, startNode, options) {
           <td>${radius}</td>
           <td>${result.depth}</td>
           <td>${result.distance.toFixed(2)}</td>
+          <td>${euclideanDistance}</td>
           <td class="path-cell">${escapeHtml(pathStr)}</td>
       </tr>`;
     });
@@ -919,10 +934,22 @@ function displayPathResults(results, startNode, options) {
         }
         
         function exportToCSV() {
+            const startX = ${typeof startNode.x === 'number' ? startNode.x : 0};
+            const startY = ${typeof startNode.y === 'number' ? startNode.y : 0};
+            
             const data = ${JSON.stringify(results.map((r, i) => {
                 const x = typeof r.node.x === 'number' ? Math.round(r.node.x) : 'N/A';
                 const y = typeof r.node.y === 'number' ? Math.round(r.node.y) : 'N/A';
                 const radius = typeof r.node.radius === 'number' ? r.node.radius : 'N/A';
+                
+                // Calculate Euclidean distance
+                let euclideanDistance = 'N/A';
+                if (typeof r.node.x === 'number' && typeof r.node.y === 'number') {
+                    const dx = r.node.x - startX;
+                    const dy = r.node.y - startY;
+                    euclideanDistance = Math.sqrt(dx * dx + dy * dy).toFixed(2);
+                }
+                
                 return {
                     index: i + 1,
                     nodeLabel: r.node.label || 'Unnamed Node',
@@ -932,11 +959,12 @@ function displayPathResults(results, startNode, options) {
                     radius: radius,
                     depth: r.depth,
                     distance: r.distance.toFixed(2),
+                    euclideanDistance: euclideanDistance,
                     path: r.path.join(' → ')
                 };
             }))};
             
-            const headers = ['#', 'Node Label', 'Chinese Label', 'X', 'Y', 'Radius', 'Depth', 'Distance', 'Path'];
+            const headers = ['#', 'Node Label', 'Chinese Label', 'X', 'Y', 'Radius', 'Depth', 'Distance (Weight Sum)', 'Euclidean Distance', 'Path'];
             const csv = [
                 headers.join(','),
                 ...data.map(row => [
@@ -948,6 +976,7 @@ function displayPathResults(results, startNode, options) {
                     row.radius,
                     row.depth,
                     row.distance,
+                    row.euclideanDistance,
                     '"' + row.path.replace(/"/g, '""') + '"'
                 ].join(','))
             ].join('\\n');
