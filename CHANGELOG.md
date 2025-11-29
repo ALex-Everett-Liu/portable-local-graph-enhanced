@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed connection list buttons becoming inaccessible when many connections are displayed - buttons now remain fixed at bottom of dialog
 - Fixed settings dialog becoming too tall when adding new font settings - dialog now has max-height constraint (85vh) with scrollable content area
 - Fixed settings dialog buttons becoming inaccessible when content expands - buttons now remain fixed at bottom of dialog
+- Fixed node deletion not working - handleNodeDelete was passing nodeId instead of node object to graph.deleteNode()
+- Fixed edge deletion not working - handleWeightDelete was passing edgeId instead of edge object to graph.deleteEdge()
 
 ### Technical Details
 - Path calculation uses Dijkstra's algorithm to find shortest paths to all nodes

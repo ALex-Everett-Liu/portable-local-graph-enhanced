@@ -245,8 +245,15 @@ function handleNodeDelete() {
     return;
   }
 
+  // Find the node object by ID
+  const node = graph.nodes.find((n) => n.id == nodeId);
+  if (!node) {
+    console.error("Node not found:", nodeId);
+    return;
+  }
+
   if (window.saveState) window.saveState();
-  if (graph.deleteNode) graph.deleteNode(nodeId);
+  if (graph.deleteNode) graph.deleteNode(node);
   if (window.updateGraphInfo) window.updateGraphInfo();
   if (window.appState) window.appState.isModified = true;
   
@@ -350,9 +357,17 @@ function handleWeightDelete() {
   }
 
   if (edgeId) {
+    // Find the edge object by ID
+    const edge = graph.edges.find((e) => e.id == edgeId);
+    if (!edge) {
+      console.error("Edge not found:", edgeId);
+      dialog.classList.add("hidden");
+      return;
+    }
+
     if (window.saveState) window.saveState();
-    if (graph.deleteEdge) graph.deleteEdge(edgeId);
-    if (graph.render) graph.render();
+    if (graph.deleteEdge) graph.deleteEdge(edge);
+    if (window.updateGraphInfo) window.updateGraphInfo();
     if (window.appState) window.appState.isModified = true;
   }
 
