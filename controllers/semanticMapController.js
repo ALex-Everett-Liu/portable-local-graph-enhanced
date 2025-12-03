@@ -170,6 +170,8 @@ async function generateEmbedding(req, res) {
       });
     }
     
+    console.log(`Generating embedding with provider: ${provider}, model: ${model || 'default'}`);
+    
     const embedding = await semanticMapService.generateEmbedding(
       text,
       provider,
@@ -177,10 +179,15 @@ async function generateEmbedding(req, res) {
       model
     );
     
+    console.log(`Successfully generated embedding with ${embedding.length} dimensions`);
     res.json({ embedding });
   } catch (error) {
     console.error("Error generating embedding:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error stack:", error.stack);
+    res.status(500).json({ 
+      error: error.message || "Failed to generate embedding",
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }
 

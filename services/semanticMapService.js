@@ -275,10 +275,16 @@ async function generateEmbeddingOpenRouter(text, apiKey, model = "BAAI/bge-m3") 
  */
 async function generateEmbeddingSiliconFlow(text, apiKey, model = "BAAI/bge-m3") {
   return new Promise((resolve, reject) => {
-    const data = JSON.stringify({
-      input: text,
+    const requestBody = {
       model: model,
-    });
+      input: text,
+    };
+    
+    const data = JSON.stringify(requestBody);
+    
+    console.log(`[SiliconFlow] Request: POST https://api.siliconflow.cn/v1/embeddings`);
+    console.log(`[SiliconFlow] Model: ${model}`);
+    console.log(`[SiliconFlow] Input length: ${text.length} characters`);
 
     const options = {
       hostname: "api.siliconflow.cn",
@@ -300,16 +306,53 @@ async function generateEmbeddingSiliconFlow(text, apiKey, model = "BAAI/bge-m3")
 
       res.on("end", () => {
         try {
+          console.log(`[SiliconFlow] Response status: ${res.statusCode}`);
+          console.log(`[SiliconFlow] Response length: ${responseData.length} bytes`);
+          
+          // Check HTTP status code
+          if (res.statusCode < 200 || res.statusCode >= 300) {
+            let errorMessage = `SiliconFlow API returned status ${res.statusCode}`;
+            console.error(`[SiliconFlow] Error response: ${responseData.substring(0, 500)}`);
+            try {
+              const errorData = JSON.parse(responseData);
+              if (errorData.error) {
+                errorMessage = errorData.error.message || errorData.error || errorMessage;
+              } else if (errorData.message) {
+                errorMessage = errorData.message;
+              }
+            } catch (e) {
+              // If we can't parse error, use raw response
+              errorMessage = responseData || errorMessage;
+            }
+            reject(new Error(errorMessage));
+            return;
+          }
+
           const parsed = JSON.parse(responseData);
+          
+          // Check for API-level errors
           if (parsed.error) {
-            reject(new Error(parsed.error.message || "SiliconFlow API error"));
-          } else if (parsed.data && parsed.data[0] && parsed.data[0].embedding) {
-            resolve(parsed.data[0].embedding);
+            reject(new Error(parsed.error.message || parsed.error || "SiliconFlow API error"));
+            return;
+          }
+          
+          // Parse response according to SiliconFlow API format
+          // Response format: { model: "...", data: [{ object: "embedding", embedding: [...], index: 0 }] }
+          if (parsed.data && Array.isArray(parsed.data) && parsed.data.length > 0) {
+            const embeddingData = parsed.data[0];
+            if (embeddingData.embedding && Array.isArray(embeddingData.embedding)) {
+              console.log(`[SiliconFlow] Successfully generated embedding with ${embeddingData.embedding.length} dimensions`);
+              resolve(embeddingData.embedding);
+            } else {
+              console.error(`[SiliconFlow] Invalid response format:`, JSON.stringify(parsed.data[0]).substring(0, 200));
+              reject(new Error("Invalid response format: missing embedding array"));
+            }
           } else {
-            reject(new Error("Invalid response from SiliconFlow API"));
+            console.error(`[SiliconFlow] Invalid response structure:`, JSON.stringify(parsed).substring(0, 500));
+            reject(new Error(`Invalid response from SiliconFlow API: ${JSON.stringify(parsed).substring(0, 200)}`));
           }
         } catch (error) {
-          reject(new Error(`Failed to parse SiliconFlow response: ${error.message}`));
+          reject(new Error(`Failed to parse SiliconFlow response: ${error.message}. Response: ${responseData.substring(0, 200)}`));
         }
       });
     });
