@@ -60,6 +60,16 @@ function setupSemanticMapDialogEvents() {
     if (fullscreenBtn) {
         fullscreenBtn.addEventListener('click', toggleFullscreen);
     }
+
+    // ESC key to exit fullscreen (only when dialog is visible and in fullscreen)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const dialog = document.getElementById('semantic-map-dialog');
+            if (dialog && !dialog.classList.contains('hidden') && dialog.classList.contains('semantic-map-fullscreen')) {
+                toggleFullscreen();
+            }
+        }
+    });
 }
 
 /**
@@ -495,52 +505,77 @@ function updateVisualization() {
 
 /**
  * Toggle fullscreen mode for the semantic map
+ * Similar to fullscreenManager.js pattern
  */
 function toggleFullscreen() {
     const plotDiv = document.getElementById('semantic-map-plot');
     const dialog = document.getElementById('semantic-map-dialog');
+    const body = document.body;
     const fullscreenBtn = document.getElementById('semantic-map-fullscreen-btn');
     
     if (!plotDiv || !dialog) return;
 
-    // Check if already in fullscreen
-    if (plotDiv.classList.contains('semantic-map-fullscreen')) {
+    const isFullscreen = dialog.classList.contains('semantic-map-fullscreen');
+
+    if (isFullscreen) {
         // Exit fullscreen
-        plotDiv.classList.remove('semantic-map-fullscreen');
-        dialog.classList.remove('semantic-map-fullscreen-dialog');
-        document.body.style.overflow = '';
-        
-        if (fullscreenBtn) {
-            fullscreenBtn.innerHTML = '<i data-lucide="maximize-2" class="icon"></i> Fullscreen';
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }
-        
-        // Resize plot to fit container
-        if (typeof Plotly !== 'undefined' && plotDiv.plotlyInstance) {
-            Plotly.Plots.resize(plotDiv);
-        }
+        exitSemanticMapFullscreen(dialog, body, fullscreenBtn, plotDiv);
     } else {
         // Enter fullscreen
-        plotDiv.classList.add('semantic-map-fullscreen');
-        dialog.classList.add('semantic-map-fullscreen-dialog');
-        document.body.style.overflow = 'hidden';
-        
-        if (fullscreenBtn) {
-            fullscreenBtn.innerHTML = '<i data-lucide="minimize-2" class="icon"></i> Exit Fullscreen';
-            if (window.lucide) {
-                lucide.createIcons();
+        enterSemanticMapFullscreen(dialog, body, fullscreenBtn, plotDiv);
+    }
+}
+
+/**
+ * Enter fullscreen mode
+ */
+function enterSemanticMapFullscreen(dialog, body, fullscreenBtn, plotDiv) {
+    dialog.classList.add('semantic-map-fullscreen');
+    body.classList.add('semantic-map-fullscreen-mode');
+    
+    // Update button icon
+    if (fullscreenBtn) {
+        const icon = fullscreenBtn.querySelector('[data-lucide]');
+        if (icon) {
+            icon.setAttribute('data-lucide', 'minimize-2');
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
             }
         }
-        
-        // Resize plot to fill screen
-        setTimeout(() => {
-            if (typeof Plotly !== 'undefined' && plotDiv.plotlyInstance) {
-                Plotly.Plots.resize(plotDiv);
-            }
-        }, 100);
     }
+    
+    // Resize plot after entering fullscreen
+    setTimeout(() => {
+        if (typeof Plotly !== 'undefined' && plotDiv) {
+            Plotly.Plots.resize(plotDiv);
+        }
+    }, 100);
+}
+
+/**
+ * Exit fullscreen mode
+ */
+function exitSemanticMapFullscreen(dialog, body, fullscreenBtn, plotDiv) {
+    dialog.classList.remove('semantic-map-fullscreen');
+    body.classList.remove('semantic-map-fullscreen-mode');
+    
+    // Update button icon
+    if (fullscreenBtn) {
+        const icon = fullscreenBtn.querySelector('[data-lucide]');
+        if (icon) {
+            icon.setAttribute('data-lucide', 'maximize-2');
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        }
+    }
+    
+    // Resize plot after exiting fullscreen
+    setTimeout(() => {
+        if (typeof Plotly !== 'undefined' && plotDiv) {
+            Plotly.Plots.resize(plotDiv);
+        }
+    }, 100);
 }
 
 /**
