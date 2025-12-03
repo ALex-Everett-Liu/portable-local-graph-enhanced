@@ -40,6 +40,7 @@ import {
   showEdgeDialog,
 } from "../ui-functions.js";
 import { showClusteringDialog } from "./dialogs/clusteringDialog.js";
+import { showSemanticMapDialog } from "./dialogs/semanticMapDialog.js";
 
 export function setupEventListeners() {
   // Mode buttons
@@ -121,6 +122,21 @@ export function setupEventListeners() {
         showClusteringDialog();
       } else {
         console.error("showClusteringDialog is not available");
+      }
+    });
+  }
+
+  // Semantic Map button
+  const semanticMapBtn = document.getElementById("semantic-map-btn");
+  if (semanticMapBtn) {
+    semanticMapBtn.addEventListener("click", () => {
+      // Use window function if available (for compatibility), otherwise use imported function
+      if (typeof window !== "undefined" && window.showSemanticMapDialog) {
+        window.showSemanticMapDialog();
+      } else if (typeof showSemanticMapDialog !== "undefined") {
+        showSemanticMapDialog();
+      } else {
+        console.error("showSemanticMapDialog is not available");
       }
     });
   }

@@ -1,0 +1,196 @@
+<div id="semantic-map-dialog" class="dialog hidden">
+    <div class="dialog-content" style="max-width: 90vw; width: 1200px; height: 90vh; display: flex; flex-direction: column;">
+        <h3 style="margin-bottom: 16px;">Semantic Map</h3>
+        
+        <div style="display: flex; gap: 16px; flex: 1; min-height: 0;">
+            <!-- Left Panel: Controls -->
+            <div style="width: 300px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto;">
+                <!-- Model Selection -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #495057;">
+                        Embedding Provider:
+                    </label>
+                    <select
+                        id="semantic-map-provider"
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                        "
+                    >
+                        <option value="openai">OpenAI</option>
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="siliconflow">SiliconFlow (BAAI/bge-m3)</option>
+                    </select>
+                </div>
+
+                <!-- Model Selection -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #495057;">
+                        Model:
+                    </label>
+                    <select
+                        id="semantic-map-model"
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                        "
+                    >
+                        <option value="text-embedding-3-small">text-embedding-3-small</option>
+                        <option value="text-embedding-3-large">text-embedding-3-large</option>
+                        <option value="text-embedding-ada-002">text-embedding-ada-002</option>
+                    </select>
+                </div>
+
+                <!-- API Key Input -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #495057;">
+                        API Key:
+                    </label>
+                    <input
+                        type="password"
+                        id="semantic-map-api-key"
+                        placeholder="Enter API key"
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                        "
+                    />
+                </div>
+
+                <!-- Text Input -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #495057;">
+                        Text to Embed:
+                    </label>
+                    <textarea
+                        id="semantic-map-text"
+                        rows="4"
+                        placeholder="Enter text to create embedding..."
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                            resize: vertical;
+                        "
+                    ></textarea>
+                </div>
+
+                <!-- Title Input (Optional) -->
+                <div>
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #495057;">
+                        Title (Optional):
+                    </label>
+                    <input
+                        type="text"
+                        id="semantic-map-title"
+                        placeholder="Enter title..."
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                        "
+                    />
+                </div>
+
+                <!-- Generate Embedding Button -->
+                <button
+                    id="semantic-map-generate-btn"
+                    class="tool-btn"
+                    style="width: 100%;"
+                >
+                    Generate Embedding
+                </button>
+
+                <!-- Load from Graph Nodes -->
+                <button
+                    id="semantic-map-load-nodes-btn"
+                    class="tool-btn"
+                    style="width: 100%;"
+                >
+                    Load from Graph Nodes
+                </button>
+
+                <!-- Dimensionality Reduction -->
+                <div style="border-top: 1px solid #dee2e6; padding-top: 16px;">
+                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #495057;">
+                        Reduction Method:
+                    </label>
+                    <select
+                        id="semantic-map-reduction"
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                        "
+                    >
+                        <option value="umap">UMAP</option>
+                        <option value="tsne">t-SNE</option>
+                    </select>
+                </div>
+
+                <!-- Apply Reduction Button -->
+                <button
+                    id="semantic-map-reduce-btn"
+                    class="tool-btn"
+                    style="width: 100%;"
+                >
+                    Apply Dimensionality Reduction
+                </button>
+
+                <!-- Clear All Button -->
+                <button
+                    id="semantic-map-clear-btn"
+                    class="tool-btn"
+                    style="width: 100%; background: #dc3545;"
+                >
+                    Clear All Embeddings
+                </button>
+
+                <!-- Status -->
+                <div id="semantic-map-status" style="
+                    padding: 8px;
+                    background: #f8f9fa;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    color: #666;
+                    min-height: 40px;
+                ">
+                    Ready
+                </div>
+            </div>
+
+            <!-- Right Panel: Visualization -->
+            <div style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+                <div id="semantic-map-plot" style="flex: 1; min-height: 0; border: 1px solid #ddd; border-radius: 4px;">
+                    <!-- Plotly visualization will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialog Buttons -->
+        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid #dee2e6; padding-top: 16px;">
+            <button
+                id="semantic-map-close-btn"
+                class="tool-btn"
+            >
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+

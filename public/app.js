@@ -33,6 +33,7 @@ import { initializeFontSettings } from './managers/fontSettingsManager.js';
 import { initializeFullscreen } from './managers/fullscreenManager.js';
 import { initializeExportDialog, showExportDialog } from './ui/dialogs/exportDialog.js';
 import { initializeClusteringDialog, showClusteringDialog } from './ui/dialogs/clusteringDialog.js';
+import { initializeSemanticMapDialog, showSemanticMapDialog } from './ui/dialogs/semanticMapDialog.js';
 
 function init() {
     const canvas = document.getElementById('graph-canvas');
@@ -95,6 +96,9 @@ function init() {
     // Setup clustering dialog
     initializeClusteringDialog();
     
+    // Setup semantic map dialog
+    initializeSemanticMapDialog();
+    
     // Initialize and apply font settings
     initializeFontSettings();
     
@@ -119,6 +123,9 @@ function init() {
     
     // Expose clustering dialog function globally
     window.showClusteringDialog = showClusteringDialog;
+    
+    // Expose semantic map dialog function globally
+    window.showSemanticMapDialog = showSemanticMapDialog;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');

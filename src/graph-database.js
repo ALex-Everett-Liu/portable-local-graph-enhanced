@@ -221,6 +221,27 @@ async function initializeGraphDatabase() {
     )
   `);
 
+  // Create semantic_map_embeddings table for storing text embeddings
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS semantic_map_embeddings (
+      id TEXT PRIMARY KEY,
+      text TEXT NOT NULL,
+      title TEXT,
+      embedding_model TEXT NOT NULL,
+      embedding_data TEXT NOT NULL,
+      x_2d REAL,
+      y_2d REAL,
+      created_at INTEGER,
+      updated_at INTEGER
+    )
+  `);
+
+  // Create index for better query performance
+  await db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_semantic_map_embeddings_model 
+    ON semantic_map_embeddings(embedding_model);
+  `);
+
   console.log("Graph plugin database initialized");
   return db;
 }

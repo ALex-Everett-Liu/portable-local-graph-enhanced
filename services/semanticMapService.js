@@ -1,0 +1,360 @@
+// semanticMapService.js - Business logic for Semantic Map operations
+const { v7: uuidv7 } = require("uuid");
+const https = require("https");
+const http = require("http");
+
+/**
+ * Get all embeddings
+ * @param {Object} graphDb - Database connection
+ * @param {string} model - Optional filter by embedding model
+ * @returns {Promise<Array>} Array of embeddings
+ */
+async function getAllEmbeddings(graphDb, model = null) {
+  let query = "SELECT * FROM semantic_map_embeddings";
+  const params = [];
+  
+  if (model) {
+    query += " WHERE embedding_model = ?";
+    params.push(model);
+  }
+  
+  query += " ORDER BY created_at DESC";
+  
+  return await graphDb.all(query, params);
+}
+
+/**
+ * Get a single embedding by ID
+ * @param {Object} graphDb - Database connection
+ * @param {string} id - Embedding ID
+ * @returns {Promise<Object|null>} Embedding object or null
+ */
+async function getEmbeddingById(graphDb, id) {
+  return await graphDb.get(
+    "SELECT * FROM semantic_map_embeddings WHERE id = ?",
+    [id]
+  );
+}
+
+/**
+ * Create a new embedding
+ * @param {Object} graphDb - Database connection
+ * @param {Object} embeddingData - Embedding data
+ * @returns {Promise<Object>} Created embedding
+ */
+async function createEmbedding(graphDb, embeddingData) {
+  const id = uuidv7();
+  const now = Date.now();
+  
+  const {
+    text,
+    title,
+    embeddingModel,
+    embeddingData: embedding,
+    x2d = null,
+    y2d = null,
+  } = embeddingData;
+
+  await graphDb.run(
+    `INSERT INTO semantic_map_embeddings 
+     (id, text, title, embedding_model, embedding_data, x_2d, y_2d, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      id,
+      text,
+      title || null,
+      embeddingModel,
+      JSON.stringify(embedding),
+      x2d,
+      y2d,
+      now,
+      now,
+    ]
+  );
+
+  return await getEmbeddingById(graphDb, id);
+}
+
+/**
+ * Update embedding 2D coordinates (after dimensionality reduction)
+ * @param {Object} graphDb - Database connection
+ * @param {string} id - Embedding ID
+ * @param {number} x2d - X coordinate in 2D space
+ * @param {number} y2d - Y coordinate in 2D space
+ * @returns {Promise<Object>} Updated embedding
+ */
+async function updateEmbedding2D(graphDb, id, x2d, y2d) {
+  const now = Date.now();
+  
+  await graphDb.run(
+    `UPDATE semantic_map_embeddings 
+     SET x_2d = ?, y_2d = ?, updated_at = ?
+     WHERE id = ?`,
+    [x2d, y2d, now, id]
+  );
+
+  return await getEmbeddingById(graphDb, id);
+}
+
+/**
+ * Update multiple embeddings' 2D coordinates (batch update)
+ * @param {Object} graphDb - Database connection
+ * @param {Array} coordinates - Array of {id, x2d, y2d} objects
+ * @returns {Promise<boolean>} Success status
+ */
+async function updateEmbeddings2DBatch(graphDb, coordinates) {
+  const now = Date.now();
+  
+  await graphDb.run("BEGIN TRANSACTION");
+  
+  try {
+    for (const coord of coordinates) {
+      await graphDb.run(
+        `UPDATE semantic_map_embeddings 
+         SET x_2d = ?, y_2d = ?, updated_at = ?
+         WHERE id = ?`,
+        [coord.x2d, coord.y2d, now, coord.id]
+      );
+    }
+    
+    await graphDb.run("COMMIT");
+    return true;
+  } catch (error) {
+    await graphDb.run("ROLLBACK");
+    throw error;
+  }
+}
+
+/**
+ * Delete an embedding
+ * @param {Object} graphDb - Database connection
+ * @param {string} id - Embedding ID
+ * @returns {Promise<boolean>} Success status
+ */
+async function deleteEmbedding(graphDb, id) {
+  const result = await graphDb.run(
+    "DELETE FROM semantic_map_embeddings WHERE id = ?",
+    [id]
+  );
+  
+  return result.changes > 0;
+}
+
+/**
+ * Delete all embeddings
+ * @param {Object} graphDb - Database connection
+ * @returns {Promise<boolean>} Success status
+ */
+async function deleteAllEmbeddings(graphDb) {
+  await graphDb.run("DELETE FROM semantic_map_embeddings");
+  return true;
+}
+
+/**
+ * Generate embedding using OpenAI API
+ * @param {string} text - Text to embed
+ * @param {string} apiKey - OpenAI API key
+ * @param {string} model - Model name (default: text-embedding-3-small)
+ * @returns {Promise<Array>} Embedding vector
+ */
+async function generateEmbeddingOpenAI(text, apiKey, model = "text-embedding-3-small") {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+      input: text,
+      model: model,
+    });
+
+    const options = {
+      hostname: "api.openai.com",
+      path: "/v1/embeddings",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Length": data.length,
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let responseData = "";
+
+      res.on("data", (chunk) => {
+        responseData += chunk;
+      });
+
+      res.on("end", () => {
+        try {
+          const parsed = JSON.parse(responseData);
+          if (parsed.error) {
+            reject(new Error(parsed.error.message || "OpenAI API error"));
+          } else if (parsed.data && parsed.data[0] && parsed.data[0].embedding) {
+            resolve(parsed.data[0].embedding);
+          } else {
+            reject(new Error("Invalid response from OpenAI API"));
+          }
+        } catch (error) {
+          reject(new Error(`Failed to parse OpenAI response: ${error.message}`));
+        }
+      });
+    });
+
+    req.on("error", (error) => {
+      reject(error);
+    });
+
+    req.write(data);
+    req.end();
+  });
+}
+
+/**
+ * Generate embedding using OpenRouter API
+ * @param {string} text - Text to embed
+ * @param {string} apiKey - OpenRouter API key
+ * @param {string} model - Model name (default: BAAI/bge-m3)
+ * @returns {Promise<Array>} Embedding vector
+ */
+async function generateEmbeddingOpenRouter(text, apiKey, model = "BAAI/bge-m3") {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+      input: text,
+      model: model,
+    });
+
+    const options = {
+      hostname: "openrouter.ai",
+      path: "/api/v1/embeddings",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "http://localhost:6825",
+        "X-Title": "Graph App Semantic Map",
+        "Content-Length": data.length,
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let responseData = "";
+
+      res.on("data", (chunk) => {
+        responseData += chunk;
+      });
+
+      res.on("end", () => {
+        try {
+          const parsed = JSON.parse(responseData);
+          if (parsed.error) {
+            reject(new Error(parsed.error.message || "OpenRouter API error"));
+          } else if (parsed.data && parsed.data[0] && parsed.data[0].embedding) {
+            resolve(parsed.data[0].embedding);
+          } else {
+            reject(new Error("Invalid response from OpenRouter API"));
+          }
+        } catch (error) {
+          reject(new Error(`Failed to parse OpenRouter response: ${error.message}`));
+        }
+      });
+    });
+
+    req.on("error", (error) => {
+      reject(error);
+    });
+
+    req.write(data);
+    req.end();
+  });
+}
+
+/**
+ * Generate embedding using SiliconFlow API (BAAI/bge-m3)
+ * @param {string} text - Text to embed
+ * @param {string} apiKey - SiliconFlow API key
+ * @param {string} model - Model name (default: BAAI/bge-m3)
+ * @returns {Promise<Array>} Embedding vector
+ */
+async function generateEmbeddingSiliconFlow(text, apiKey, model = "BAAI/bge-m3") {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify({
+      input: text,
+      model: model,
+    });
+
+    const options = {
+      hostname: "api.siliconflow.cn",
+      path: "/v1/embeddings",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Length": data.length,
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let responseData = "";
+
+      res.on("data", (chunk) => {
+        responseData += chunk;
+      });
+
+      res.on("end", () => {
+        try {
+          const parsed = JSON.parse(responseData);
+          if (parsed.error) {
+            reject(new Error(parsed.error.message || "SiliconFlow API error"));
+          } else if (parsed.data && parsed.data[0] && parsed.data[0].embedding) {
+            resolve(parsed.data[0].embedding);
+          } else {
+            reject(new Error("Invalid response from SiliconFlow API"));
+          }
+        } catch (error) {
+          reject(new Error(`Failed to parse SiliconFlow response: ${error.message}`));
+        }
+      });
+    });
+
+    req.on("error", (error) => {
+      reject(error);
+    });
+
+    req.write(data);
+    req.end();
+  });
+}
+
+/**
+ * Generate embedding based on provider
+ * @param {string} text - Text to embed
+ * @param {string} provider - Provider name (openai, openrouter, siliconflow)
+ * @param {string} apiKey - API key
+ * @param {string} model - Model name
+ * @returns {Promise<Array>} Embedding vector
+ */
+async function generateEmbedding(text, provider, apiKey, model) {
+  switch (provider.toLowerCase()) {
+    case "openai":
+      return await generateEmbeddingOpenAI(text, apiKey, model);
+    case "openrouter":
+      return await generateEmbeddingOpenRouter(text, apiKey, model);
+    case "siliconflow":
+      return await generateEmbeddingSiliconFlow(text, apiKey, model);
+    default:
+      throw new Error(`Unsupported provider: ${provider}`);
+  }
+}
+
+module.exports = {
+  getAllEmbeddings,
+  getEmbeddingById,
+  createEmbedding,
+  updateEmbedding2D,
+  updateEmbeddings2DBatch,
+  deleteEmbedding,
+  deleteAllEmbeddings,
+  generateEmbedding,
+  generateEmbeddingOpenAI,
+  generateEmbeddingOpenRouter,
+  generateEmbeddingSiliconFlow,
+};
+

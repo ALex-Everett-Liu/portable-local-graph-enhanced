@@ -7,6 +7,7 @@ const {
   populateGraphSequenceIds,
 } = require("./src/graph-database");
 const graphRoutes = require("./routes/graphRoutes");
+const semanticMapRoutes = require("./routes/semanticMapRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 6825;
@@ -34,6 +35,9 @@ initializeGraphDatabase()
 
 // Graph plugin routes
 app.use("/api/plugins/graph", graphRoutes);
+
+// Semantic Map routes
+app.use("/api/plugins/semantic-map", semanticMapRoutes);
 
 // Start the server
 app.listen(PORT, () => {
