@@ -14,6 +14,7 @@ import { createNewGraphTemplate } from '../ui/template.js';
 import { openSettingsDialog } from '../ui/dialogs/settingsDialog.js';
 import { showExportDialog } from '../ui/dialogs/exportDialog.js';
 import { showClusteringDialog } from '../ui/dialogs/clusteringDialog.js';
+import { showSemanticMapDialog } from '../ui/dialogs/semanticMapDialog.js';
 
 let hotkeyModeActive = false;
 let sequenceBuffer = '';
@@ -212,6 +213,11 @@ const COMMANDS = {
     'cl': { 
         action: () => showClusteringDialog(), 
         description: 'Graph clustering',
+        requiresCount: false 
+    },
+    'sm': { 
+        action: () => showSemanticMapDialog(), 
+        description: 'Semantic map',
         requiresCount: false 
     },
     
@@ -490,7 +496,7 @@ function showHelpOverlay() {
         'Display Options': ['ea'],
         'View Operations': ['fs', 'sv'],
         'Database Operations': ['md', 'ex'],
-        'Graph Analysis': ['ca', 'cl'],
+        'Graph Analysis': ['ca', 'cl', 'sm'],
         'Layer Management': ['ml'],
         'Template Operations': ['nt'],
         'Settings': ['st'],
