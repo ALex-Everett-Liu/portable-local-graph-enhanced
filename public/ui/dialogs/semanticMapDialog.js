@@ -54,6 +54,12 @@ function setupSemanticMapDialogEvents() {
     if (closeBtn) {
         closeBtn.addEventListener('click', closeSemanticMapDialog);
     }
+
+    // Fullscreen button
+    const fullscreenBtn = document.getElementById('semantic-map-fullscreen-btn');
+    if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+    }
 }
 
 /**
@@ -436,17 +442,35 @@ function updateVisualization() {
 
     const layout = {
         title: 'Semantic Map',
-        xaxis: { title: 'X' },
-        yaxis: { title: 'Y' },
+        xaxis: { 
+            title: 'X',
+            fixedrange: false, // Allow zoom/pan on x-axis
+        },
+        yaxis: { 
+            title: 'Y',
+            fixedrange: false, // Allow zoom/pan on y-axis
+        },
         hovermode: 'closest',
         showlegend: false,
         margin: { l: 50, r: 50, t: 50, b: 50 },
+        dragmode: 'pan', // Default to pan mode (can be changed via toolbar)
     };
 
     const config = {
         responsive: true,
         displayModeBar: true,
         displaylogo: false,
+        modeBarButtonsToRemove: ['lasso2d', 'select2d'], // Keep zoom and pan
+        doubleClick: 'reset', // Double-click to reset zoom
+        toImageButtonOptions: {
+            format: 'png',
+            filename: 'semantic-map',
+            height: 800,
+            width: 1200,
+            scale: 1
+        },
+        // Enable all interactive features
+        scrollZoom: true, // Enable scroll to zoom
     };
 
     // Load Plotly if not already loaded
@@ -455,11 +479,67 @@ function updateVisualization() {
         const script = document.createElement('script');
         script.src = 'https://cdn.plot.ly/plotly-2.26.0.min.js';
         script.onload = () => {
-            Plotly.newPlot(plotDiv, [trace], layout, config);
+            plotlyInstance = Plotly.newPlot(plotDiv, [trace], layout, config);
+            
+            // Store instance for fullscreen resize
+            plotDiv.plotlyInstance = plotlyInstance;
         };
         document.head.appendChild(script);
     } else {
-        Plotly.newPlot(plotDiv, [trace], layout, config);
+        plotlyInstance = Plotly.newPlot(plotDiv, [trace], layout, config);
+        
+        // Store instance for fullscreen resize
+        plotDiv.plotlyInstance = plotlyInstance;
+    }
+}
+
+/**
+ * Toggle fullscreen mode for the semantic map
+ */
+function toggleFullscreen() {
+    const plotDiv = document.getElementById('semantic-map-plot');
+    const dialog = document.getElementById('semantic-map-dialog');
+    const fullscreenBtn = document.getElementById('semantic-map-fullscreen-btn');
+    
+    if (!plotDiv || !dialog) return;
+
+    // Check if already in fullscreen
+    if (plotDiv.classList.contains('semantic-map-fullscreen')) {
+        // Exit fullscreen
+        plotDiv.classList.remove('semantic-map-fullscreen');
+        dialog.classList.remove('semantic-map-fullscreen-dialog');
+        document.body.style.overflow = '';
+        
+        if (fullscreenBtn) {
+            fullscreenBtn.innerHTML = '<i data-lucide="maximize-2" class="icon"></i> Fullscreen';
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+        
+        // Resize plot to fit container
+        if (typeof Plotly !== 'undefined' && plotDiv.plotlyInstance) {
+            Plotly.Plots.resize(plotDiv);
+        }
+    } else {
+        // Enter fullscreen
+        plotDiv.classList.add('semantic-map-fullscreen');
+        dialog.classList.add('semantic-map-fullscreen-dialog');
+        document.body.style.overflow = 'hidden';
+        
+        if (fullscreenBtn) {
+            fullscreenBtn.innerHTML = '<i data-lucide="minimize-2" class="icon"></i> Exit Fullscreen';
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+        
+        // Resize plot to fill screen
+        setTimeout(() => {
+            if (typeof Plotly !== 'undefined' && plotDiv.plotlyInstance) {
+                Plotly.Plots.resize(plotDiv);
+            }
+        }, 100);
     }
 }
 

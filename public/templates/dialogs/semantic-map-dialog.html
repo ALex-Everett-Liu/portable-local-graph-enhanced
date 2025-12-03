@@ -176,7 +176,21 @@
 
             <!-- Right Panel: Visualization -->
             <div style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
-                <div id="semantic-map-plot" style="flex: 1; min-height: 0; border: 1px solid #ddd; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-size: 12px; color: #666;">
+                        Drag to pan • Scroll to zoom • Double-click to reset
+                    </div>
+                    <button
+                        id="semantic-map-fullscreen-btn"
+                        class="tool-btn"
+                        style="padding: 6px 12px; font-size: 12px;"
+                        title="Toggle Fullscreen"
+                    >
+                        <i data-lucide="maximize-2" class="icon"></i>
+                        Fullscreen
+                    </button>
+                </div>
+                <div id="semantic-map-plot" style="flex: 1; min-height: 0; border: 1px solid #ddd; border-radius: 4px; position: relative;">
                     <!-- Plotly visualization will be rendered here -->
                 </div>
             </div>
