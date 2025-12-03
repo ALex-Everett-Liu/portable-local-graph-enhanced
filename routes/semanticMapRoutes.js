@@ -40,5 +40,8 @@ router.delete("/embeddings", semanticMapController.deleteAllEmbeddings);
 // Generate embedding from text
 router.post("/embeddings/generate", semanticMapController.generateEmbedding);
 
+// Perform semantic search
+router.post("/search", semanticMapController.semanticSearch);
+
 module.exports = router;
 

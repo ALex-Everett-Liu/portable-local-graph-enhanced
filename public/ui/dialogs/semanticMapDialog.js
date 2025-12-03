@@ -37,6 +37,22 @@ function setupSemanticMapDialogEvents() {
         loadNodesBtn.addEventListener('click', loadEmbeddingsFromNodes);
     }
 
+    // Semantic search button
+    const searchBtn = document.getElementById('semantic-map-search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', performSemanticSearch);
+    }
+
+    // Semantic search input - allow Enter key to trigger search
+    const searchInput = document.getElementById('semantic-map-search-query');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSemanticSearch();
+            }
+        });
+    }
+
     // Apply dimensionality reduction button
     const reduceBtn = document.getElementById('semantic-map-reduce-btn');
     if (reduceBtn) {
@@ -602,6 +618,233 @@ async function clearAllEmbeddings() {
     } catch (error) {
         console.error('Error clearing embeddings:', error);
         updateStatus(`Error: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Perform semantic search
+ */
+async function performSemanticSearch() {
+    const searchInput = document.getElementById('semantic-map-search-query');
+    const providerSelect = document.getElementById('semantic-map-provider');
+    const modelSelect = document.getElementById('semantic-map-model');
+    const apiKeyInput = document.getElementById('semantic-map-api-key');
+
+    const queryText = searchInput?.value.trim();
+    const provider = providerSelect?.value;
+    const model = modelSelect?.value;
+    const apiKey = apiKeyInput?.value.trim();
+
+    if (!queryText) {
+        updateStatus('Please enter a search query', 'error');
+        return;
+    }
+
+    if (!apiKey) {
+        updateStatus('Please enter API key', 'error');
+        return;
+    }
+
+    updateStatus('Searching...', 'info');
+
+    try {
+        const response = await fetch('/api/plugins/semantic-map/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                queryText,
+                provider,
+                apiKey,
+                model,
+                limit: 10,
+            }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to perform search');
+        }
+
+        const data = await response.json();
+        const results = data.results || [];
+
+        if (results.length === 0) {
+            updateStatus('No results found', 'info');
+            return;
+        }
+
+        updateStatus(`Found ${results.length} results`, 'success');
+        showSearchResults(results, queryText);
+    } catch (error) {
+        console.error('Error performing semantic search:', error);
+        updateStatus(`Error: ${error.message}`, 'error');
+    }
+}
+
+/**
+ * Show search results in a new window
+ */
+function showSearchResults(results, queryText) {
+    // Escape HTML helper function
+    const escapeHtml = (text) => {
+        if (text == null) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return String(text).replace(/[&<>"']/g, (m) => map[m]);
+    };
+
+    // Create results window HTML
+    const resultsHTML = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Semantic Search Results</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                    padding: 20px;
+                    background: #f5f5f5;
+                    color: #333;
+                }
+                .header {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .header h1 {
+                    font-size: 24px;
+                    margin-bottom: 8px;
+                    color: #2c3e50;
+                }
+                .header .query {
+                    color: #666;
+                    font-size: 14px;
+                }
+                .results-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                }
+                .result-item {
+                    background: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    transition: box-shadow 0.2s;
+                }
+                .result-item:hover {
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+                }
+                .result-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    margin-bottom: 12px;
+                }
+                .result-title {
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #2c3e50;
+                    flex: 1;
+                }
+                .similarity-score {
+                    background: #28a745;
+                    color: white;
+                    padding: 6px 12px;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    white-space: nowrap;
+                    margin-left: 12px;
+                }
+                .result-text {
+                    color: #666;
+                    font-size: 14px;
+                    line-height: 1.6;
+                    margin-bottom: 8px;
+                    word-wrap: break-word;
+                    white-space: pre-wrap;
+                }
+                .result-meta {
+                    display: flex;
+                    gap: 16px;
+                    font-size: 12px;
+                    color: #999;
+                    margin-top: 12px;
+                    padding-top: 12px;
+                    border-top: 1px solid #eee;
+                    flex-wrap: wrap;
+                }
+                .result-meta-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                }
+                .no-results {
+                    background: white;
+                    padding: 40px;
+                    text-align: center;
+                    border-radius: 8px;
+                    color: #666;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Semantic Search Results</h1>
+                <div class="query">Query: "${escapeHtml(queryText)}"</div>
+            </div>
+            <div class="results-container">
+                ${results.map((result, index) => `
+                    <div class="result-item">
+                        <div class="result-header">
+                            <div class="result-title">${index + 1}. ${escapeHtml(result.title || 'Untitled')}</div>
+                            <div class="similarity-score">${(result.similarity * 100).toFixed(2)}%</div>
+                        </div>
+                        <div class="result-text">${escapeHtml(result.text || 'No text available')}</div>
+                        <div class="result-meta">
+                            <div class="result-meta-item">
+                                <strong>Model:</strong> ${escapeHtml(result.embeddingModel || 'N/A')}
+                            </div>
+                            ${result.x2d !== null && result.y2d !== null ? `
+                                <div class="result-meta-item">
+                                    <strong>2D Position:</strong> (${result.x2d.toFixed(2)}, ${result.y2d.toFixed(2)})
+                                </div>
+                            ` : ''}
+                            <div class="result-meta-item">
+                                <strong>ID:</strong> ${escapeHtml(result.id.substring(0, 8))}...
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </body>
+        </html>
+    `;
+
+    // Create a new window
+    const resultsWindow = window.open('', '_blank', 'width=900,height=800,scrollbars=yes,resizable=yes');
+    if (resultsWindow) {
+        resultsWindow.document.write(resultsHTML);
+        resultsWindow.document.close();
+    } else {
+        // Fallback: show in a dialog if popup is blocked
+        alert(`Found ${results.length} results. Please allow popups to view results window.\n\nTop result: ${results[0].title || 'Untitled'} (${(results[0].similarity * 100).toFixed(2)}% similarity)`);
     }
 }
 

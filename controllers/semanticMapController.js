@@ -191,6 +191,44 @@ async function generateEmbedding(req, res) {
   }
 }
 
+/**
+ * Perform semantic search
+ */
+async function semanticSearch(req, res) {
+  try {
+    const { queryText, provider, apiKey, model, limit } = req.body;
+    
+    if (!queryText || !provider || !apiKey) {
+      return res.status(400).json({ 
+        error: "Missing required fields: queryText, provider, apiKey" 
+      });
+    }
+    
+    const maxLimit = limit ? Math.min(parseInt(limit, 10), 100) : 10; // Cap at 100 results
+    
+    console.log(`Performing semantic search with provider: ${provider}, model: ${model || 'default'}, limit: ${maxLimit}`);
+    
+    const results = await semanticMapService.semanticSearch(
+      req.graphDb,
+      queryText,
+      provider,
+      apiKey,
+      model,
+      maxLimit
+    );
+    
+    console.log(`Semantic search returned ${results.length} results`);
+    res.json({ results });
+  } catch (error) {
+    console.error("Error performing semantic search:", error);
+    console.error("Error stack:", error.stack);
+    res.status(500).json({ 
+      error: error.message || "Failed to perform semantic search",
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+}
+
 module.exports = {
   getAllEmbeddings,
   getEmbeddingById,
@@ -200,5 +238,6 @@ module.exports = {
   deleteEmbedding,
   deleteAllEmbeddings,
   generateEmbedding,
+  semanticSearch,
 };
 

@@ -418,6 +418,85 @@ async function generateEmbedding(text, provider, apiKey, model) {
   }
 }
 
+/**
+ * Calculate cosine similarity between two vectors
+ * @param {Array<number>} vecA - First vector
+ * @param {Array<number>} vecB - Second vector
+ * @returns {number} Cosine similarity score (0 to 1)
+ */
+function cosineSimilarity(vecA, vecB) {
+  if (vecA.length !== vecB.length) {
+    throw new Error("Vectors must have the same length");
+  }
+
+  let dotProduct = 0;
+  let normA = 0;
+  let normB = 0;
+
+  for (let i = 0; i < vecA.length; i++) {
+    dotProduct += vecA[i] * vecB[i];
+    normA += vecA[i] * vecA[i];
+    normB += vecB[i] * vecB[i];
+  }
+
+  normA = Math.sqrt(normA);
+  normB = Math.sqrt(normB);
+
+  if (normA === 0 || normB === 0) {
+    return 0;
+  }
+
+  return dotProduct / (normA * normB);
+}
+
+/**
+ * Perform semantic search on embeddings
+ * @param {Object} graphDb - Database connection
+ * @param {string} queryText - Text to search for
+ * @param {string} provider - Provider name (openai, openrouter, siliconflow)
+ * @param {string} apiKey - API key
+ * @param {string} model - Model name
+ * @param {number} limit - Maximum number of results (default: 10)
+ * @returns {Promise<Array>} Array of results with similarity scores, sorted by score descending
+ */
+async function semanticSearch(graphDb, queryText, provider, apiKey, model, limit = 10) {
+  // Generate embedding for query text
+  const queryEmbedding = await generateEmbedding(queryText, provider, apiKey, model);
+
+  // Get all embeddings from database
+  const allEmbeddings = await getAllEmbeddings(graphDb);
+
+  if (allEmbeddings.length === 0) {
+    return [];
+  }
+
+  // Calculate similarity scores
+  const results = allEmbeddings.map(embedding => {
+    try {
+      const storedEmbedding = JSON.parse(embedding.embedding_data);
+      const similarity = cosineSimilarity(queryEmbedding, storedEmbedding);
+
+      return {
+        id: embedding.id,
+        text: embedding.text,
+        title: embedding.title,
+        embeddingModel: embedding.embedding_model,
+        similarity: similarity,
+        x2d: embedding.x_2d,
+        y2d: embedding.y_2d,
+        createdAt: embedding.created_at,
+      };
+    } catch (error) {
+      console.error(`Error parsing embedding ${embedding.id}:`, error);
+      return null;
+    }
+  }).filter(result => result !== null); // Remove any failed parsing results
+
+  // Sort by similarity (descending) and return top N
+  results.sort((a, b) => b.similarity - a.similarity);
+  return results.slice(0, limit);
+}
+
 module.exports = {
   getAllEmbeddings,
   getEmbeddingById,
@@ -430,5 +509,7 @@ module.exports = {
   generateEmbeddingOpenAI,
   generateEmbeddingOpenRouter,
   generateEmbeddingSiliconFlow,
+  semanticSearch,
+  cosineSimilarity,
 };
 

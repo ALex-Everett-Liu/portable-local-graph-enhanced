@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.4] - 2025-12-03
+
+### Added
+- Semantic search functionality for semantic map embeddings - search embeddings by semantic similarity
+- Cosine similarity calculation for comparing query embeddings with stored embeddings
+- Semantic search API endpoint (`POST /api/plugins/semantic-map/search`) - returns top 10 most similar embeddings
+- Search input field and button in semantic map dialog for querying embeddings
+- Search results window displaying top 10 results with similarity scores (as percentages)
+- Results window shows: similarity scores, titles, text content, embedding model, 2D coordinates (if available), and IDs
+- Enter key support for triggering semantic search from input field
+- HTML escaping in results window to prevent XSS vulnerabilities
+
+### Changed
+- Semantic map dialog now includes semantic search section with dedicated input and search button
+
+### Technical Details
+- Cosine similarity calculated using dot product and vector norms for accurate semantic matching
+- Search uses same provider/model settings as embedding generation for consistency
+- Results sorted by similarity score (descending) and limited to top 10 by default (configurable up to 100)
+- Results displayed in new popup window with clean, formatted UI
+- Search function (`semanticSearch`) in `semanticMapService.js` handles embedding generation and similarity calculation
+- Controller endpoint validates input and handles errors gracefully
+- Results window uses inline HTML/CSS for standalone display without external dependencies
+
 ## [0.4.3] - 2025-12-03
 
 ### Added
