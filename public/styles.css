@@ -1073,9 +1073,20 @@ body.fullscreen-mode .fullscreen-exit-btn {
     gap: 16px !important;
 }
 
+/* Hide the left control panel in fullscreen */
+#semantic-map-dialog.semantic-map-fullscreen .dialog-content > div:first-of-type > div:first-child {
+    display: none !important;
+}
+
+/* Make the plot area take full width in fullscreen */
+#semantic-map-dialog.semantic-map-fullscreen .dialog-content > div:first-of-type > div:last-child {
+    flex: 1 !important;
+    width: 100% !important;
+}
+
 #semantic-map-dialog.semantic-map-fullscreen #semantic-map-plot {
-    height: calc(100vh - 200px) !important;
-    min-height: calc(100vh - 200px) !important;
+    height: calc(100vh - 100px) !important;
+    min-height: calc(100vh - 100px) !important;
     flex: 1 !important;
 }
 

@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.3] - 2025-12-03
+
+### Added
+- Semantic Map module - visualize semantic relationships using text embeddings
+- Embedding generation support for multiple providers: OpenAI, OpenRouter, and SiliconFlow (BAAI/bge-m3)
+- Semantic map database table (`semantic_map_embeddings`) for storing embeddings with 2D coordinates
+- Plotly.js integration for interactive 2D scatter plot visualization of embeddings
+- Fullscreen mode for semantic map with drag/zoom/pan interactions
+- Dimensionality reduction (simplified PCA-like projection) for visualizing high-dimensional embeddings in 2D
+- "Load from Graph Nodes" feature - automatically generate embeddings for all graph nodes
+- Semantic Map button in sidebar under "Graph Analysis" section
+- Backend API endpoints (`/api/plugins/semantic-map/embeddings`) for CRUD operations on embeddings
+- Embedding generation API endpoint with support for multiple providers and models
+- Batch 2D coordinate updates for efficient dimensionality reduction application
+- Semantic map dialog with controls panel and visualization area
+- Model selection dropdowns that update based on selected provider
+- Status display showing current operation progress and results
+
+### Changed
+- Semantic map fullscreen mode hides left control panel for immersive viewing experience
+- Plotly visualization configured with enhanced interactions: drag to pan, scroll to zoom, double-click to reset
+
+### Fixed
+- Fixed SiliconFlow API integration - corrected input format to use array format as required by API
+- Fixed fullscreen CSS specificity issues - added `!important` flags to override inline styles
+- Fixed dialog centering transform interfering with fullscreen positioning
+- Improved error handling and logging for embedding generation API calls
+
+### Technical Details
+- Database schema includes `semantic_map_embeddings` table with fields: id, text, title, embedding_model, embedding_data (JSON), x_2d, y_2d, timestamps
+- Backend service (`services/semanticMapService.js`) handles embedding generation via HTTPS requests to provider APIs
+- Frontend module (`public/ui/dialogs/semanticMapDialog.js`) manages UI interactions and Plotly visualization
+- Embedding data stored as JSON strings in database, parsed on load for visualization
+- Dimensionality reduction uses simplified PCA-like projection (first two normalized dimensions) - can be enhanced with proper UMAP/t-SNE libraries
+- Fullscreen mode follows same pattern as canvas fullscreen (`fullscreenManager.js`) for consistency
+- Plotly.js loaded dynamically from CDN with fallback handling
+- API key input uses password type for security
+- Status messages provide real-time feedback during embedding generation and reduction operations
+- ESC key support to exit fullscreen mode
+- Semantic map fullscreen hides toolbar, sidebar, and canvas container for focused viewing
+
 ## [0.4.2] - 2025-11-28
 
 ### Added

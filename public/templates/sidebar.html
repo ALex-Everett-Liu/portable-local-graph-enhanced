@@ -1,8 +1,5 @@
 <div class="sidebar" id="local-graph-sidebar">
-    <div
-        class="resize-handle"
-        id="local-graph-resize-handle"
-    ></div>
+    <div class="resize-handle" id="local-graph-resize-handle"></div>
     <div class="sidebar-section">
         <h3>Graph Info</h3>
         <div id="graph-info">
@@ -11,11 +8,7 @@
             <p>Mode: <span id="current-mode">Node</span></p>
             <p
                 id="search-count"
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-top: 8px;
-                "
+                style="font-size: 12px; color: #666; margin-top: 8px"
             >
                 0 nodes
             </p>
@@ -32,23 +25,13 @@
     <div class="sidebar-section">
         <h4>Graph Analysis</h4>
         <div style="margin-bottom: 8px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Calculate centrality measures for all nodes
             </p>
             <button
                 id="calculate-centralities-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Calculate Centralities"
             >
                 <i data-lucide="bar-chart-3" class="icon"></i>
@@ -56,23 +39,13 @@
             </button>
         </div>
         <div style="margin-top: 12px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Detect communities and clusters in the graph
             </p>
             <button
                 id="clustering-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Graph Clustering"
             >
                 <i data-lucide="network" class="icon"></i>
@@ -80,26 +53,16 @@
             </button>
         </div>
         <div style="margin-top: 12px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Visualize semantic relationships using embeddings
             </p>
             <button
                 id="semantic-map-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Semantic Map"
             >
-                <i data-lucide="layout-template" class="icon"></i>
+                <i data-lucide="map-plus" class="icon"></i>
                 Semantic Map
             </button>
         </div>
@@ -108,25 +71,11 @@
     <div class="sidebar-section">
         <h3>Instructions</h3>
         <div class="instructions">
-            <p>
-                <strong>Node Mode:</strong> Click to create
-                nodes
-            </p>
-            <p>
-                <strong>Edge Mode:</strong> Click two nodes to
-                connect
-            </p>
-            <p>
-                <strong>Select Mode:</strong> Click to
-                select/move nodes
-            </p>
-            <p>
-                <strong>Right-click:</strong> Edit node/edge
-                properties
-            </p>
-            <p>
-                <strong>Drag:</strong> Move nodes or pan canvas
-            </p>
+            <p><strong>Node Mode:</strong> Click to create nodes</p>
+            <p><strong>Edge Mode:</strong> Click two nodes to connect</p>
+            <p><strong>Select Mode:</strong> Click to select/move nodes</p>
+            <p><strong>Right-click:</strong> Edit node/edge properties</p>
+            <p><strong>Drag:</strong> Move nodes or pan canvas</p>
             <p><strong>Scroll:</strong> Zoom in/out</p>
         </div>
     </div>
@@ -157,29 +106,16 @@
     <div class="sidebar-section">
         <h4>View</h4>
         <div style="margin-bottom: 8px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Enter fullscreen mode for immersive canvas experience
             </p>
             <button
                 id="fullscreen-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Toggle Fullscreen"
             >
-                <i
-                    data-lucide="maximize-2"
-                    class="icon"
-                ></i>
+                <i data-lucide="maximize-2" class="icon"></i>
                 Fullscreen Canvas
             </button>
         </div>
@@ -188,29 +124,16 @@
     <div class="sidebar-section">
         <h4>View State</h4>
         <div style="margin-bottom: 8px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Save current zoom and pan position
             </p>
             <button
                 id="save-view-state-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Save View State"
             >
-                <i
-                    data-lucide="hard-drive-download"
-                    class="icon"
-                ></i>
+                <i data-lucide="hard-drive-download" class="icon"></i>
                 Save View
             </button>
         </div>
@@ -219,23 +142,13 @@
     <div class="sidebar-section">
         <h4>Create Edge</h4>
         <div style="margin-bottom: 8px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Connect distant nodes via search
             </p>
             <button
                 id="create-edge-search-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Create Edge via Search"
             >
                 <i data-lucide="link-2" class="icon"></i>
@@ -247,23 +160,13 @@
     <div class="sidebar-section">
         <h4>Database Operations</h4>
         <div style="margin-bottom: 8px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Merge data from another database
             </p>
             <button
                 id="merge-db-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Merge Database"
             >
                 <i data-lucide="git-merge" class="icon"></i>
@@ -271,23 +174,13 @@
             </button>
         </div>
         <div style="margin-top: 12px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Export all tables as JSON or CSV
             </p>
             <button
                 id="export-db-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Export Database"
             >
                 <i data-lucide="download" class="icon"></i>
@@ -301,22 +194,14 @@
         <div style="margin-bottom: 8px">
             <p
                 id="layer-summary"
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
+                style="font-size: 12px; color: #666; margin-bottom: 8px"
             >
                 No layers defined
             </p>
             <button
                 id="manage-layers-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Manage Layers"
             >
                 <i data-lucide="layers" class="icon"></i>
@@ -326,11 +211,7 @@
         <div style="margin-top: 8px">
             <div style="margin-bottom: 8px">
                 <label
-                    style="
-                        font-size: 11px;
-                        display: block;
-                        margin-bottom: 4px;
-                    "
+                    style="font-size: 11px; display: block; margin-bottom: 4px"
                 >
                     Filter Mode:
                 </label>
@@ -375,29 +256,16 @@
     <div class="sidebar-section">
         <h4>Templates</h4>
         <div style="margin-bottom: 8px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Start fresh with a template
             </p>
             <button
                 id="new-template-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="New Graph Template"
             >
-                <i
-                    data-lucide="layout-template"
-                    class="icon"
-                ></i>
+                <i data-lucide="layout-template" class="icon"></i>
                 New Graph Template
             </button>
         </div>
@@ -406,23 +274,13 @@
     <div class="sidebar-section">
         <h4>Settings</h4>
         <div style="margin-bottom: 8px">
-            <p
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    margin-bottom: 8px;
-                "
-            >
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
                 Customize application preferences
             </p>
             <button
                 id="settings-btn"
                 class="tool-btn"
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    font-size: 12px;
-                "
+                style="width: 100%; padding: 8px; font-size: 12px"
                 title="Settings"
             >
                 <i data-lucide="settings" class="icon"></i>
@@ -431,4 +289,3 @@
         </div>
     </div>
 </div>
-
