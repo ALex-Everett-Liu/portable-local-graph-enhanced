@@ -275,16 +275,43 @@ async function generateEmbeddingOpenRouter(text, apiKey, model = "BAAI/bge-m3") 
  */
 async function generateEmbeddingSiliconFlow(text, apiKey, model = "BAAI/bge-m3") {
   return new Promise((resolve, reject) => {
+    // Validate input
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      reject(new Error("Input text must be a non-empty string"));
+      return;
+    }
+    
+    // Validate model name
+    const validModels = [
+      "BAAI/bge-large-zh-v1.5",
+      "BAAI/bge-large-en-v1.5",
+      "netease-youdao/bce-embedding-base_v1",
+      "BAAI/bge-m3",
+      "Pro/BAAI/bge-m3",
+      "Qwen/Qwen3-Embedding-8B",
+      "Qwen/Qwen3-Embedding-4B",
+      "Qwen/Qwen3-Embedding-0.6B"
+    ];
+    
+    if (!validModels.includes(model)) {
+      console.warn(`[SiliconFlow] Model ${model} not in validated list, but proceeding anyway`);
+    }
+    
+    // SiliconFlow API expects: { model: "...", input: "..." or ["..."] }
+    // According to docs, input can be string or array of strings
+    // Some examples show array format, so let's try array format first
+    const trimmedText = text.trim();
     const requestBody = {
       model: model,
-      input: text,
+      input: [trimmedText], // Use array format as shown in some examples
     };
     
     const data = JSON.stringify(requestBody);
     
     console.log(`[SiliconFlow] Request: POST https://api.siliconflow.cn/v1/embeddings`);
     console.log(`[SiliconFlow] Model: ${model}`);
-    console.log(`[SiliconFlow] Input length: ${text.length} characters`);
+    console.log(`[SiliconFlow] Input: "${trimmedText.substring(0, 100)}${trimmedText.length > 100 ? '...' : ''}"`);
+    console.log(`[SiliconFlow] Request body: ${data}`);
 
     const options = {
       hostname: "api.siliconflow.cn",
@@ -293,9 +320,11 @@ async function generateEmbeddingSiliconFlow(text, apiKey, model = "BAAI/bge-m3")
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
-        "Content-Length": data.length,
+        "Content-Length": Buffer.byteLength(data, 'utf8'), // Use byte length, not string length
       },
     };
+    
+    console.log(`[SiliconFlow] Headers:`, JSON.stringify(options.headers, null, 2).replace(apiKey, '***REDACTED***'));
 
     const req = https.request(options, (res) => {
       let responseData = "";
@@ -339,8 +368,10 @@ async function generateEmbeddingSiliconFlow(text, apiKey, model = "BAAI/bge-m3")
           // Parse response according to SiliconFlow API format
           // Response format: { model: "...", data: [{ object: "embedding", embedding: [...], index: 0 }] }
           if (parsed.data && Array.isArray(parsed.data) && parsed.data.length > 0) {
+            // When input is an array, response.data is an array with one item per input
+            // Since we send a single item array, we get back a single item
             const embeddingData = parsed.data[0];
-            if (embeddingData.embedding && Array.isArray(embeddingData.embedding)) {
+            if (embeddingData && embeddingData.embedding && Array.isArray(embeddingData.embedding)) {
               console.log(`[SiliconFlow] Successfully generated embedding with ${embeddingData.embedding.length} dimensions`);
               resolve(embeddingData.embedding);
             } else {
