@@ -1,6 +1,8 @@
 # Graph App
 
-An independent desktop application for creating and visualizing graph networks. This is a standalone version of the Graph Plugin extracted from the Luhmann Roam project.
+An independent desktop application for creating and visualizing graph networks. This is a standalone version of the Graph Plugin extracted from my Luhmann Roam project.
+
+Inspired by Gephi, Roam Research and Obsidian.
 
 ## Features
 
