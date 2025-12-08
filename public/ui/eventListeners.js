@@ -7,11 +7,6 @@ import {
   handleLoadCancel,
 } from "./dialogs/loadDialog.js";
 import {
-  showSaveAsDialog,
-  handleSaveAsOK,
-  handleSaveAsCancel,
-} from "./dialogs/saveAsDialog.js";
-import {
   showMergeDialog,
   handleMergeOK,
   handleMergeCancel,
@@ -65,10 +60,6 @@ export function setupEventListeners() {
     .getElementById("load-btn")
     .addEventListener("click", () => showLoadDialog());
 
-  // Save As button
-  document
-    .getElementById("save-as-btn")
-    .addEventListener("click", () => showSaveAsDialog());
 
   // Action buttons
   document.getElementById("clear-btn").addEventListener("click", clearGraph);
@@ -340,26 +331,6 @@ export function setupDialogs() {
   const loadCancel = document.getElementById("load-cancel");
   if (loadCancel) {
     loadCancel.addEventListener("click", handleLoadCancel);
-  }
-
-  // Save As dialog handlers
-  const saveAsOk = document.getElementById("save-as-ok");
-  if (saveAsOk) {
-    saveAsOk.addEventListener("click", handleSaveAsOK);
-  }
-  const saveAsCancel = document.getElementById("save-as-cancel");
-  if (saveAsCancel) {
-    saveAsCancel.addEventListener("click", handleSaveAsCancel);
-  }
-
-  // Allow Enter key to submit Save As dialog
-  const saveAsFilename = document.getElementById("save-as-filename");
-  if (saveAsFilename) {
-    saveAsFilename.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        handleSaveAsOK();
-      }
-    });
   }
 
   // Setup pagination listeners

@@ -170,12 +170,12 @@ function getCommandCategory(key) {
     if (key.startsWith('e') && ['en', 'ee'].includes(key)) return 'Edit';
     if (key === 'ea') return 'Display Options';
     if (['fs', 'sv'].includes(key)) return 'View Operations';
-    if (['md', 'ex'].includes(key)) return 'Database Operations';
+    if (['md', 'ex', 'w'].includes(key)) return 'Database Operations';
     if (['ca', 'cl', 'sm'].includes(key)) return 'Graph Analysis';
     if (key === 'ml') return 'Layer Management';
     if (key === 'nt') return 'Template Operations';
     if (key === 'st') return 'Settings';
-    if (['f', 'l', 'w', 'c'].includes(key)) return 'Navigation';
+    if (['f', 'l', 'c'].includes(key)) return 'Navigation';
     if (key === '?') return 'Help';
     return 'Other';
 }

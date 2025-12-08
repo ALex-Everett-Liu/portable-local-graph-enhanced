@@ -3,7 +3,7 @@ import { setMode } from './modeManager.js';
 import { getGraph } from '../state/appState.js';
 import { showLoadDialog } from '../ui/dialogs/loadDialog.js';
 import { showSearchDialog } from '../ui/dialogs/searchDialog.js';
-import { showSaveAsDialog } from '../ui/dialogs/saveAsDialog.js';
+import { backupCurrentDatabase } from '../services/databaseService.js';
 import { showEdgeSearchDialog } from '../ui/dialogs/edgeSearchDialog.js';
 import { clearGraph } from '../ui/saveDiscardUI.js';
 import { toggleFullscreen } from './fullscreenManager.js';
@@ -142,8 +142,10 @@ const COMMANDS = {
         requiresCount: false 
     },
     'w': { 
-        action: () => showSaveAsDialog(), 
-        description: 'Write/Save As',
+        action: async () => {
+            await backupCurrentDatabase();
+        }, 
+        description: 'Write/Backup Database',
         requiresCount: false 
     },
     'c': { 
@@ -495,12 +497,12 @@ function showHelpOverlay() {
         'Edge Operations': ['ce', 'de', 'ee', 'ces'],
         'Display Options': ['ea'],
         'View Operations': ['fs', 'sv'],
-        'Database Operations': ['md', 'ex'],
+        'Database Operations': ['md', 'ex', 'w'],
         'Graph Analysis': ['ca', 'cl', 'sm'],
         'Layer Management': ['ml'],
         'Template Operations': ['nt'],
         'Settings': ['st'],
-        'Navigation': ['f', 'l', 'w', 'c'],
+        'Navigation': ['f', 'l', 'c'],
         'Help': ['?']
     };
     

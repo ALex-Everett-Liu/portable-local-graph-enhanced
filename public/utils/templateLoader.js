@@ -55,7 +55,6 @@ export async function initializeTemplates() {
         { path: 'templates/dialogs/weight-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/node-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/load-dialog.html', target: '.canvas-container', mode: 'append' },
-        { path: 'templates/dialogs/save-as-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/node-search-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/node-connections-dialog.html', target: '.canvas-container', mode: 'append' },
         { path: 'templates/dialogs/edge-search-dialog.html', target: '.canvas-container', mode: 'append' },

@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template now includes 2 nodes and 1 edge as a proper sample template (instead of just 1 node)
 - Updated button text and description to reflect safe behavior - removed misleading warnings about data deletion
 - Template creates database files with format `graph-YYYY-MM-DDTHH-MM-SS.db` for easy identification
+- Removed "Save As" button and dialog - replaced with "Backup Database" button for simpler workflow
+- Hotkey `w` now triggers database backup instead of Save As dialog
+- Command palette updated - backup command moved to "Database Operations" category
 
 ### Added
 - New API endpoint `POST /api/plugins/graph/new-database` for creating empty database files
@@ -36,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All database operations now use proper file creation instead of data deletion
 - Backup feature uses saveAs API internally to create timestamped copies without switching databases
 - Backup filenames automatically generated from current database name with ISO timestamp format
+- Save As functionality removed from UI - users can rename backup files manually if needed
+- Simplified workflow: Backup Database button provides one-click timestamped backups
 
 ## [0.4.4] - 2025-12-03
 
