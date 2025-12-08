@@ -1,8 +1,8 @@
 // Template functionality - Start new graph from template
-// This creates a fresh graph with 1 node at center and scale set to 2
+// This creates a fresh graph with 2 nodes and 1 edge as a sample template
 
 import { getGraph } from '../state/appState.js';
-import { createNewDatabase, saveNodeToDb, saveViewStateToDb, loadGraphFromDb } from '../services/databaseService.js';
+import { createNewDatabase, saveNodeToDb, saveEdgeToDb, saveViewStateToDb, loadGraphFromDb } from '../services/databaseService.js';
 import { unsavedChanges, originalState } from '../state/appState.js';
 import { updateSaveButtonVisibility } from './saveDiscardUI.js';
 
@@ -43,22 +43,26 @@ export async function createNewGraphTemplate() {
         const worldCenterX = (screenCenterX - graph.offset.x) / graph.scale;
         const worldCenterY = (screenCenterY - graph.offset.y) / graph.scale;
 
-        // Create a node at the center
-        const node = graph.addNode(worldCenterX, worldCenterY, 'Node 1');
+        // Create two nodes positioned horizontally (left and right of center)
+        const nodeSpacing = 150; // World coordinate spacing between nodes
+        const node1 = graph.addNode(worldCenterX - nodeSpacing / 2, worldCenterY, 'Node 1');
+        const node2 = graph.addNode(worldCenterX + nodeSpacing / 2, worldCenterY, 'Node 2');
 
-        // Save the node to database
-        await saveNodeToDb(node);
+        // Save both nodes to database
+        await saveNodeToDb(node1);
+        await saveNodeToDb(node2);
+
+        // Create an edge connecting the two nodes
+        const edge = graph.addEdge(node1, node2, 1.0);
+
+        // Save the edge to database
+        await saveEdgeToDb(edge);
 
         // Save view state (scale and offset) to database
         await saveViewStateToDb();
 
-        // Clear unsaved changes tracking
-        unsavedChanges.nodes.clear();
-        unsavedChanges.edges.clear();
-        unsavedChanges.viewState = null;
-        originalState.nodes.clear();
-        originalState.edges.clear();
-        originalState.viewState = null;
+        // Reload from database to ensure originalState is properly populated
+        await loadGraphFromDb();
 
         // Update UI
         updateSaveButtonVisibility();
