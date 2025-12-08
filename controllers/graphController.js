@@ -216,6 +216,14 @@ exports.switchDatabase = async (req, res) => {
  * POST /api/plugins/graph/save-as
  */
 exports.saveAs = async (req, res) => {
+  const sqlite3 = require("sqlite3").verbose();
+  const { open } = require("sqlite");
+  const path = require("path");
+  const fs = require("fs").promises;
+  const { ensureDatabaseDirectory } = require("../src/graph-database");
+  
+  let newDb = null;
+  
   try {
     const { filename } = req.body;
     if (!filename) {
@@ -232,19 +240,14 @@ exports.saveAs = async (req, res) => {
       return res.status(400).json({ error: "Filename cannot contain path separators" });
     }
 
-    // Export current graph data
+    // Export current graph data BEFORE switching databases
     const graphData = await graphService.exportGraphData(req.graphDb);
 
-    // Create new database file path in the database directory
-    const path = require("path");
-    const { getDatabaseDirectory, ensureDatabaseDirectory } = require("../src/graph-database");
-    
     // Ensure database directory exists and get its path
     const dbDir = await ensureDatabaseDirectory();
     const newDbPath = path.join(dbDir, filename);
 
     // Check if file already exists
-    const fs = require("fs").promises;
     try {
       await fs.access(newDbPath);
       return res.status(400).json({ error: "File already exists. Please choose a different name." });
@@ -252,12 +255,22 @@ exports.saveAs = async (req, res) => {
       // File doesn't exist, proceed
     }
 
-    // Switch to new database (this will create it)
-    await switchDatabase(newDbPath);
+    // Create a temporary connection to the new database WITHOUT switching the global manager
+    // This ensures the original database remains active
+    newDb = await open({
+      filename: newDbPath,
+      driver: sqlite3.Database,
+    });
+
+    // Initialize schema in the new database
+    await initializeDatabaseSchema(newDb);
 
     // Import graph data to new database
-    const newDb = await require("../src/graph-database").getGraphDb();
     await graphService.importGraphData(newDb, graphData);
+
+    // Close the temporary connection
+    await newDb.close();
+    newDb = null;
 
     res.json({ 
       success: true, 
@@ -266,10 +279,148 @@ exports.saveAs = async (req, res) => {
       filename: filename
     });
   } catch (error) {
+    // Ensure we close the connection even if there's an error
+    if (newDb) {
+      try {
+        await newDb.close();
+      } catch (closeError) {
+        console.error("Error closing new database connection:", closeError);
+      }
+    }
     console.error("Error saving as:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
+/**
+ * Initialize database schema for a given database connection
+ * This is a helper function that doesn't rely on the global database manager
+ */
+async function initializeDatabaseSchema(db) {
+  // Create graph_nodes table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS graph_nodes (
+      id TEXT PRIMARY KEY,
+      x REAL NOT NULL,
+      y REAL NOT NULL,
+      label TEXT NOT NULL,
+      color TEXT DEFAULT '#3b82f6',
+      radius REAL DEFAULT 20,
+      created_at INTEGER,
+      updated_at INTEGER
+    )
+  `);
+
+  // Create graph_edges table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS graph_edges (
+      id TEXT PRIMARY KEY,
+      from_node_id TEXT NOT NULL,
+      to_node_id TEXT NOT NULL,
+      weight REAL DEFAULT 1.0,
+      created_at INTEGER,
+      updated_at INTEGER,
+      FOREIGN KEY (from_node_id) REFERENCES graph_nodes (id) ON DELETE CASCADE,
+      FOREIGN KEY (to_node_id) REFERENCES graph_nodes (id) ON DELETE CASCADE
+    )
+  `);
+
+  // Create graph_metadata table for storing view state (scale, offset)
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS graph_metadata (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      scale REAL DEFAULT 1.0,
+      offset_x REAL DEFAULT 0,
+      offset_y REAL DEFAULT 0,
+      updated_at INTEGER
+    )
+  `);
+
+  // Create indexes for better performance
+  await db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_graph_edges_from ON graph_edges(from_node_id);
+    CREATE INDEX IF NOT EXISTS idx_graph_edges_to ON graph_edges(to_node_id);
+  `);
+
+  // Add sequence_id columns to graph_nodes and graph_edges tables
+  try {
+    await db.exec(`ALTER TABLE graph_nodes ADD COLUMN sequence_id INTEGER;`);
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_graph_nodes_sequence_id ON graph_nodes(sequence_id);`,
+    );
+  } catch (error) {
+    // Column or index already exists, ignore
+  }
+
+  try {
+    await db.exec(`ALTER TABLE graph_edges ADD COLUMN sequence_id INTEGER;`);
+    await db.exec(
+      `CREATE INDEX IF NOT EXISTS idx_graph_edges_sequence_id ON graph_edges(sequence_id);`,
+    );
+  } catch (error) {
+    // Column or index already exists, ignore
+  }
+
+  // Add chinese_label column to graph_nodes table
+  try {
+    await db.exec(`ALTER TABLE graph_nodes ADD COLUMN chinese_label TEXT;`);
+  } catch (error) {
+    // Column already exists, ignore
+  }
+
+  // Add category column to graph_nodes table
+  try {
+    await db.exec(`ALTER TABLE graph_nodes ADD COLUMN category TEXT;`);
+  } catch (error) {
+    // Column already exists, ignore
+  }
+
+  // Add category column to graph_edges table
+  try {
+    await db.exec(`ALTER TABLE graph_edges ADD COLUMN category TEXT;`);
+  } catch (error) {
+    // Column already exists, ignore
+  }
+
+  // Add layers column to graph_nodes table
+  try {
+    await db.exec(`ALTER TABLE graph_nodes ADD COLUMN layers TEXT;`);
+  } catch (error) {
+    // Column already exists, ignore
+  }
+
+  // Create filter_state table for storing layer filter state
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS filter_state (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      layer_filter_enabled INTEGER DEFAULT 0,
+      layer_filter_active_layers TEXT DEFAULT '[]',
+      layer_filter_mode TEXT DEFAULT 'include',
+      updated_at INTEGER
+    )
+  `);
+
+  // Create semantic_map_embeddings table for storing text embeddings
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS semantic_map_embeddings (
+      id TEXT PRIMARY KEY,
+      text TEXT NOT NULL,
+      title TEXT,
+      embedding_model TEXT NOT NULL,
+      embedding_data TEXT NOT NULL,
+      x_2d REAL,
+      y_2d REAL,
+      created_at INTEGER,
+      updated_at INTEGER
+    )
+  `);
+
+  // Create index for better query performance
+  await db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_semantic_map_embeddings_model 
+    ON semantic_map_embeddings(embedding_model);
+  `);
+}
 
 /**
  * Export all database tables
