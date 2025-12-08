@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
+## [0.4.5] - 2025-01-15
+
+### Fixed
+- **CRITICAL BUG FIX:** Fixed "New Template" button causing permanent data loss - button now creates a new database file instead of deleting all data from current database
+- Fixed template functionality to properly create new database files with unique timestamp-based filenames
+- Removed dangerous data deletion warnings - button now safely creates new workspace without affecting existing data
+
+### Changed
+- "New Template" button now creates a new empty database file and switches to it, preserving all existing databases
+- Template now includes 2 nodes and 1 edge as a proper sample template (instead of just 1 node)
+- Updated button text and description to reflect safe behavior - removed misleading warnings about data deletion
+- Template creates database files with format `graph-YYYY-MM-DDTHH-MM-SS.db` for easy identification
+
+### Added
+- New API endpoint `POST /api/plugins/graph/new-database` for creating empty database files
+- `createNewDatabase()` function in `databaseService.js` for safe database file creation
+- Template now initializes with 2 connected nodes positioned horizontally as a working example
+
+### Technical Details
+- New template functionality creates a fresh database file instead of clearing current database
+- Database switching properly implemented to preserve all existing database files
+- Template includes proper sample data (2 nodes, 1 edge) to demonstrate graph functionality
+- Original database files remain completely untouched when creating new templates
+- All database operations now use proper file creation instead of data deletion
+
 ## [0.4.4] - 2025-12-03
 
 ### Added
