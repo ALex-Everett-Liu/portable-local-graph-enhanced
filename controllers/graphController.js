@@ -293,6 +293,80 @@ exports.saveAs = async (req, res) => {
 };
 
 /**
+ * Create a new empty database file
+ * POST /api/plugins/graph/new-database
+ */
+exports.createNewDatabase = async (req, res) => {
+  const sqlite3 = require("sqlite3").verbose();
+  const { open } = require("sqlite");
+  const path = require("path");
+  const fs = require("fs").promises;
+  const { ensureDatabaseDirectory } = require("../src/graph-database");
+  
+  let newDb = null;
+  
+  try {
+    const { filename } = req.body;
+    if (!filename) {
+      return res.status(400).json({ error: "filename is required" });
+    }
+
+    // Validate filename
+    if (!filename.endsWith('.db')) {
+      return res.status(400).json({ error: "Filename must end with .db" });
+    }
+
+    // Validate filename doesn't contain path separators
+    if (filename.includes('/') || filename.includes('\\')) {
+      return res.status(400).json({ error: "Filename cannot contain path separators" });
+    }
+
+    // Ensure database directory exists and get its path
+    const dbDir = await ensureDatabaseDirectory();
+    const newDbPath = path.join(dbDir, filename);
+
+    // Check if file already exists
+    try {
+      await fs.access(newDbPath);
+      return res.status(400).json({ error: "File already exists. Please choose a different name." });
+    } catch {
+      // File doesn't exist, proceed
+    }
+
+    // Create a new empty database with schema initialized
+    newDb = await open({
+      filename: newDbPath,
+      driver: sqlite3.Database,
+    });
+
+    // Initialize schema in the new database
+    await initializeDatabaseSchema(newDb);
+
+    // Close the connection
+    await newDb.close();
+    newDb = null;
+
+    res.json({ 
+      success: true,
+      message: "New database file created",
+      filePath: newDbPath,
+      filename: filename
+    });
+  } catch (error) {
+    // Ensure we close the connection even if there's an error
+    if (newDb) {
+      try {
+        await newDb.close();
+      } catch (closeError) {
+        console.error("Error closing new database connection:", closeError);
+      }
+    }
+    console.error("Error creating new database:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
  * Initialize database schema for a given database connection
  * This is a helper function that doesn't rely on the global database manager
  */

@@ -2,11 +2,9 @@
 // This creates a fresh graph with 1 node at center and scale set to 2
 
 import { getGraph } from '../state/appState.js';
-import { clearGraphInDb, saveNodeToDb, saveViewStateToDb } from '../services/databaseService.js';
+import { createNewDatabase, saveNodeToDb, saveViewStateToDb, loadGraphFromDb } from '../services/databaseService.js';
 import { unsavedChanges, originalState } from '../state/appState.js';
 import { updateSaveButtonVisibility } from './saveDiscardUI.js';
-
-const API_BASE = '/api/plugins/graph';
 
 export async function createNewGraphTemplate() {
     // Get graph instance
@@ -16,26 +14,13 @@ export async function createNewGraphTemplate() {
         return;
     }
 
-    // Check if there are unsaved changes
-    const hasUnsavedChanges = (
-        (unsavedChanges.nodes && unsavedChanges.nodes.size > 0) ||
-        (unsavedChanges.edges && unsavedChanges.edges.size > 0) ||
-        unsavedChanges.viewState !== null
-    );
-
-    if (hasUnsavedChanges) {
-        const proceed = confirm(
-            'You have unsaved changes. Creating a new template will discard them.\n\n' +
-            'Do you want to continue?'
-        );
-        if (!proceed) {
-            return;
-        }
-    }
-
     try {
-        // Clear the current graph from database
-        await clearGraphInDb();
+        // Generate a unique filename with timestamp
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        const filename = `graph-${timestamp}.db`;
+
+        // Create a new empty database file and switch to it
+        await createNewDatabase(filename);
 
         // Clear the graph instance (this resets scale to 1, offset to {0,0})
         graph.clear();

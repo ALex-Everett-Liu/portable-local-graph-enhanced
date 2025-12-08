@@ -347,6 +347,33 @@ export async function saveAsDatabase(filename) {
     }
 }
 
+export async function createNewDatabase(filename) {
+    try {
+        const response = await fetch(`${API_BASE}/new-database`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to create new database');
+        }
+        
+        const result = await response.json();
+        
+        // Switch to the new database
+        await loadDatabase(result.filePath);
+        
+        console.log(`Created new database: ${filename}`);
+        return result;
+    } catch (error) {
+        console.error('Error creating new database:', error);
+        alert(`Failed to create new database: ${error.message}`);
+        throw error;
+    }
+}
+
 export async function fetchDatabases() {
     try {
         const response = await fetch(`${API_BASE}/databases`);
