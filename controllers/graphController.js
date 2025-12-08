@@ -1,6 +1,6 @@
 // graphController.js - HTTP logic for Graph Plugin operations
 const graphService = require("../services/graphService");
-const { listDatabaseFiles, switchDatabase } = require("../src/graph-database");
+const { listDatabaseFiles, switchDatabase, getCurrentDatabasePath } = require("../src/graph-database");
 
 /**
  * Get all graph data
@@ -207,6 +207,27 @@ exports.switchDatabase = async (req, res) => {
     res.json({ success: true, message: "Database switched successfully" });
   } catch (error) {
     console.error("Error switching database:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
+ * Get current database file path
+ * GET /api/plugins/graph/current-database
+ */
+exports.getCurrentDatabase = async (req, res) => {
+  try {
+    const dbPath = getCurrentDatabasePath();
+    const path = require("path");
+    const filename = path.basename(dbPath);
+    
+    res.json({ 
+      success: true,
+      filePath: dbPath,
+      filename: filename
+    });
+  } catch (error) {
+    console.error("Error getting current database:", error);
     res.status(500).json({ error: error.message });
   }
 };

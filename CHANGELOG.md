@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New API endpoint `POST /api/plugins/graph/new-database` for creating empty database files
 - `createNewDatabase()` function in `databaseService.js` for safe database file creation
 - Template now initializes with 2 connected nodes positioned horizontally as a working example
+- Database backup functionality - "Backup Database" button in sidebar for quick timestamped backups
+- New API endpoint `GET /api/plugins/graph/current-database` to get current database file information
+- `backupCurrentDatabase()` function that creates backups with format `{name}-backup-{timestamp}.db`
 
 ### Technical Details
 - New template functionality creates a fresh database file instead of clearing current database
@@ -31,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template includes proper sample data (2 nodes, 1 edge) to demonstrate graph functionality
 - Original database files remain completely untouched when creating new templates
 - All database operations now use proper file creation instead of data deletion
+- Backup feature uses saveAs API internally to create timestamped copies without switching databases
+- Backup filenames automatically generated from current database name with ISO timestamp format
 
 ## [0.4.4] - 2025-12-03
 

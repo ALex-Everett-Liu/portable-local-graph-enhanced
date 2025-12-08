@@ -387,6 +387,60 @@ export async function fetchDatabases() {
     }
 }
 
+export async function getCurrentDatabase() {
+    try {
+        const response = await fetch(`${API_BASE}/current-database`);
+        if (!response.ok) {
+            throw new Error('Failed to get current database');
+        }
+        
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error getting current database:', error);
+        throw error;
+    }
+}
+
+export async function backupCurrentDatabase() {
+    try {
+        // Get current database info
+        const currentDb = await getCurrentDatabase();
+        const currentFilename = currentDb.filename;
+        
+        // Extract base name without extension
+        const baseName = currentFilename.replace(/\.db$/, '');
+        
+        // Generate timestamp-based backup filename
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        const backupFilename = `${baseName}-backup-${timestamp}.db`;
+        
+        // Use saveAs to create the backup
+        const response = await fetch(`${API_BASE}/save-as`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: backupFilename })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to backup database');
+        }
+        
+        const result = await response.json();
+        
+        // Show success message (backup doesn't switch databases, stays on current)
+        alert(`Database backed up successfully to "${backupFilename}"\n\nYour current database remains active.`);
+        
+        console.log(`Database backed up to: ${backupFilename}`);
+        return result;
+    } catch (error) {
+        console.error('Error backing up database:', error);
+        alert(`Failed to backup database: ${error.message}`);
+        throw error;
+    }
+}
+
 /**
  * Export all database tables
  * @param {string} format - 'json' or 'csv'

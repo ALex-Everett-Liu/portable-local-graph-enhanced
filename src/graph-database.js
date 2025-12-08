@@ -333,6 +333,14 @@ async function switchDatabase(filePath) {
   return manager;
 }
 
+/**
+ * Get the current database file path
+ */
+function getCurrentDatabasePath() {
+  const manager = getDatabaseManager();
+  return manager.getCurrentPath();
+}
+
 module.exports = {
   getGraphDb,
   getDatabaseManager,
@@ -342,5 +350,6 @@ module.exports = {
   switchDatabase,
   getDatabaseDirectory,
   ensureDatabaseDirectory,
+  getCurrentDatabasePath,
 };
 

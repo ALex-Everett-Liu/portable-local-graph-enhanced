@@ -58,6 +58,9 @@ router.get("/databases", graphController.listDatabases);
 // Switch to a different database file
 router.post("/switch-database", graphController.switchDatabase);
 
+// Get current database file path
+router.get("/current-database", graphController.getCurrentDatabase);
+
 // Save current graph to a new database file
 router.post("/save-as", graphController.saveAs);
 

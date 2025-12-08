@@ -91,6 +91,15 @@ export function setupEventListeners() {
     mergeDbBtn.addEventListener("click", () => showMergeDialog());
   }
 
+  // Backup Database button
+  const backupDbBtn = document.getElementById("backup-db-btn");
+  if (backupDbBtn) {
+    backupDbBtn.addEventListener("click", async () => {
+      const { backupCurrentDatabase } = await import("../services/databaseService.js");
+      await backupCurrentDatabase();
+    });
+  }
+
   // Export Database button
   const exportDbBtn = document.getElementById("export-db-btn");
   if (exportDbBtn) {
