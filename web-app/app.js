@@ -83,6 +83,41 @@ async function loadDatabase(file) {
 }
 
 /**
+ * Sample graph gallery configuration
+ * Add your sample JSON files here with metadata
+ */
+const SAMPLE_GRAPHS = [
+    {
+        id: 'basic-sample',
+        filename: 'sample-graph.json',
+        title: 'Basic Sample',
+        description: 'A simple graph with 2 nodes and 1 edge to get you started',
+        category: 'Getting Started',
+        nodeCount: 2,
+        edgeCount: 1
+    }
+    // Add more sample graphs here as you prepare them:
+    // {
+    //     id: 'science-sample',
+    //     filename: 'samples/science-graph.json',
+    //     title: 'Science Network',
+    //     description: 'Explore connections between scientific concepts and discoveries',
+    //     category: 'Science',
+    //     nodeCount: 50,
+    //     edgeCount: 120
+    // },
+    // {
+    //     id: 'history-sample',
+    //     filename: 'samples/history-graph.json',
+    //     title: 'Historical Timeline',
+    //     description: 'Visualize historical events and their relationships',
+    //     category: 'History',
+    //     nodeCount: 30,
+    //     edgeCount: 45
+    // }
+];
+
+/**
  * Load graph data from JSON export file
  */
 async function loadJSON(file) {
@@ -453,16 +488,16 @@ function render() {
 }
 
 /**
- * Load sample graph data
+ * Load sample graph data from a JSON file
  */
-async function loadSampleGraph() {
+async function loadSampleGraphFromFile(filename) {
     const statusText = document.getElementById('status-text');
     statusText.textContent = 'Loading sample graph...';
     
     try {
-        const response = await fetch('sample-graph.json');
+        const response = await fetch(filename);
         if (!response.ok) {
-            throw new Error('Failed to load sample graph file');
+            throw new Error(`Failed to load sample graph file: ${filename}`);
         }
         
         const data = await response.json();
@@ -526,6 +561,98 @@ async function loadSampleGraph() {
 }
 
 /**
+ * Load the default sample graph
+ */
+async function loadSampleGraph() {
+    await loadSampleGraphFromFile('sample-graph.json');
+}
+
+/**
+ * Show sample gallery modal
+ */
+function showSampleGallery() {
+    const modal = document.getElementById('sample-gallery-modal');
+    if (!modal) return;
+    
+    populateSampleGallery();
+    modal.classList.add('visible');
+}
+
+/**
+ * Hide sample gallery modal
+ */
+function hideSampleGallery() {
+    const modal = document.getElementById('sample-gallery-modal');
+    if (modal) {
+        modal.classList.remove('visible');
+    }
+}
+
+/**
+ * Populate the sample gallery grid with available samples
+ */
+function populateSampleGallery() {
+    const grid = document.getElementById('sample-gallery-grid');
+    if (!grid) return;
+    
+    // Group samples by category
+    const groupedSamples = {};
+    SAMPLE_GRAPHS.forEach(sample => {
+        const category = sample.category || 'Other';
+        if (!groupedSamples[category]) {
+            groupedSamples[category] = [];
+        }
+        groupedSamples[category].push(sample);
+    });
+    
+    // Clear existing content
+    grid.innerHTML = '';
+    
+    // Render samples grouped by category
+    Object.keys(groupedSamples).sort().forEach(category => {
+        const samples = groupedSamples[category];
+        
+        samples.forEach(sample => {
+            const item = document.createElement('div');
+            item.className = 'sample-gallery-item';
+            item.setAttribute('data-filename', sample.filename);
+            
+            item.innerHTML = `
+                <h3 class="sample-gallery-item-title">${escapeHtml(sample.title)}</h3>
+                <p class="sample-gallery-item-description">${escapeHtml(sample.description)}</p>
+                <div class="sample-gallery-item-meta">
+                    <span>📊 ${sample.nodeCount || 0} nodes</span>
+                    <span>🔗 ${sample.edgeCount || 0} edges</span>
+                    ${sample.category ? `<span>📁 ${escapeHtml(sample.category)}</span>` : ''}
+                </div>
+            `;
+            
+            item.addEventListener('click', () => {
+                loadSampleGraphFromFile(sample.filename);
+                hideSampleGallery();
+            });
+            
+            grid.appendChild(item);
+        });
+    });
+    
+    // Show message if no samples available
+    if (SAMPLE_GRAPHS.length === 0) {
+        grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: #999; padding: 40px;">No sample graphs available yet. Check back soon!</p>';
+    }
+}
+
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    if (!text) return "";
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/**
  * Reset view to default
  */
 function resetView() {
@@ -576,6 +703,19 @@ function init() {
     // Setup load sample button
     document.getElementById('load-sample-btn').addEventListener('click', loadSampleGraph);
     
+    // Setup sample gallery button
+    document.getElementById('open-gallery-btn').addEventListener('click', showSampleGallery);
+    
+    // Setup gallery modal close button
+    document.getElementById('sample-gallery-close').addEventListener('click', hideSampleGallery);
+    
+    // Close gallery when clicking backdrop
+    const galleryModal = document.getElementById('sample-gallery-modal');
+    const galleryBackdrop = galleryModal?.querySelector('.sample-gallery-modal-backdrop');
+    if (galleryBackdrop) {
+        galleryBackdrop.addEventListener('click', hideSampleGallery);
+    }
+    
     // Setup reset view button
     document.getElementById('reset-view-btn').addEventListener('click', resetView);
     
@@ -600,9 +740,17 @@ function init() {
         }
     });
     
-    // ESC key to close popup
+    // ESC key to close popups/modals
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+            // Close gallery modal first if open
+            const galleryModal = document.getElementById('sample-gallery-modal');
+            if (galleryModal && galleryModal.classList.contains('visible')) {
+                hideSampleGallery();
+                return;
+            }
+            
+            // Close selection popup if open
             const popup = document.getElementById('selection-info-popup');
             if (popup && popup.classList.contains('visible')) {
                 hideSelectionInfoPopup();

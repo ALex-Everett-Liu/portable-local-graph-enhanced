@@ -25,6 +25,9 @@
                 <button id="load-sample-btn" class="tool-btn">✨ Load Sample Graph</button>
             </div>
             <div class="toolbar-section">
+                <button id="open-gallery-btn" class="tool-btn">📚 Sample Gallery</button>
+            </div>
+            <div class="toolbar-section">
                 <span id="status-text">Ready to load database</span>
             </div>
             <div class="toolbar-section">
@@ -55,6 +58,23 @@
             id="selection-info-popup-content"
         >
             <p>Nothing selected</p>
+        </div>
+    </div>
+
+    <!-- Sample Gallery Modal -->
+    <div id="sample-gallery-modal" class="sample-gallery-modal">
+        <div class="sample-gallery-modal-backdrop"></div>
+        <div class="sample-gallery-modal-content">
+            <div class="sample-gallery-modal-header">
+                <h2>Sample Graph Gallery</h2>
+                <button class="sample-gallery-modal-close" id="sample-gallery-close">×</button>
+            </div>
+            <div class="sample-gallery-modal-body">
+                <p class="sample-gallery-description">Choose a sample graph to explore different areas and use cases:</p>
+                <div id="sample-gallery-grid" class="sample-gallery-grid">
+                    <!-- Sample items will be dynamically generated here -->
+                </div>
+            </div>
         </div>
     </div>
 
