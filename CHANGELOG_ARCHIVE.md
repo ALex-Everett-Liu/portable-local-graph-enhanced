@@ -6,6 +6,276 @@ For recent changes, see [CHANGELOG.md](./CHANGELOG.md).
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [0.1.10] - 2025-11-22
+
+### Changed
+- Migrated from UUIDv4 to UUIDv7 for all new node and edge identifiers
+- Updated `uuid` package from v9.0.0 to v10.0.0 (required for UUIDv7 support)
+- Server-side UUID generation now uses UUIDv7 via `uuid.v7()` in `graphService.js`
+- Client-side UUID generation now uses UUIDv7 via local utility in `public/utils/uuid.js`
+
+### Added
+- `public/utils/uuid.js` - Local UUID utility that uses Node.js `require()` to access uuid package from node_modules
+- UUIDv7 generation for better database performance and chronological ordering
+
+### Fixed
+- Fixed CDN dependency issue - now uses local uuid package (works completely offline)
+- UUID generation now works without internet connection (local-first architecture)
+
+### Technical Details
+- UUIDv7 provides time-ordered identifiers, improving SQLite index locality and insert performance
+- UUIDs naturally sort chronologically, making debugging and queries easier
+- Local utility uses Electron's `nodeIntegration: true` to access node_modules directly
+- Server-side fallback generation uses UUIDv7 when client doesn't provide ID
+- All existing UUIDv4 IDs remain valid; only new IDs use UUIDv7 format
+
+## [0.1.9] - 2025-11-22
+
+### Added
+- Comprehensive constants system matching legacy code structure
+- Missing constants: visual defaults, ranges, text settings, animation, zoom limits, interaction, centrality calculations
+- `WEIGHT_MAPPING` structure with logarithmic mapping constants (`MIN_LOG_WEIGHT`, `MAX_LOG_WEIGHT`, `LOG_OFFSET`, `LOG_BASE`, `INVERT_MAPPING`)
+- Constants exposed on `window` object for non-module scripts
+- Documentation in `docs/CONSTANTS_UPDATE_SUMMARY.md`
+
+### Changed
+- Expanded `public/utils/constants.js` from 24 to 72 lines to match legacy
+- Updated default node color from `#6737E8` to `#507F80`
+- Updated grid settings: `GRID_SIZE` 50 → 30, `GRID_COLOR` '#e0e0e0' → '#F0F0F0', `GRID_LINE_WIDTH` 0.5 → 1
+- Updated font settings: `DEFAULT_FONT_SIZE` 12 → 14, `DEFAULT_FONT_FAMILY` 'Arial, sans-serif' → 'Arial'
+- Updated animation: `PULSE_AMPLITUDE` 0.15 → 0.2, `PULSE_FREQUENCY` 0.01 → 0.005
+- Replaced all hardcoded values with constants throughout codebase
+- Updated `graph.js` to use `GRAPH_CONSTANTS.DEFAULT_NODE_RADIUS`, `DEFAULT_NODE_COLOR`, `MIN_SCALE`, `MAX_SCALE`
+- Updated `styles.js` to use `WEIGHT_MAPPING` constants for weight calculations
+- Updated `graph-renderer.js` to use `TEXT_BACKGROUND_COLOR` and `TEXT_COLOR` constants
+- Updated `ui-functions.js` to use constants via `window.GRAPH_CONSTANTS`
+- Updated `index.html` default color values to match constants
+
+### Fixed
+- Eliminated hardcoded magic numbers scattered across codebase
+- Inconsistent default values between files (e.g., node color, radius)
+- Missing constants for features that existed but weren't configurable
+
+### Technical Details
+- All constants centralized in `public/utils/constants.js`
+- Constants properly exported and imported in ES modules
+- Constants exposed on window for compatibility with non-module scripts (`ui-functions.js`)
+- Legacy compatibility maintained in `WEIGHT_MAPPING` structure
+- Improved maintainability: change constants once, affects entire codebase
+
+## [0.1.8] - 2025-11-22
+
+### Fixed
+- **CRITICAL:** Fixed GraphRenderer integration failure - GraphRenderer class existed but was never actually used
+- Fixed edge colors not rendering correctly (was using `#666` instead of `#EFF0E9`)
+- Fixed edge line widths not following weight-based calculations from `styles.js`
+- Fixed node styling inconsistencies by properly using GraphRenderer
+- Fixed missing grid rendering, labels, and highlighting features
+
+### Changed
+- Converted `graph.js` to ES module (`type="module"`) to enable proper imports
+- Removed obsolete `drawNode()` and `drawEdge()` methods from Graph class
+- Removed unused `this.ctx` from Graph class (GraphRenderer handles all rendering)
+- Updated `graph.js` to fully delegate ALL rendering to GraphRenderer
+- Updated `app.js` to import Graph class as ES module
+- Updated `index.html` to load `graph.js` as module
+
+### Added
+- Proper GraphRenderer integration with complete state passing
+- `renderer.resize()` call on canvas resize for proper renderer updates
+- Coordinate transformation using `screenToWorld()` from geometry utilities
+- Scaled radius hit detection using `getScaledRadius()` from styles utilities
+- Comprehensive debugging documentation in `docs/DEBUGGING_LESSON_RENDERER_INTEGRATION.md`
+
+### Technical Details
+- GraphRenderer now handles 100% of visual rendering (edges, nodes, grid, labels, arrows)
+- All style calculations from `styles.js` are now properly utilized
+- Proper separation of concerns: Graph manages data/events, GraphRenderer handles visuals
+- Module system properly configured for ES6 imports/exports
+- Removed all dead code that was bypassing the renderer system
+
+## [0.1.7] - 2025-11-22
+
+### Added
+- Resizable sidebar functionality - users can drag the left edge of the sidebar to adjust its width
+- Sidebar width persistence - sidebar width is saved to localStorage and restored on page load
+- `ui/sidebarResizer.js` module for managing sidebar resize functionality
+
+### Fixed
+- Fixed canvas distortion (compression/stretching) when resizing sidebar by triggering canvas resize
+- Canvas now properly updates its dimensions when sidebar width changes
+
+### Changed
+- Updated `app.js` to initialize sidebar resizer on application startup
+- Sidebar resize handle now provides visual feedback during drag operations
+
+### Technical Details
+- Resize handle positioned on left edge of sidebar with hover/active states
+- Throttled canvas resize calls (~60fps) for smooth performance during drag
+- Window resize handler ensures sidebar doesn't exceed 60% of viewport width
+- Canvas resize triggered via Graph's `resizeCanvas()` method to maintain proper aspect ratio
+
+## [0.1.6] - 2025-11-21
+
+### Added
+- `chinese_label` field support for nodes in database schema
+- `category` field support for nodes and edges in database schema
+- Database migration code to add new fields to existing databases
+
+### Fixed
+- Fixed `graph is not defined` errors in `ui-functions.js` by exposing graph instance on window
+- Fixed save changes button not appearing when editing nodes/edges through dialogs
+- Fixed `chinese_label` and `category` fields not being saved to database
+- Fixed change tracking not being triggered when editing nodes/edges via dialogs
+- Fixed edge category field not being restored when discarding changes
+
+### Changed
+- Updated `databaseService.js` to include `chinese_label` and `category` fields in all save/update operations
+- Updated `appState.js` to expose graph instance and change tracking functions on window for non-module scripts
+- Updated `ui-functions.js` to call change tracking functions after editing nodes/edges
+- Updated `saveDiscardUI.js` to properly restore category field when discarding edge changes
+- Updated `graphService.js` to handle `chinese_label` and `category` fields in node/edge operations
+
+### Technical Details
+- Database schema migration adds new columns with proper error handling for existing databases
+- Change tracking functions exposed on window object for compatibility with non-module scripts
+- Field name mapping between frontend (camelCase) and backend (snake_case) properly handled
+- Empty string handling for `chinese_label` field preserves user input correctly
+
+## [0.1.5] - 2025-11-20
+
+### Changed
+- Refactored `app.js` (1,133 lines) into modular architecture with 12 focused modules
+- Split application into separate concerns: state management, services, managers, and UI components
+- Migrated to ES6 modules (`import`/`export`) for better code organization
+- Updated `index.html` to use ES6 module syntax (`type="module"`)
+
+### Added
+- `state/appState.js` - Centralized global state management
+- `services/databaseService.js` - All database API operations
+- `managers/changeTracker.js` - Change tracking logic
+- `managers/viewStateManager.js` - View state saving functionality
+- `managers/modeManager.js` - Application mode switching
+- `ui/eventListeners.js` - Event listener setup
+- `ui/contextMenu.js` - Context menu handling
+- `ui/saveDiscardUI.js` - Save/discard functionality
+- `ui/dialogs/loadDialog.js` - Load database dialog with pagination
+- `ui/dialogs/saveAsDialog.js` - Save As dialog functionality
+- Refactored `app.js` to be a thin orchestrator (~58 lines)
+
+### Technical Details
+- Improved separation of concerns with single responsibility principle
+- Eliminated circular dependencies between modules
+- Better maintainability and testability with modular structure
+- Easier to scale and add new features without bloating existing files
+- All existing functionality preserved with improved code organization
+
+## [0.1.4] - 2025-11-20
+
+### Added
+- Configurable database directory - database files now stored in `data/` directory by default
+- Environment variable support (`GRAPH_DB_DIR`) for custom database directory location
+- Automatic database directory creation if it doesn't exist
+- Pagination for Load Database dialog - shows 10 databases per page when there are many files
+- Pagination controls with Previous/Next buttons and page information
+- Improved database file management with better organization
+
+### Changed
+- Database files moved from `src/` directory to `data/` directory at project root
+- Load Database dialog now supports pagination for better UX with many database files
+- Updated `.gitignore` to exclude `data/` directory
+- Updated documentation to reflect new database directory structure
+
+### Technical Details
+- Database directory defaults to `data/` but can be configured via `GRAPH_DB_DIR` environment variable
+- Pagination shows 10 items per page (configurable via `ITEMS_PER_PAGE` constant)
+- Database directory is automatically created on first use
+- Pagination controls only appear when there are more than 10 database files
+- Selection state persists across pagination pages
+
+## [0.1.3] - 2025-11-20
+
+### Added
+- Load button to switch between different database files
+- Save As functionality to clone current workspace to a new database file
+- Database file selection dialog showing all available `.db` files in src directory
+- Database switching API endpoints (`GET /databases`, `POST /switch-database`)
+- Save As API endpoint (`POST /save-as`) for creating new database files
+- DatabaseManager class for managing database connections and switching
+- Warning dialog when loading database with unsaved changes
+- Option to switch to newly saved database after Save As operation
+
+### Changed
+- Refactored database module to support multiple database files
+- Database connection now managed through singleton DatabaseManager instance
+- Load operation now clears unsaved changes before switching databases
+
+### Technical Details
+- DatabaseManager class handles connection lifecycle and file switching
+- Database files are stored in `data/` directory (configurable via `GRAPH_DB_DIR` environment variable)
+- Save As creates new database files with full graph data (nodes, edges, view state)
+- File validation prevents overwriting existing databases and ensures `.db` extension
+- Database switching automatically reinitializes schema in new database files
+
+## [0.1.2] - 2025-11-20
+
+### Added
+- Canvas panning (dragging) in select mode - click and drag empty space to pan the canvas
+- Zoom support with mouse wheel - scroll to zoom in/out (0.1x to 5x range)
+- View state persistence - canvas scale and offset are saved and restored between sessions
+- `graph_metadata` database table for storing view state (scale, offset)
+- `/api/plugins/graph/view-state` endpoint for saving view state independently
+- Automatic view state saving with debouncing (saves after 500ms of inactivity)
+- Mouse coordinate transformation to account for scale and offset
+
+### Changed
+- Updated Graph class to use `scale` instead of `zoom` for consistency
+- Mouse coordinate calculations now account for canvas transformations
+- Rendering now applies scale and offset transformations before drawing
+- Graph export/import now includes scale and offset data
+
+### Technical Details
+- Canvas transformations applied via `ctx.translate()` and `ctx.scale()`
+- Panning state tracked with `isPanning` flag and `lastPanPoint` coordinates
+- View state saved to `graph_metadata` table with single-row constraint (id = 1)
+- Debounced view state saving prevents excessive database writes during pan/zoom operations
+
+## [0.1.1] - 2025-11-20
+
+### Added
+- Modern UI redesign matching legacy code structure
+- Enhanced toolbar with organized sections and icons
+- Sidebar panel with graph info, selection info, and display options
+- Advanced node editing dialog with Chinese labels, categories, layers, and size controls
+- Enhanced edge editing dialog with category support and reverse direction feature
+- GraphRenderer class for modular canvas rendering
+- Utility modules: constants.js, geometry.js, algorithms.js
+- Styles.js module for visual style calculations
+- Support for edge arrows display toggle
+- Node layers and categories support
+- Improved dialog system with better UX
+
+### Changed
+- Migrated from inline styles to external CSS file (styles.css)
+- Updated canvas ID from 'canvas' to 'graph-canvas' for consistency
+- Refactored dialog handling to use modular UI functions
+- Improved canvas sizing to properly fill container
+- Enhanced right-click behavior to show dialogs directly
+- Updated button styling and layout to match modern design
+
+### Fixed
+- Fixed canvas element not found error (canvas ID mismatch)
+- Fixed dialog button references (node-ok, weight-ok instead of node-save, edge-save)
+- Fixed context menu handling for new HTML structure
+- Fixed canvas cursor updates for different modes
+
+### Technical Details
+- Modular architecture with separated concerns (rendering, styles, UI functions)
+- ES6 module imports for better code organization
+- Improved error handling for missing DOM elements
+- Better separation between UI logic and graph logic
+
 ## [0.1.0] - 2025-11-19
 
 ### Added
@@ -34,4 +304,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Canvas-based rendering for graph visualization
 - RESTful API endpoints for all graph operations
 
-[0.1.0]: https://github.com/yourusername/graph-app/releases/tag/v0.1.0
+[0.1.0]: https://github.com/ALex-Everett-Liu/portable-local-graph-enhanced/releases/tag/v0.1.0
