@@ -23,18 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sample graph loading refactored to support multiple sample files
 - Gallery automatically populates from `SAMPLE_GRAPHS` configuration array
 
-### Technical Details
-- Sample gallery modal uses same styling pattern as selection popup for consistency
-- Gallery closes via X button, backdrop click, or ESC key
-- Sample graphs stored in `web-app/samples/` directory
-- Configuration array supports: id, filename, title, description, category, nodeCount, edgeCount
-- Graph Theory sample includes: core concepts, fundamental elements, structures, properties, graph types, and algorithms
-- Sample graphs use color-coded categories and meaningful edge relationships
-- Gallery grid uses responsive CSS Grid with auto-fill layout
-- Sample cards show hover effects and click-to-load functionality
-
-## [0.4.7+] - 2025-12-10
-
 ### Fixed
 - Fixed load dialog becoming too tall when many databases are listed - dialog now has max-height constraint (85vh) with scrollable content area
 - Fixed load dialog buttons becoming inaccessible when content expands - buttons now remain fixed at bottom of dialog
@@ -46,6 +34,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed layer management dialog buttons becoming inaccessible when content expands - buttons now remain fixed at bottom of dialog
 - Fixed clustering dialog becoming too tall when results are displayed - dialog now has max-height constraint (85vh) with scrollable content area
 - Fixed clustering dialog buttons becoming inaccessible when results expand - buttons now remain fixed at bottom of dialog
+
+### Technical Details
+- Sample gallery modal uses same styling pattern as selection popup for consistency
+- Gallery closes via X button, backdrop click, or ESC key
+- Sample graphs stored in `web-app/samples/` directory
+- Configuration array supports: id, filename, title, description, category, nodeCount, edgeCount
+- Graph Theory sample includes: core concepts, fundamental elements, structures, properties, graph types, and algorithms
+- Sample graphs use color-coded categories and meaningful edge relationships
+- Gallery grid uses responsive CSS Grid with auto-fill layout
+- Sample cards show hover effects and click-to-load functionality
 
 ## [0.4.7] - 2025-12-09
 
