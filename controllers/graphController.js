@@ -233,6 +233,61 @@ exports.getCurrentDatabase = async (req, res) => {
 };
 
 /**
+ * Backup current database by copying the file directly
+ * POST /api/plugins/graph/backup-database
+ */
+exports.backupDatabase = async (req, res) => {
+  const path = require("path");
+  const fs = require("fs").promises;
+  const { ensureDatabaseDirectory, getCurrentDatabasePath } = require("../src/graph-database");
+  
+  try {
+    const { filename } = req.body;
+    if (!filename) {
+      return res.status(400).json({ error: "filename is required" });
+    }
+
+    // Validate filename
+    if (!filename.endsWith('.db')) {
+      return res.status(400).json({ error: "Filename must end with .db" });
+    }
+
+    // Validate filename doesn't contain path separators
+    if (filename.includes('/') || filename.includes('\\')) {
+      return res.status(400).json({ error: "Filename cannot contain path separators" });
+    }
+
+    // Get current database path
+    const currentDbPath = getCurrentDatabasePath();
+    
+    // Ensure database directory exists and get its path
+    const dbDir = await ensureDatabaseDirectory();
+    const backupDbPath = path.join(dbDir, filename);
+
+    // Check if file already exists
+    try {
+      await fs.access(backupDbPath);
+      return res.status(400).json({ error: "File already exists. Please choose a different name." });
+    } catch {
+      // File doesn't exist, proceed
+    }
+
+    // Copy the entire database file directly (true backup - includes all tables)
+    await fs.copyFile(currentDbPath, backupDbPath);
+
+    res.json({ 
+      success: true,
+      message: "Database backed up successfully",
+      filePath: backupDbPath,
+      filename: filename
+    });
+  } catch (error) {
+    console.error("Error backing up database:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+/**
  * Save current graph to a new database file
  * POST /api/plugins/graph/save-as
  */

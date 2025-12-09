@@ -61,6 +61,9 @@ router.post("/switch-database", graphController.switchDatabase);
 // Get current database file path
 router.get("/current-database", graphController.getCurrentDatabase);
 
+// Backup current database by copying file directly
+router.post("/backup-database", graphController.backupDatabase);
+
 // Save current graph to a new database file
 router.post("/save-as", graphController.saveAs);
 

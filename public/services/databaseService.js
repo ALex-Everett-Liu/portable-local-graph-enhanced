@@ -415,8 +415,8 @@ export async function backupCurrentDatabase() {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
         const backupFilename = `${baseName}-backup-${timestamp}.db`;
         
-        // Use saveAs to create the backup
-        const response = await fetch(`${API_BASE}/save-as`, {
+        // Use backup-database endpoint to copy the file directly (includes all tables)
+        const response = await fetch(`${API_BASE}/backup-database`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ filename: backupFilename })

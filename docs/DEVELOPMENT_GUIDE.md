@@ -6,6 +6,8 @@ This guide contains development principles, UI/UX guidelines, and best practices
 
 - [UI/UX Guidelines](#uiux-guidelines)
   - [Pagination Controls](#pagination-controls)
+- [Database Operations](#database-operations)
+  - [Backup Best Practices](#backup-best-practices)
 - [Code Style](#code-style)
 - [Module Organization](#module-organization)
 
@@ -140,6 +142,98 @@ When adding new pagination features, follow one of these patterns.
 
 ---
 
+## Database Operations
+
+### Backup Best Practices
+
+**CRITICAL ANTI-PATTERN:** Never use export/import functions for database backups.
+
+#### The Wrong Way (Anti-Pattern)
+
+❌ **DO NOT** use `exportGraphData()` + `importGraphData()` for backups:
+
+```javascript
+// BAD: This approach has multiple critical flaws
+const graphData = await graphService.exportGraphData(currentDb);
+// Problem 1: exportGraphData only exports partial data (nodes, edges, scale, offset)
+// Problem 2: Missing filter_state, semantic_map_embeddings, and other tables
+// Problem 3: Slow - requires reading all data, transforming, then writing back
+
+const newDb = await open({ filename: newDbPath });
+await initializeDatabaseSchema(newDb);
+await graphService.importGraphData(newDb, graphData);
+// Problem 4: Incomplete - filter_state and other tables are lost!
+// Problem 5: Takes 3-5 seconds for large databases
+```
+
+**Why This Is Terrible:**
+- **Data Loss:** Export functions typically only export "main" data (nodes, edges, view state)
+- **Missing Tables:** `filter_state`, `semantic_map_embeddings`, and other tables are ignored
+- **Performance:** Slow - requires reading all data, transforming it, then writing it back
+- **Complexity:** Unnecessary transformation steps when you just want a copy
+- **Brittle:** If new tables are added, they won't be included unless export/import are updated
+
+#### The Right Way (Best Practice)
+
+✅ **DO** use direct file copy for backups:
+
+```javascript
+// GOOD: Direct file copy - instant, complete, reliable
+const fs = require("fs").promises;
+const currentDbPath = getCurrentDatabasePath();
+const backupDbPath = path.join(dbDir, backupFilename);
+
+// Copy entire database file directly
+await fs.copyFile(currentDbPath, backupDbPath);
+// ✅ Instant (milliseconds instead of seconds)
+// ✅ Complete - includes ALL tables, indexes, metadata
+// ✅ Reliable - exact copy, no data transformation
+// ✅ Future-proof - automatically includes any new tables
+```
+
+**Why This Is Better:**
+- **Complete:** Copies entire database file including all tables, indexes, and metadata
+- **Fast:** Instant file copy operation (milliseconds vs seconds)
+- **Reliable:** Exact binary copy - no data loss or transformation errors
+- **Future-proof:** Automatically includes any new tables without code changes
+- **Simple:** One line of code instead of complex export/import logic
+
+#### When to Use Export/Import
+
+Export/import functions (`exportGraphData`, `importGraphData`) should **ONLY** be used for:
+- **Data Migration:** When you need to transform data structure
+- **Data Export:** When exporting to different formats (JSON, CSV)
+- **Selective Copying:** When you only want specific tables/data
+
+**Never use export/import for:**
+- ❌ Database backups
+- ❌ Creating copies of databases
+- ❌ Cloning databases
+
+#### Real-World Example
+
+**Before Fix (v0.4.5):**
+```javascript
+// Backup took 3-5 seconds and lost filter_state data
+const graphData = await graphService.exportGraphData(req.graphDb);
+// ... create new DB, initialize schema, import data ...
+await graphService.importGraphData(newDb, graphData);
+// Result: Incomplete backup, slow, data loss
+```
+
+**After Fix (v0.4.7):**
+```javascript
+// Backup takes milliseconds and preserves everything
+await fs.copyFile(currentDbPath, backupDbPath);
+// Result: Complete backup, instant, no data loss
+```
+
+#### Key Principle
+
+> **For backups, copy the file. For transformations, use export/import.**
+
+---
+
 ## Code Style
 
 ### Module Organization
@@ -203,5 +297,5 @@ These enhancements improve usability but are not strictly required by the core p
 
 ---
 
-**Last Updated:** 2025-11-23
-**Version:** 0.2.0
+**Last Updated:** 2025-12-09
+**Version:** 0.4.7

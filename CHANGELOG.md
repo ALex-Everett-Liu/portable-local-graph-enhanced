@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed Vercel deployment errors - removed invalid regex patterns in vercel.json headers
 - Fixed build configuration - added empty build/install commands to prevent Electron app build attempts
 - Fixed deployment documentation - added Root Directory requirement and troubleshooting guide
+- **CRITICAL FIX:** Fixed database backup losing filter_state data - backup now uses direct file copy instead of export/import
+- Fixed backup performance - backup now completes instantly (milliseconds) instead of taking 3-5 seconds
 
 ### Technical Details
 - Popup displays: English/Chinese labels, position, color, size, category, layers, timestamps
@@ -34,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Screen-to-world coordinate conversion ensures correct node detection regardless of pan/zoom state
 - Popup automatically adjusts position to stay within viewport boundaries
 - Selection state managed separately from pan state for better UX
+- Backup now uses `fs.copyFile()` for direct database file copy - preserves ALL tables including filter_state
+- New backup endpoint `POST /api/plugins/graph/backup-database` replaces slow export/import approach
+- Backup performance improved from 3-5 seconds to milliseconds by copying file directly
 
 ## [0.4.6] - 2025-11-28
 
