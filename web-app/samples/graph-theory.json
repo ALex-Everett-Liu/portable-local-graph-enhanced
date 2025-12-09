@@ -1,0 +1,465 @@
+{
+  "graph_nodes": [
+    {
+      "id": "gt-main",
+      "x": 0,
+      "y": 0,
+      "label": "Graph Theory",
+      "chinese_label": "图论",
+      "color": "#507F80",
+      "radius": 25,
+      "category": "Core Concept",
+      "layers": []
+    },
+    {
+      "id": "vertex",
+      "x": -200,
+      "y": -150,
+      "label": "Vertex",
+      "chinese_label": "顶点",
+      "color": "#4a90e2",
+      "radius": 20,
+      "category": "Fundamental",
+      "layers": []
+    },
+    {
+      "id": "edge",
+      "x": 200,
+      "y": -150,
+      "label": "Edge",
+      "chinese_label": "边",
+      "color": "#4a90e2",
+      "radius": 20,
+      "category": "Fundamental",
+      "layers": []
+    },
+    {
+      "id": "path",
+      "x": -300,
+      "y": 50,
+      "label": "Path",
+      "chinese_label": "路径",
+      "color": "#9b59b6",
+      "radius": 20,
+      "category": "Structure",
+      "layers": []
+    },
+    {
+      "id": "cycle",
+      "x": -150,
+      "y": 150,
+      "label": "Cycle",
+      "chinese_label": "环",
+      "color": "#9b59b6",
+      "radius": 20,
+      "category": "Structure",
+      "layers": []
+    },
+    {
+      "id": "tree",
+      "x": 150,
+      "y": 150,
+      "label": "Tree",
+      "chinese_label": "树",
+      "color": "#27ae60",
+      "radius": 20,
+      "category": "Structure",
+      "layers": []
+    },
+    {
+      "id": "forest",
+      "x": 300,
+      "y": 50,
+      "label": "Forest",
+      "chinese_label": "森林",
+      "color": "#27ae60",
+      "radius": 20,
+      "category": "Structure",
+      "layers": []
+    },
+    {
+      "id": "connected",
+      "x": -250,
+      "y": -50,
+      "label": "Connected Graph",
+      "chinese_label": "连通图",
+      "color": "#e67e22",
+      "radius": 22,
+      "category": "Property",
+      "layers": []
+    },
+    {
+      "id": "directed",
+      "x": -100,
+      "y": -200,
+      "label": "Directed Graph",
+      "chinese_label": "有向图",
+      "color": "#e74c3c",
+      "radius": 22,
+      "category": "Type",
+      "layers": []
+    },
+    {
+      "id": "undirected",
+      "x": 100,
+      "y": -200,
+      "label": "Undirected Graph",
+      "chinese_label": "无向图",
+      "color": "#e74c3c",
+      "radius": 22,
+      "category": "Type",
+      "layers": []
+    },
+    {
+      "id": "weighted",
+      "x": 250,
+      "y": -50,
+      "label": "Weighted Graph",
+      "chinese_label": "加权图",
+      "color": "#e74c3c",
+      "radius": 22,
+      "category": "Type",
+      "layers": []
+    },
+    {
+      "id": "bipartite",
+      "x": -350,
+      "y": -100,
+      "label": "Bipartite Graph",
+      "chinese_label": "二分图",
+      "color": "#e74c3c",
+      "radius": 22,
+      "category": "Type",
+      "layers": []
+    },
+    {
+      "id": "complete",
+      "x": 350,
+      "y": -100,
+      "label": "Complete Graph",
+      "chinese_label": "完全图",
+      "color": "#e74c3c",
+      "radius": 22,
+      "category": "Type",
+      "layers": []
+    },
+    {
+      "id": "planar",
+      "x": -400,
+      "y": 100,
+      "label": "Planar Graph",
+      "chinese_label": "平面图",
+      "color": "#e74c3c",
+      "radius": 22,
+      "category": "Type",
+      "layers": []
+    },
+    {
+      "id": "eulerian",
+      "x": -200,
+      "y": 200,
+      "label": "Eulerian Path",
+      "chinese_label": "欧拉路径",
+      "color": "#f39c12",
+      "radius": 22,
+      "category": "Algorithm",
+      "layers": []
+    },
+    {
+      "id": "hamiltonian",
+      "x": 0,
+      "y": 200,
+      "label": "Hamiltonian Path",
+      "chinese_label": "哈密顿路径",
+      "color": "#f39c12",
+      "radius": 22,
+      "category": "Algorithm",
+      "layers": []
+    },
+    {
+      "id": "shortest-path",
+      "x": 200,
+      "y": 200,
+      "label": "Shortest Path",
+      "chinese_label": "最短路径",
+      "color": "#f39c12",
+      "radius": 22,
+      "category": "Algorithm",
+      "layers": []
+    },
+    {
+      "id": "mst",
+      "x": 400,
+      "y": 100,
+      "label": "Minimum Spanning Tree",
+      "chinese_label": "最小生成树",
+      "color": "#f39c12",
+      "radius": 22,
+      "category": "Algorithm",
+      "layers": []
+    },
+    {
+      "id": "traversal",
+      "x": -50,
+      "y": 100,
+      "label": "Graph Traversal",
+      "chinese_label": "图遍历",
+      "color": "#f39c12",
+      "radius": 22,
+      "category": "Algorithm",
+      "layers": []
+    },
+    {
+      "id": "coloring",
+      "x": 50,
+      "y": 100,
+      "label": "Graph Coloring",
+      "chinese_label": "图着色",
+      "color": "#f39c12",
+      "radius": 22,
+      "category": "Algorithm",
+      "layers": []
+    }
+  ],
+  "graph_edges": [
+    {
+      "id": "e1",
+      "from_node_id": "gt-main",
+      "to_node_id": "vertex",
+      "weight": 2,
+      "category": "contains"
+    },
+    {
+      "id": "e2",
+      "from_node_id": "gt-main",
+      "to_node_id": "edge",
+      "weight": 2,
+      "category": "contains"
+    },
+    {
+      "id": "e3",
+      "from_node_id": "gt-main",
+      "to_node_id": "path",
+      "weight": 1.5,
+      "category": "contains"
+    },
+    {
+      "id": "e4",
+      "from_node_id": "gt-main",
+      "to_node_id": "cycle",
+      "weight": 1.5,
+      "category": "contains"
+    },
+    {
+      "id": "e5",
+      "from_node_id": "gt-main",
+      "to_node_id": "tree",
+      "weight": 1.5,
+      "category": "contains"
+    },
+    {
+      "id": "e6",
+      "from_node_id": "gt-main",
+      "to_node_id": "connected",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e7",
+      "from_node_id": "gt-main",
+      "to_node_id": "directed",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e8",
+      "from_node_id": "gt-main",
+      "to_node_id": "undirected",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e9",
+      "from_node_id": "gt-main",
+      "to_node_id": "weighted",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e10",
+      "from_node_id": "gt-main",
+      "to_node_id": "bipartite",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e11",
+      "from_node_id": "gt-main",
+      "to_node_id": "complete",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e12",
+      "from_node_id": "gt-main",
+      "to_node_id": "planar",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e13",
+      "from_node_id": "gt-main",
+      "to_node_id": "eulerian",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e14",
+      "from_node_id": "gt-main",
+      "to_node_id": "hamiltonian",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e15",
+      "from_node_id": "gt-main",
+      "to_node_id": "shortest-path",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e16",
+      "from_node_id": "gt-main",
+      "to_node_id": "mst",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e17",
+      "from_node_id": "gt-main",
+      "to_node_id": "traversal",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e18",
+      "from_node_id": "gt-main",
+      "to_node_id": "coloring",
+      "weight": 1,
+      "category": "contains"
+    },
+    {
+      "id": "e19",
+      "from_node_id": "vertex",
+      "to_node_id": "edge",
+      "weight": 2,
+      "category": "composes"
+    },
+    {
+      "id": "e20",
+      "from_node_id": "path",
+      "to_node_id": "cycle",
+      "weight": 1.5,
+      "category": "related"
+    },
+    {
+      "id": "e21",
+      "from_node_id": "tree",
+      "to_node_id": "forest",
+      "weight": 2,
+      "category": "composes"
+    },
+    {
+      "id": "e22",
+      "from_node_id": "tree",
+      "to_node_id": "mst",
+      "weight": 1.5,
+      "category": "related"
+    },
+    {
+      "id": "e23",
+      "from_node_id": "path",
+      "to_node_id": "eulerian",
+      "weight": 1.5,
+      "category": "related"
+    },
+    {
+      "id": "e24",
+      "from_node_id": "path",
+      "to_node_id": "hamiltonian",
+      "weight": 1.5,
+      "category": "related"
+    },
+    {
+      "id": "e25",
+      "from_node_id": "path",
+      "to_node_id": "shortest-path",
+      "weight": 2,
+      "category": "related"
+    },
+    {
+      "id": "e26",
+      "from_node_id": "traversal",
+      "to_node_id": "path",
+      "weight": 1.5,
+      "category": "uses"
+    },
+    {
+      "id": "e27",
+      "from_node_id": "traversal",
+      "to_node_id": "tree",
+      "weight": 1.5,
+      "category": "uses"
+    },
+    {
+      "id": "e28",
+      "from_node_id": "connected",
+      "to_node_id": "path",
+      "weight": 1.5,
+      "category": "requires"
+    },
+    {
+      "id": "e29",
+      "from_node_id": "directed",
+      "to_node_id": "undirected",
+      "weight": 1,
+      "category": "alternative"
+    },
+    {
+      "id": "e30",
+      "from_node_id": "weighted",
+      "to_node_id": "shortest-path",
+      "weight": 2,
+      "category": "enables"
+    },
+    {
+      "id": "e31",
+      "from_node_id": "weighted",
+      "to_node_id": "mst",
+      "weight": 2,
+      "category": "enables"
+    },
+    {
+      "id": "e32",
+      "from_node_id": "bipartite",
+      "to_node_id": "coloring",
+      "weight": 1.5,
+      "category": "related"
+    },
+    {
+      "id": "e33",
+      "from_node_id": "planar",
+      "to_node_id": "coloring",
+      "weight": 1.5,
+      "category": "related"
+    }
+  ],
+  "graph_metadata": [
+    {
+      "scale": 0.8,
+      "offset_x": 0,
+      "offset_y": 0
+    }
+  ]
+}
+

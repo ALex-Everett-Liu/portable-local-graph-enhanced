@@ -95,6 +95,15 @@ const SAMPLE_GRAPHS = [
         category: 'Getting Started',
         nodeCount: 2,
         edgeCount: 1
+    },
+    {
+        id: 'graph-theory',
+        filename: 'samples/graph-theory.json',
+        title: 'Graph Theory Concepts',
+        description: 'Explore fundamental graph theory concepts including vertices, edges, paths, trees, and various graph types and algorithms',
+        category: 'Mathematics',
+        nodeCount: 20,
+        edgeCount: 33
     }
     // Add more sample graphs here as you prepare them:
     // {
