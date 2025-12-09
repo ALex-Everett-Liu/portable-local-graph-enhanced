@@ -1,144 +1,146 @@
 <div id="node-search-dialog" class="dialog hidden">
-    <div class="dialog-content" style="max-width: 500px">
+    <div class="dialog-content node-search-dialog-content" style="max-width: 500px">
         <h3>Search Nodes</h3>
-        <div style="margin-bottom: 12px">
-            <input
-                type="text"
-                id="dialog-node-search"
-                placeholder="Type to search nodes..."
-                style="
-                    width: 100%;
-                    padding: 8px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    font-size: 13px;
-                "
-            />
-            <div
-                style="
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-top: 8px;
-                "
-            >
-                <span
-                    id="dialog-search-count"
-                    style="font-size: 12px; color: #666"
-                    >Start typing to search...</span
-                >
-                <button
-                    id="dialog-clear-search-btn"
-                    class="tool-btn"
+        <div class="node-search-dialog-body">
+            <div style="margin-bottom: 12px">
+                <input
+                    type="text"
+                    id="dialog-node-search"
+                    placeholder="Type to search nodes..."
                     style="
-                        padding: 4px 8px;
-                        font-size: 12px;
+                        width: 100%;
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        font-size: 13px;
+                    "
+                />
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-top: 8px;
                     "
                 >
-                    Clear
-                </button>
+                    <span
+                        id="dialog-search-count"
+                        style="font-size: 12px; color: #666"
+                        >Start typing to search...</span
+                    >
+                    <button
+                        id="dialog-clear-search-btn"
+                        class="tool-btn"
+                        style="
+                            padding: 4px 8px;
+                            font-size: 12px;
+                        "
+                    >
+                        Clear
+                    </button>
+                </div>
             </div>
-        </div>
-        <div
-            id="search-results-list"
-            style="
-                max-height: 300px;
-                overflow-y: auto;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                padding: 8px;
-                margin-bottom: 12px;
-                background: #f9f9f9;
-            "
-        >
-            <p
+            <div
+                id="search-results-list"
                 style="
-                    text-align: center;
-                    color: #666;
-                    font-size: 12px;
-                    margin: 20px 0;
-                "
-            >
-                Start typing to search for nodes...
-            </p>
-        </div>
-        <div
-            id="dialog-pagination"
-            style="
-                display: none;
-                justify-content: center;
-                align-items: center;
-                gap: 8px;
-                margin-bottom: 12px;
-                padding: 8px;
-                background: #f5f5f5;
-                border-radius: 4px;
-            "
-        >
-            <button
-                id="dialog-pagination-prev"
-                class="tool-btn"
-                style="padding: 6px 12px; font-size: 12px"
-                disabled
-            >
-                ← Prev
-            </button>
-            <span
-                id="dialog-pagination-info"
-                style="
-                    font-size: 12px;
-                    color: #666;
-                    font-weight: 500;
-                "
-            ></span>
-            <span style="font-size: 12px; color: #666"
-                >Go to page:</span
-            >
-            <input
-                type="number"
-                id="dialog-pagination-input"
-                min="1"
-                style="
-                    width: 60px;
-                    padding: 4px 8px;
+                    max-height: 300px;
+                    overflow-y: auto;
                     border: 1px solid #ddd;
                     border-radius: 4px;
-                    font-size: 12px;
-                    text-align: center;
+                    padding: 8px;
+                    margin-bottom: 12px;
+                    background: #f9f9f9;
                 "
-                placeholder="Page"
-            />
-            <button
-                id="dialog-pagination-go"
-                class="tool-btn"
-                style="padding: 6px 12px; font-size: 12px"
             >
-                Go
-            </button>
-            <button
-                id="dialog-pagination-next"
-                class="tool-btn"
-                style="padding: 6px 12px; font-size: 12px"
-                disabled
+                <p
+                    style="
+                        text-align: center;
+                        color: #666;
+                        font-size: 12px;
+                        margin: 20px 0;
+                    "
+                >
+                    Start typing to search for nodes...
+                </p>
+            </div>
+            <div
+                id="dialog-pagination"
+                style="
+                    display: none;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 12px;
+                    padding: 8px;
+                    background: #f5f5f5;
+                    border-radius: 4px;
+                "
             >
-                Next →
-            </button>
-        </div>
-        <div
-            id="selected-node-info"
-            style="
-                display: none;
-                padding: 12px;
-                background: #f0f0f0;
-                border-radius: 4px;
-                margin-bottom: 12px;
-                font-size: 12px;
-            "
-        >
-            <h4 style="margin-bottom: 8px; font-size: 13px">
-                Selected Node:
-            </h4>
-            <div id="selected-node-details"></div>
+                <button
+                    id="dialog-pagination-prev"
+                    class="tool-btn"
+                    style="padding: 6px 12px; font-size: 12px"
+                    disabled
+                >
+                    ← Prev
+                </button>
+                <span
+                    id="dialog-pagination-info"
+                    style="
+                        font-size: 12px;
+                        color: #666;
+                        font-weight: 500;
+                    "
+                ></span>
+                <span style="font-size: 12px; color: #666"
+                    >Go to page:</span
+                >
+                <input
+                    type="number"
+                    id="dialog-pagination-input"
+                    min="1"
+                    style="
+                        width: 60px;
+                        padding: 4px 8px;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        text-align: center;
+                    "
+                    placeholder="Page"
+                />
+                <button
+                    id="dialog-pagination-go"
+                    class="tool-btn"
+                    style="padding: 6px 12px; font-size: 12px"
+                >
+                    Go
+                </button>
+                <button
+                    id="dialog-pagination-next"
+                    class="tool-btn"
+                    style="padding: 6px 12px; font-size: 12px"
+                    disabled
+                >
+                    Next →
+                </button>
+            </div>
+            <div
+                id="selected-node-info"
+                style="
+                    display: none;
+                    padding: 12px;
+                    background: #f0f0f0;
+                    border-radius: 4px;
+                    margin-bottom: 12px;
+                    font-size: 12px;
+                "
+            >
+                <h4 style="margin-bottom: 8px; font-size: 13px">
+                    Selected Node:
+                </h4>
+                <div id="selected-node-details"></div>
+            </div>
         </div>
         <div class="dialog-buttons">
             <button id="dialog-select-node-btn" disabled>
