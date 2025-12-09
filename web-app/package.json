@@ -1,0 +1,15 @@
+{
+  "name": "graph-viewer-web",
+  "version": "1.0.0",
+  "description": "Minimal web app for viewing graph data from SQLite database",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'No build needed - static files'"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+

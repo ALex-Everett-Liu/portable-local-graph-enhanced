@@ -7,7 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.1.1, see [CHANGELOG_ARCHIVE.md](./CHANGELOG_ARCHIVE.md)
 
-## [0.4.5] - 2025-01-15
+## [0.4.7] - 2025-12-09
+
+### Added
+- Selection info popup for web app - displays detailed node information when clicking on nodes
+- Node click detection with world coordinate conversion - accurate hit detection at any zoom level
+- Popup positioning logic - automatically positions near click location while staying within viewport
+- Close popup functionality - ESC key, close button, or click outside to dismiss
+- Node selection highlighting - selected nodes are visually highlighted on canvas
+- JSON file import support - load graph data from JSON export files (alternative to .db files)
+- Vercel deployment configuration - vercel.json with proper static site settings
+
+### Changed
+- Updated pan/zoom interaction - clicking nodes shows popup instead of starting pan
+- Improved click handling - distinguishes between node clicks and empty space clicks
+- Enhanced reset view - clears selection and hides popup when resetting view
+
+### Fixed
+- Fixed Vercel deployment errors - removed invalid regex patterns in vercel.json headers
+- Fixed build configuration - added empty build/install commands to prevent Electron app build attempts
+- Fixed deployment documentation - added Root Directory requirement and troubleshooting guide
+
+### Technical Details
+- Popup displays: English/Chinese labels, position, color, size, category, layers, timestamps
+- Node hit detection uses scaled radius calculation for accurate selection at different zoom levels
+- Screen-to-world coordinate conversion ensures correct node detection regardless of pan/zoom state
+- Popup automatically adjusts position to stay within viewport boundaries
+- Selection state managed separately from pan state for better UX
+
+## [0.4.6] - 2025-11-28
+
+### Added
+- Minimal web app for viewing graph data (`web-app/` directory) - standalone web application for exploring graph visualizations in browser
+- SQLite WASM integration using sql.js - read database files directly in browser without backend server
+- Read-only graph viewer with canvas rendering - visualize nodes and edges from SQLite database files
+- Pan and zoom functionality - mouse drag to pan, mouse wheel to zoom (0.1x to 5x range)
+- File input interface - load `.db` files from local file system
+- Reset view button - restore default zoom and pan position
+- Graph renderer module adapted for web - read-only version of GraphRenderer class
+- Utility modules for web app - constants, geometry, algorithms, and styles utilities
+- Express server for local hosting - simple HTTP server for development (port 3000)
+- Comprehensive documentation - README.md and QUICKSTART.md for web app usage
+
+### Changed
+- N/A (new feature branch)
+
+### Technical Details
+- Web app uses SQL.js (SQLite compiled to WebAssembly) for client-side database reading
+- All processing happens in browser - no backend database required for viewing
+- Compatible with same database schema as Electron desktop app
+- Canvas rendering uses HTML5 Canvas API with proper coordinate transformations
+- View state (scale, offset) loaded from `graph_metadata` table if available
+- Database files loaded entirely into memory for processing
+- Ready for deployment to static hosting platforms (Vercel, Netlify, etc.)
+- SQL.js loaded from CDN with fallback error handling
+
+## [0.4.5] - 2025-12-09
 
 ### Fixed
 - **CRITICAL BUG FIX:** Fixed "New Template" button causing permanent data loss - button now creates a new database file instead of deleting all data from current database

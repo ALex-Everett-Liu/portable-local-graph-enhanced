@@ -1,0 +1,6 @@
+node_modules/
+package-lock.json
+server.js
+QUICKSTART.md
+DEPLOYMENT.md
+.gitignore
