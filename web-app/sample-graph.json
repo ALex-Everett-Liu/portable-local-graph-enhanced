@@ -1,0 +1,43 @@
+{
+  "graph_nodes": [
+    {
+      "id": "node1",
+      "x": -100,
+      "y": 0,
+      "label": "Node A",
+      "chinese_label": "节点A",
+      "color": "#507F80",
+      "radius": 20,
+      "category": null,
+      "layers": []
+    },
+    {
+      "id": "node2",
+      "x": 100,
+      "y": 0,
+      "label": "Node B",
+      "chinese_label": "节点B",
+      "color": "#507F80",
+      "radius": 20,
+      "category": null,
+      "layers": []
+    }
+  ],
+  "graph_edges": [
+    {
+      "id": "edge1",
+      "from_node_id": "node1",
+      "to_node_id": "node2",
+      "weight": 1,
+      "category": null
+    }
+  ],
+  "graph_metadata": [
+    {
+      "scale": 1,
+      "offset_x": 0,
+      "offset_y": 0
+    }
+  ]
+}
+

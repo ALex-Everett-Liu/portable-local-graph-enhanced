@@ -453,6 +453,79 @@ function render() {
 }
 
 /**
+ * Load sample graph data
+ */
+async function loadSampleGraph() {
+    const statusText = document.getElementById('status-text');
+    statusText.textContent = 'Loading sample graph...';
+    
+    try {
+        const response = await fetch('sample-graph.json');
+        if (!response.ok) {
+            throw new Error('Failed to load sample graph file');
+        }
+        
+        const data = await response.json();
+        
+        // Validate JSON structure
+        if (!data.graph_nodes || !data.graph_edges) {
+            throw new Error('Invalid JSON format. Expected graph_nodes and graph_edges arrays.');
+        }
+        
+        // Convert database format to graph format
+        nodes = data.graph_nodes.map(node => ({
+            id: node.id,
+            x: node.x,
+            y: node.y,
+            label: node.label || '',
+            chineseLabel: node.chinese_label || node.chineseLabel || '',
+            color: node.color || GRAPH_CONSTANTS.DEFAULT_NODE_COLOR,
+            radius: node.radius || GRAPH_CONSTANTS.DEFAULT_NODE_RADIUS,
+            category: node.category || null,
+            layers: node.layers 
+                ? (typeof node.layers === 'string' 
+                    ? node.layers.split(',').map(l => l.trim()).filter(l => l)
+                    : node.layers)
+                : []
+        }));
+        
+        edges = data.graph_edges.map(edge => ({
+            id: edge.id,
+            from: edge.from_node_id || edge.from,
+            to: edge.to_node_id || edge.to,
+            weight: edge.weight || 1,
+            category: edge.category || null
+        }));
+        
+        // Load view state from metadata if available
+        if (data.graph_metadata && data.graph_metadata.length > 0) {
+            const meta = data.graph_metadata[0];
+            viewState.scale = meta.scale || 1;
+            viewState.offset = { 
+                x: meta.offset_x || 0, 
+                y: meta.offset_y || 0 
+            };
+        } else {
+            viewState.scale = 1;
+            viewState.offset = { x: 0, y: 0 };
+        }
+        
+        statusText.textContent = `Loaded sample: ${nodes.length} nodes, ${edges.length} edges`;
+        
+        // Clear selection when loading new data
+        selectedNode = null;
+        hideSelectionInfoPopup();
+        
+        // Initial render
+        render();
+    } catch (error) {
+        console.error('Error loading sample graph:', error);
+        statusText.textContent = `Error: ${error.message}`;
+        alert(`Failed to load sample graph: ${error.message}`);
+    }
+}
+
+/**
  * Reset view to default
  */
 function resetView() {
@@ -499,6 +572,9 @@ function init() {
             loadJSON(file);
         }
     });
+    
+    // Setup load sample button
+    document.getElementById('load-sample-btn').addEventListener('click', loadSampleGraph);
     
     // Setup reset view button
     document.getElementById('reset-view-btn').addEventListener('click', resetView);

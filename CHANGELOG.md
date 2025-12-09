@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.2.0, see [CHANGELOG_ARCHIVE.md](docs/CHANGELOG_ARCHIVE.md)
 
-## [Unreleased]
+## [0.4.8] - 2025-12-10
 
 ### Fixed
 - Fixed load dialog becoming too tall when many databases are listed - dialog now has max-height constraint (85vh) with scrollable content area
