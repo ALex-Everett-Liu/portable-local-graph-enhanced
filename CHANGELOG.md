@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.2.0, see [CHANGELOG_ARCHIVE.md](docs/CHANGELOG_ARCHIVE.md)
 
+## [0.4.9] - 2025-12-10
+
+### Added
+- Internationalization (i18n) support for Chinese users - complete translation system with language switching
+- i18n Manager (`public/managers/i18nManager.js`) - handles language loading, switching, and translation with dot-notation key support
+- Translation files for English (`public/locales/en.json`) and Chinese (`public/locales/zh.json`) - comprehensive translations for all UI elements
+- Language selection tab in Settings dialog - choose between English and 中文 (Chinese) with real-time UI updates
+- Language preference persistence - language choice saved to localStorage and restored on app load
+- Translation attributes (`data-i18n`, `data-i18n-placeholder`, `data-i18n-title`) added to toolbar, sidebar, dialogs, and common UI elements
+- Parameter interpolation support in translations - supports `{{count}}` and `{{plural}}` placeholders for dynamic content
+- Language change event system - triggers page-wide retranslation when language is switched
+
+### Changed
+- Settings dialog now includes Language tab alongside Fonts tab for language selection
+- UI elements automatically translate when language preference changes
+- Document language attribute (`lang`) updates based on selected language
+
+### Technical Details
+- i18n system initializes early in app startup before other components
+- Translation files loaded via fetch() with fallback to English if Chinese fails
+- Language preference stored in localStorage with key `graphApp_language`
+- Translation function (`t()`) supports nested keys (e.g., `settings.fonts.uiFont.title`)
+- Pluralization handled automatically for English (adds 's' when count !== 1)
+- Chinese translations use simplified Chinese (简体中文)
+- All UI text elements translatable including buttons, labels, placeholders, and tooltips
+- Language change triggers custom `languageChanged` event for reactive updates
+
 ## [0.4.8] - 2025-12-10
 
 ### Added
@@ -24,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gallery automatically populates from `SAMPLE_GRAPHS` configuration array
 
 ### Fixed
+- Fixed canvas distortion (compression/stretching) when toolbar height changes - canvas now properly resizes when save/discard buttons appear or disappear
 - Fixed load dialog becoming too tall when many databases are listed - dialog now has max-height constraint (85vh) with scrollable content area
 - Fixed load dialog buttons becoming inaccessible when content expands - buttons now remain fixed at bottom of dialog
 - Fixed node search dialog becoming too tall when many search results are displayed - dialog now has max-height constraint (85vh) with scrollable content area
@@ -34,9 +62,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed layer management dialog buttons becoming inaccessible when content expands - buttons now remain fixed at bottom of dialog
 - Fixed clustering dialog becoming too tall when results are displayed - dialog now has max-height constraint (85vh) with scrollable content area
 - Fixed clustering dialog buttons becoming inaccessible when results expand - buttons now remain fixed at bottom of dialog
-- Fixed canvas distortion (compression/stretching) when toolbar height changes - canvas now properly resizes when save/discard buttons appear or disappear
 
 ### Technical Details
+- Canvas resize triggered via Graph's `resizeCanvas()` method when toolbar height changes to maintain proper aspect ratio
 - Sample gallery modal uses same styling pattern as selection popup for consistency
 - Gallery closes via X button, backdrop click, or ESC key
 - Sample graphs stored in `web-app/samples/` directory
@@ -45,7 +73,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sample graphs use color-coded categories and meaningful edge relationships
 - Gallery grid uses responsive CSS Grid with auto-fill layout
 - Sample cards show hover effects and click-to-load functionality
-- Canvas resize triggered via Graph's `resizeCanvas()` method when toolbar height changes to maintain proper aspect ratio
 
 ## [0.4.7] - 2025-12-09
 

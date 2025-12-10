@@ -1,0 +1,201 @@
+{
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "fonts": "Fonts",
+      "language": "Language"
+    },
+    "fonts": {
+      "uiFont": {
+        "title": "UI Font",
+        "description": "Font family for interface elements (toolbar, dialogs, sidebar)"
+      },
+      "canvasFont": {
+        "title": "Canvas Label Font (English)",
+        "description": "Font family for English labels on graph nodes"
+      },
+      "canvasChineseFont": {
+        "title": "Canvas Label Font (Chinese)",
+        "description": "Font family for Chinese labels on graph nodes"
+      },
+      "canvasFontSize": {
+        "title": "Canvas Font Size",
+        "description": "Base font size for canvas labels (default: 14px)"
+      },
+      "selectionInfoFontSize": {
+        "title": "Selection Info Font Size",
+        "description": "Font size for selection info display in sidebar and popup (default: 13px)"
+      },
+      "preview": "Preview:"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your preferred language",
+      "selectLabel": "Language:",
+      "applyNote": "Language changes will take effect after clicking Apply"
+    },
+    "buttons": {
+      "reset": "Reset to Defaults",
+      "apply": "Apply",
+      "cancel": "Cancel"
+    },
+    "resetConfirm": "Reset all font settings to defaults? This cannot be undone."
+  },
+  "toolbar": {
+    "search": {
+      "placeholder": "Search nodes...",
+      "clear": "Clear Search",
+      "openDialog": "Open Search Dialog"
+    },
+    "save": "Save Changes",
+    "discard": "Discard",
+    "modes": {
+      "node": "Node",
+      "edge": "Edge",
+      "select": "Select",
+      "hotkey": "Hotkey"
+    },
+    "actions": {
+      "load": "Load",
+      "clear": "Clear All"
+    }
+  },
+  "sidebar": {
+    "graphInfo": {
+      "title": "Graph Info",
+      "nodes": "Nodes:",
+      "edges": "Edges:",
+      "mode": "Mode:",
+      "searchCount": "{{count}} nodes"
+    },
+    "selected": {
+      "title": "Selected",
+      "nothing": "Nothing selected"
+    },
+    "analysis": {
+      "title": "Graph Analysis",
+      "centralities": {
+        "description": "Calculate centrality measures for all nodes",
+        "button": "Calculate Centralities"
+      },
+      "clustering": {
+        "description": "Detect communities and clusters in the graph",
+        "button": "Graph Clustering"
+      },
+      "semanticMap": {
+        "description": "Visualize semantic relationships using embeddings",
+        "button": "Semantic Map"
+      }
+    },
+    "instructions": {
+      "title": "Instructions",
+      "nodeMode": "Node Mode: Click to create nodes",
+      "edgeMode": "Edge Mode: Click two nodes to connect",
+      "selectMode": "Select Mode: Click to select/move nodes",
+      "rightClick": "Right-click: Edit node/edge properties",
+      "drag": "Drag: Move nodes or pan canvas",
+      "scroll": "Scroll: Zoom in/out"
+    },
+    "displayOptions": {
+      "title": "Display Options",
+      "showEdgeArrows": "Show Edge Arrows"
+    },
+    "view": {
+      "title": "View",
+      "fullscreen": {
+        "description": "Enter fullscreen mode for immersive canvas experience",
+        "button": "Fullscreen Canvas"
+      }
+    },
+    "viewState": {
+      "title": "View State",
+      "save": {
+        "description": "Save current zoom and pan position",
+        "button": "Save View"
+      }
+    },
+    "createEdge": {
+      "title": "Create Edge",
+      "description": "Connect distant nodes via search",
+      "button": "Create Edge"
+    },
+    "database": {
+      "title": "Database Operations",
+      "merge": {
+        "description": "Merge data from another database",
+        "button": "Merge Database"
+      },
+      "backup": {
+        "description": "Create a timestamped backup of current database",
+        "button": "Backup Database"
+      },
+      "export": {
+        "description": "Export all tables as JSON or CSV",
+        "button": "Export Database"
+      }
+    },
+    "layers": {
+      "title": "Layer Management",
+      "summary": "No layers defined",
+      "manage": "Manage Layers",
+      "filterMode": "Filter Mode:",
+      "include": "Include",
+      "exclude": "Exclude"
+    },
+    "templates": {
+      "title": "Templates",
+      "description": "Create a new graph in a fresh database file.",
+      "button": "New Template"
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Customize application preferences",
+      "button": "Settings"
+    }
+  },
+  "dialogs": {
+    "node": {
+      "title": "Edit Node",
+      "label": "Node label (English)",
+      "chinese": "中文标签 (Chinese)",
+      "position": "Position:",
+      "x": "X:",
+      "y": "Y:",
+      "category": "Category (optional)",
+      "layers": "Layers:",
+      "layersPlaceholder": "Enter layers (comma-separated)",
+      "size": "Size:"
+    },
+    "export": {
+      "title": "Export Database Tables",
+      "description": "Export all 4 database tables (graph_nodes, graph_edges, graph_metadata, filter_state) as JSON or CSV files.",
+      "format": "Export Format:",
+      "json": "JSON",
+      "csv": "CSV"
+    },
+    "layerRename": {
+      "title": "Rename Layer",
+      "currentName": "Current Name:",
+      "newName": "New Name:",
+      "newNamePlaceholder": "Enter new layer name",
+      "usageInfo": "This layer is used by {{count}} node(s)"
+    }
+  },
+  "common": {
+    "nothingSelected": "Nothing selected",
+    "nodeDetails": "Node Details",
+    "exitFullscreen": "Exit Fullscreen",
+    "saving": "Saving...",
+    "saved": "Saved {{count}} change{{plural}}!",
+    "savedPlural": "changes",
+    "savedSingular": "change",
+    "error": "Error!",
+    "noChangesToSave": "No changes to save",
+    "noChangesToDiscard": "No changes to discard",
+    "discarding": "Discarding...",
+    "discarded": "Discarded {{count}} change{{plural}}!",
+    "discardedPlural": "changes",
+    "discardedSingular": "change"
+  }
+}
+

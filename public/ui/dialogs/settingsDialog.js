@@ -1,6 +1,6 @@
 /**
  * Settings Dialog
- * Manages application settings including fonts
+ * Manages application settings including fonts and language
  */
 
 import {
@@ -10,9 +10,19 @@ import {
     resetFontSettings,
     DEFAULT_SETTINGS
 } from '../../managers/fontSettingsManager.js';
+import {
+    getCurrentLanguage,
+    setLanguage,
+    getSupportedLanguages,
+    getLanguageDisplayName,
+    translatePage,
+    t
+} from '../../managers/i18nManager.js';
 
 let currentSettings = { ...DEFAULT_SETTINGS };
 let originalSettings = { ...DEFAULT_SETTINGS };
+let currentLanguage = 'en';
+let originalLanguage = 'en';
 
 /**
  * Initialize settings dialog
@@ -44,6 +54,19 @@ function setupSettingsDialogEvents() {
     const fontsTab = document.getElementById("settings-tab-fonts");
     if (fontsTab) {
         fontsTab.addEventListener("click", () => switchTab("fonts"));
+    }
+    
+    const languageTab = document.getElementById("settings-tab-language");
+    if (languageTab) {
+        languageTab.addEventListener("click", () => switchTab("language"));
+    }
+    
+    // Language selector
+    const languageSelect = document.getElementById("language-select");
+    if (languageSelect) {
+        languageSelect.addEventListener("change", (e) => {
+            currentLanguage = e.target.value;
+        });
     }
 
     // Font selectors
@@ -105,6 +128,10 @@ function setupSettingsDialogEvents() {
 function loadCurrentSettings() {
     currentSettings = loadFontSettings();
     originalSettings = { ...currentSettings };
+    
+    // Load current language
+    currentLanguage = getCurrentLanguage();
+    originalLanguage = currentLanguage;
 
     // Update UI
     const uiFontSelect = document.getElementById("ui-font-family");
@@ -114,6 +141,7 @@ function loadCurrentSettings() {
     const canvasFontSizeValue = document.getElementById("canvas-font-size-value");
     const selectionInfoFontSizeSlider = document.getElementById("selection-info-font-size");
     const selectionInfoFontSizeValue = document.getElementById("selection-info-font-size-value");
+    const languageSelect = document.getElementById("language-select");
 
     if (uiFontSelect) {
         uiFontSelect.value = currentSettings.uiFontFamily;
@@ -135,6 +163,12 @@ function loadCurrentSettings() {
         selectionInfoFontSizeSlider.value = currentSettings.selectionInfoFontSize || 13;
         selectionInfoFontSizeValue.textContent = `${currentSettings.selectionInfoFontSize || 13}px`;
     }
+    if (languageSelect) {
+        languageSelect.value = currentLanguage;
+    }
+    
+    // Translate dialog content
+    translatePage();
 }
 
 /**
@@ -201,6 +235,9 @@ function switchTab(tabName) {
     if (activeContent) {
         activeContent.style.display = "block";
     }
+    
+    // Translate content when switching tabs
+    translatePage();
 }
 
 /**
@@ -226,6 +263,7 @@ export function closeSettingsDialog() {
 
     // Revert to original settings
     currentSettings = { ...originalSettings };
+    currentLanguage = originalLanguage;
     loadCurrentSettings();
     
     dialog.classList.add("hidden");
@@ -234,13 +272,14 @@ export function closeSettingsDialog() {
 /**
  * Apply settings
  */
-function applySettings() {
+async function applySettings() {
     // Get current values from form
     const uiFontSelect = document.getElementById("ui-font-family");
     const canvasFontSelect = document.getElementById("canvas-font-family");
     const canvasChineseFontSelect = document.getElementById("canvas-chinese-font-family");
     const canvasFontSizeSlider = document.getElementById("canvas-font-size");
     const selectionInfoFontSizeSlider = document.getElementById("selection-info-font-size");
+    const languageSelect = document.getElementById("language-select");
 
     currentSettings = {
         uiFontFamily: uiFontSelect ? uiFontSelect.value : currentSettings.uiFontFamily,
@@ -250,10 +289,20 @@ function applySettings() {
         selectionInfoFontSize: selectionInfoFontSizeSlider ? parseInt(selectionInfoFontSizeSlider.value) : (currentSettings.selectionInfoFontSize || 13)
     };
 
-    // Save and apply
+    // Save and apply font settings
     saveFontSettings(currentSettings);
     applyFontSettings(currentSettings);
     originalSettings = { ...currentSettings };
+
+    // Apply language change if different
+    const selectedLanguage = languageSelect ? languageSelect.value : currentLanguage;
+    if (selectedLanguage !== originalLanguage) {
+        await setLanguage(selectedLanguage);
+        originalLanguage = selectedLanguage;
+        currentLanguage = selectedLanguage;
+        // Translate the entire page after language change
+        translatePage();
+    }
 
     // Close dialog
     closeSettingsDialog();
@@ -263,9 +312,17 @@ function applySettings() {
  * Reset settings to defaults
  */
 function resetSettings() {
-    if (confirm("Reset all font settings to defaults? This cannot be undone.")) {
+    const confirmMessage = t('settings.resetConfirm');
+    if (confirm(confirmMessage)) {
         currentSettings = resetFontSettings();
         originalSettings = { ...currentSettings };
+        // Reset language to default (English)
+        currentLanguage = 'en';
+        originalLanguage = 'en';
+        const languageSelect = document.getElementById("language-select");
+        if (languageSelect) {
+            languageSelect.value = 'en';
+        }
         loadCurrentSettings();
     }
 }

@@ -34,8 +34,17 @@ import { initializeFullscreen } from './managers/fullscreenManager.js';
 import { initializeExportDialog, showExportDialog } from './ui/dialogs/exportDialog.js';
 import { initializeClusteringDialog, showClusteringDialog } from './ui/dialogs/clusteringDialog.js';
 import { initializeSemanticMapDialog, showSemanticMapDialog } from './ui/dialogs/semanticMapDialog.js';
+import { initializeI18n, translatePage } from './managers/i18nManager.js';
 
-function init() {
+async function init() {
+    // Initialize i18n first, before other components
+    await initializeI18n();
+    translatePage();
+    
+    // Listen for language changes and retranslate
+    window.addEventListener('languageChanged', () => {
+        translatePage();
+    });
     const canvas = document.getElementById('graph-canvas');
     if (!canvas) {
         console.error('Canvas element not found!');
@@ -126,6 +135,9 @@ function init() {
     
     // Expose semantic map dialog function globally
     window.showSemanticMapDialog = showSemanticMapDialog;
+    
+    // Expose i18n functions globally
+    window.translatePage = translatePage;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');
@@ -141,4 +153,9 @@ function init() {
 }
 
 // Initialize when page loads
-document.addEventListener('DOMContentLoaded', init);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    // DOM already loaded
+    init();
+}

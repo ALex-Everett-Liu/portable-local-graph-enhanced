@@ -1,11 +1,11 @@
 <div class="sidebar" id="local-graph-sidebar">
     <div class="resize-handle" id="local-graph-resize-handle"></div>
     <div class="sidebar-section">
-        <h3>Graph Info</h3>
+        <h3 data-i18n="sidebar.graphInfo.title">Graph Info</h3>
         <div id="graph-info">
-            <p>Nodes: <span id="node-count">0</span></p>
-            <p>Edges: <span id="edge-count">0</span></p>
-            <p>Mode: <span id="current-mode">Node</span></p>
+            <p><span data-i18n="sidebar.graphInfo.nodes">Nodes:</span> <span id="node-count">0</span></p>
+            <p><span data-i18n="sidebar.graphInfo.edges">Edges:</span> <span id="edge-count">0</span></p>
+            <p><span data-i18n="sidebar.graphInfo.mode">Mode:</span> <span id="current-mode">Node</span></p>
             <p
                 id="search-count"
                 style="font-size: 12px; color: #666; margin-top: 8px"
@@ -16,16 +16,16 @@
     </div>
 
     <div class="sidebar-section">
-        <h3>Selected</h3>
+        <h3 data-i18n="sidebar.selected.title">Selected</h3>
         <div id="selection-info">
-            <p>Nothing selected</p>
+            <p data-i18n="sidebar.selected.nothing">Nothing selected</p>
         </div>
     </div>
 
     <div class="sidebar-section">
-        <h4>Graph Analysis</h4>
+        <h4 data-i18n="sidebar.analysis.title">Graph Analysis</h4>
         <div style="margin-bottom: 8px">
-            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px" data-i18n="sidebar.analysis.centralities.description">
                 Calculate centrality measures for all nodes
             </p>
             <button
@@ -33,13 +33,14 @@
                 class="tool-btn"
                 style="width: 100%; padding: 8px; font-size: 12px"
                 title="Calculate Centralities"
+                data-i18n-title="sidebar.analysis.centralities.button"
             >
                 <i data-lucide="bar-chart-3" class="icon"></i>
-                Calculate Centralities
+                <span data-i18n="sidebar.analysis.centralities.button">Calculate Centralities</span>
             </button>
         </div>
         <div style="margin-top: 12px">
-            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px" data-i18n="sidebar.analysis.clustering.description">
                 Detect communities and clusters in the graph
             </p>
             <button
@@ -47,13 +48,14 @@
                 class="tool-btn"
                 style="width: 100%; padding: 8px; font-size: 12px"
                 title="Graph Clustering"
+                data-i18n-title="sidebar.analysis.clustering.button"
             >
                 <i data-lucide="network" class="icon"></i>
-                Graph Clustering
+                <span data-i18n="sidebar.analysis.clustering.button">Graph Clustering</span>
             </button>
         </div>
         <div style="margin-top: 12px">
-            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px" data-i18n="sidebar.analysis.semanticMap.description">
                 Visualize semantic relationships using embeddings
             </p>
             <button
@@ -61,27 +63,28 @@
                 class="tool-btn"
                 style="width: 100%; padding: 8px; font-size: 12px"
                 title="Semantic Map"
+                data-i18n-title="sidebar.analysis.semanticMap.button"
             >
                 <i data-lucide="map-plus" class="icon"></i>
-                Semantic Map
+                <span data-i18n="sidebar.analysis.semanticMap.button">Semantic Map</span>
             </button>
         </div>
     </div>
 
     <div class="sidebar-section">
-        <h3>Instructions</h3>
+        <h3 data-i18n="sidebar.instructions.title">Instructions</h3>
         <div class="instructions">
-            <p><strong>Node Mode:</strong> Click to create nodes</p>
-            <p><strong>Edge Mode:</strong> Click two nodes to connect</p>
-            <p><strong>Select Mode:</strong> Click to select/move nodes</p>
-            <p><strong>Right-click:</strong> Edit node/edge properties</p>
-            <p><strong>Drag:</strong> Move nodes or pan canvas</p>
-            <p><strong>Scroll:</strong> Zoom in/out</p>
+            <p><strong>Node Mode:</strong> <span data-i18n="sidebar.instructions.nodeMode">Click to create nodes</span></p>
+            <p><strong>Edge Mode:</strong> <span data-i18n="sidebar.instructions.edgeMode">Click two nodes to connect</span></p>
+            <p><strong>Select Mode:</strong> <span data-i18n="sidebar.instructions.selectMode">Click to select/move nodes</span></p>
+            <p><strong>Right-click:</strong> <span data-i18n="sidebar.instructions.rightClick">Edit node/edge properties</span></p>
+            <p><strong>Drag:</strong> <span data-i18n="sidebar.instructions.drag">Move nodes or pan canvas</span></p>
+            <p><strong>Scroll:</strong> <span data-i18n="sidebar.instructions.scroll">Zoom in/out</span></p>
         </div>
     </div>
 
     <div class="sidebar-section">
-        <h4>Display Options</h4>
+        <h4 data-i18n="sidebar.displayOptions.title">Display Options</h4>
         <div class="filter-controls">
             <div style="margin-bottom: 8px">
                 <label
@@ -97,7 +100,7 @@
                         id="show-edge-arrows"
                         style="margin-right: 6px"
                     />
-                    Show Edge Arrows
+                    <span data-i18n="sidebar.displayOptions.showEdgeArrows">Show Edge Arrows</span>
                 </label>
             </div>
         </div>
@@ -286,9 +289,9 @@
     </div>
 
     <div class="sidebar-section">
-        <h4>Settings</h4>
+        <h4 data-i18n="sidebar.settings.title">Settings</h4>
         <div style="margin-bottom: 8px">
-            <p style="font-size: 12px; color: #666; margin-bottom: 8px">
+            <p style="font-size: 12px; color: #666; margin-bottom: 8px" data-i18n="sidebar.settings.description">
                 Customize application preferences
             </p>
             <button
@@ -296,9 +299,10 @@
                 class="tool-btn"
                 style="width: 100%; padding: 8px; font-size: 12px"
                 title="Settings"
+                data-i18n-title="sidebar.settings.button"
             >
                 <i data-lucide="settings" class="icon"></i>
-                Settings
+                <span data-i18n="sidebar.settings.button">Settings</span>
             </button>
         </div>
     </div>

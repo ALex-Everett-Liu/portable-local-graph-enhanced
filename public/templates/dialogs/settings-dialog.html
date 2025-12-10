@@ -1,6 +1,6 @@
 <div id="settings-dialog" class="dialog hidden">
     <div class="dialog-content settings-dialog-content" style="max-width: 600px">
-        <h3>Settings</h3>
+        <h3 data-i18n="settings.title">Settings</h3>
         
         <!-- Tab Navigation -->
         <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #dee2e6;">
@@ -18,19 +18,38 @@
                     border-bottom: 2px solid #007bff;
                     margin-bottom: -1px;
                 "
+                data-i18n="settings.tabs.fonts"
             >
                 Fonts
+            </button>
+            <button
+                id="settings-tab-language"
+                class="settings-tab"
+                data-tab="language"
+                style="
+                    padding: 8px 16px;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+                    font-size: 14px;
+                    color: #495057;
+                    border-bottom: none;
+                    margin-bottom: -1px;
+                "
+                data-i18n="settings.tabs.language"
+            >
+                Language
             </button>
         </div>
 
         <div class="settings-dialog-body">
         <!-- Fonts Tab Content -->
-        <div id="settings-content-fonts" class="settings-tab-content">
+        <div id="settings-content-fonts" class="settings-tab-content" style="display: block;">
             <div style="margin-bottom: 20px">
-                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;" data-i18n="settings.fonts.uiFont.title">
                     UI Font
                 </h4>
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;" data-i18n="settings.fonts.uiFont.description">
                     Font family for interface elements (toolbar, dialogs, sidebar)
                 </p>
                 <select
@@ -58,15 +77,15 @@
                     <option value="'Courier New', Courier, monospace">Courier New</option>
                 </select>
                 <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px; color: #666;">
-                    Preview: <span id="ui-font-preview" style="font-weight: 500;">The quick brown fox jumps over the lazy dog 快速棕色狐狸</span>
+                    <span data-i18n="settings.fonts.preview">Preview:</span> <span id="ui-font-preview" style="font-weight: 500;">The quick brown fox jumps over the lazy dog 快速棕色狐狸</span>
                 </div>
             </div>
 
             <div style="margin-bottom: 20px">
-                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;" data-i18n="settings.fonts.canvasFont.title">
                     Canvas Label Font (English)
                 </h4>
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;" data-i18n="settings.fonts.canvasFont.description">
                     Font family for English labels on graph nodes
                 </p>
                 <select
@@ -95,15 +114,15 @@
                     <option value="'Courier New', Courier, monospace">Courier New</option>
                 </select>
                 <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px; color: #666;">
-                    Preview: <span id="canvas-font-preview" style="font-weight: 500;">Node Label 节点标签</span>
+                    <span data-i18n="settings.fonts.preview">Preview:</span> <span id="canvas-font-preview" style="font-weight: 500;">Node Label 节点标签</span>
                 </div>
             </div>
 
             <div style="margin-bottom: 20px">
-                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;" data-i18n="settings.fonts.canvasChineseFont.title">
                     Canvas Label Font (Chinese)
                 </h4>
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;" data-i18n="settings.fonts.canvasChineseFont.description">
                     Font family for Chinese labels on graph nodes
                 </p>
                 <select
@@ -130,15 +149,15 @@
                     <option value="'Source Han Sans SC', Arial, sans-serif">Source Han Sans SC</option>
                 </select>
                 <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px; color: #666;">
-                    Preview: <span id="canvas-chinese-font-preview" style="font-weight: 500;">中文标签 快速棕色狐狸跳过懒狗</span>
+                    <span data-i18n="settings.fonts.preview">Preview:</span> <span id="canvas-chinese-font-preview" style="font-weight: 500;">中文标签 快速棕色狐狸跳过懒狗</span>
                 </div>
             </div>
 
             <div style="margin-bottom: 20px">
-                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;" data-i18n="settings.fonts.canvasFontSize.title">
                     Canvas Font Size
                 </h4>
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;" data-i18n="settings.fonts.canvasFontSize.description">
                     Base font size for canvas labels (default: 14px)
                 </p>
                 <input
@@ -158,10 +177,10 @@
             </div>
 
             <div style="margin-bottom: 20px">
-                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;" data-i18n="settings.fonts.selectionInfoFontSize.title">
                     Selection Info Font Size
                 </h4>
-                <p style="font-size: 12px; color: #666; margin-bottom: 8px;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 8px;" data-i18n="settings.fonts.selectionInfoFontSize.description">
                     Font size for selection info display in sidebar and popup (default: 13px)
                 </p>
                 <input
@@ -180,12 +199,45 @@
                 </div>
             </div>
         </div>
+
+        <!-- Language Tab Content -->
+        <div id="settings-content-language" class="settings-tab-content" style="display: none;">
+            <div style="margin-bottom: 20px">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;" data-i18n="settings.language.title">
+                    Language
+                </h4>
+                <p style="font-size: 12px; color: #666; margin-bottom: 16px;" data-i18n="settings.language.description">
+                    Choose your preferred language
+                </p>
+                <div style="margin-bottom: 12px">
+                    <label style="font-size: 13px; font-weight: 500; display: block; margin-bottom: 8px; color: #495057;" data-i18n="settings.language.selectLabel">
+                        Language:
+                    </label>
+                    <select
+                        id="language-select"
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                        "
+                    >
+                        <option value="en">English</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </div>
+                <p style="font-size: 11px; color: #999; font-style: italic;" data-i18n="settings.language.applyNote">
+                    Language changes will take effect after clicking Apply
+                </p>
+            </div>
+        </div>
         </div>
 
         <div class="dialog-buttons">
-            <button id="settings-reset-btn">Reset to Defaults</button>
-            <button id="settings-apply-btn">Apply</button>
-            <button id="settings-cancel-btn">Cancel</button>
+            <button id="settings-reset-btn" data-i18n="settings.buttons.reset">Reset to Defaults</button>
+            <button id="settings-apply-btn" data-i18n="settings.buttons.apply">Apply</button>
+            <button id="settings-cancel-btn" data-i18n="settings.buttons.cancel">Cancel</button>
         </div>
     </div>
 </div>

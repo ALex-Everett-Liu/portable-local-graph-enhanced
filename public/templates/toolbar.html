@@ -8,6 +8,7 @@
                     type="text"
                     id="node-search"
                     placeholder="Search nodes..."
+                    data-i18n-placeholder="toolbar.search.placeholder"
                     style="
                         padding: 6px 12px;
                         border: 1px solid #ddd;
@@ -20,6 +21,7 @@
                     id="clear-search-btn"
                     class="tool-btn"
                     title="Clear Search"
+                    data-i18n-title="toolbar.search.clear"
                     style="padding: 6px 10px; display: none"
                 >
                     <i data-lucide="x" class="icon"></i>
@@ -28,6 +30,7 @@
                     id="search-dialog-btn"
                     class="tool-btn"
                     title="Open Search Dialog"
+                    data-i18n-title="toolbar.search.openDialog"
                 >
                     <i data-lucide="search" class="icon"></i>
                 </button>
@@ -44,19 +47,21 @@
             id="save-changes"
             class="tool-btn"
             title="Save Changes"
+            data-i18n-title="toolbar.save"
             style="display: none"
         >
             <i data-lucide="save" class="icon"></i>
-            <span>Save Changes</span>
+            <span data-i18n="toolbar.save">Save Changes</span>
         </button>
         <button
             id="discard-changes"
             class="tool-btn"
             title="Discard Changes"
+            data-i18n-title="toolbar.discard"
             style="display: none"
         >
             <i data-lucide="undo-2" class="icon"></i>
-            <span>Discard</span>
+            <span data-i18n="toolbar.discard">Discard</span>
         </button>
     </div>
 
@@ -65,29 +70,32 @@
             id="node-mode"
             class="tool-btn active"
             title="Node Mode"
+            data-i18n-title="toolbar.modes.node"
         >
             <i data-lucide="circle-dot" class="icon"></i>
-            <span>Node</span>
+            <span data-i18n="toolbar.modes.node">Node</span>
         </button>
-        <button id="edge-mode" class="tool-btn" title="Edge Mode">
+        <button id="edge-mode" class="tool-btn" title="Edge Mode" data-i18n-title="toolbar.modes.edge">
             <i data-lucide="link" class="icon"></i>
-            <span>Edge</span>
+            <span data-i18n="toolbar.modes.edge">Edge</span>
         </button>
         <button
             id="select-mode"
             class="tool-btn"
             title="Select Mode"
+            data-i18n-title="toolbar.modes.select"
         >
             <i data-lucide="mouse-pointer-2" class="icon"></i>
-            <span>Select</span>
+            <span data-i18n="toolbar.modes.select">Select</span>
         </button>
         <button
             id="hotkey-mode-btn"
             class="tool-btn"
             title="Hotkey Mode (Vim-like)"
+            data-i18n-title="toolbar.modes.hotkey"
         >
             <i data-lucide="command" class="icon"></i>
-            <span>Hotkey</span>
+            <span data-i18n="toolbar.modes.hotkey">Hotkey</span>
         </button>
     </div>
 
@@ -96,14 +104,16 @@
             id="load-btn"
             class="tool-btn"
             title="Load Database"
+            data-i18n-title="toolbar.actions.load"
         >
             <i data-lucide="folder-open" class="icon"></i>
-            <span>Load</span>
+            <span data-i18n="toolbar.actions.load">Load</span>
         </button>
         <button
             id="clear-btn"
             class="tool-btn danger"
             title="Clear All"
+            data-i18n-title="toolbar.actions.clear"
         >
             <i data-lucide="trash-2" class="icon"></i>
         </button>
