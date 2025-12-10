@@ -26,8 +26,9 @@ function throttle(func, limit) {
 
 /**
  * Trigger canvas resize to fix distortion when sidebar changes
+ * Exported for use in other modules (e.g., when toolbar height changes)
  */
-const triggerCanvasResize = throttle(() => {
+export const triggerCanvasResize = throttle(() => {
     // Use requestAnimationFrame to ensure DOM has updated
     requestAnimationFrame(() => {
         const graph = getGraph();

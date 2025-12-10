@@ -10,6 +10,7 @@ import {
     saveFilterStateToDb,
     clearGraphInDb
 } from '../services/databaseService.js';
+import { triggerCanvasResize } from './sidebarResizer.js';
 
 // ========== Save/Discard Functions ==========
 
@@ -43,6 +44,8 @@ export function updateSaveButtonVisibility() {
             if (window.lucide && typeof window.lucide.createIcons === 'function') {
                 lucide.createIcons();
             }
+            // Trigger canvas resize to fix distortion when toolbar height changes
+            triggerCanvasResize();
         } else {
             // Preserve icon structure, only update text span
             const textSpan = saveButton.querySelector('span');
@@ -56,6 +59,8 @@ export function updateSaveButtonVisibility() {
             }
             saveButton.style.display = 'none';
             saveButton.classList.remove('has-unsaved');
+            // Trigger canvas resize to fix distortion when toolbar height changes
+            triggerCanvasResize();
         }
     }
     
@@ -77,6 +82,8 @@ export function updateSaveButtonVisibility() {
             if (window.lucide && typeof window.lucide.createIcons === 'function') {
                 lucide.createIcons();
             }
+            // Trigger canvas resize to fix distortion when toolbar height changes
+            triggerCanvasResize();
         } else {
             // Preserve icon structure, only update text span
             const textSpan = discardButton.querySelector('span');
@@ -90,6 +97,8 @@ export function updateSaveButtonVisibility() {
             }
             discardButton.style.display = 'none';
             discardButton.classList.remove('has-unsaved');
+            // Trigger canvas resize to fix distortion when toolbar height changes
+            triggerCanvasResize();
         }
     }
 }
