@@ -1,5 +1,7 @@
 import { fetchDatabases, mergeDatabase } from '../../services/databaseService.js';
 import { unsavedChanges } from '../../state/appState.js';
+import { showToast } from '../../utils/toast.js';
+import { showConfirmDialog } from '../../utils/confirmDialog.js';
 
 let selectedDatabasePath = null;
 let allDatabases = [];
@@ -9,9 +11,12 @@ export async function showMergeDialog() {
     const hasUnsavedChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
     
     if (hasUnsavedChanges) {
-        const proceed = confirm(
+        const proceed = await showConfirmDialog(
             `You have ${unsavedChanges.nodes.size + unsavedChanges.edges.size} unsaved change(s). ` +
-            `Merging a database will save these changes first. Continue?`
+            `Merging a database will save these changes first. Continue?`,
+            'warning',
+            'Continue',
+            'Cancel'
         );
         if (!proceed) {
             return;
@@ -118,7 +123,7 @@ function updateMergeButtonState() {
 export async function handleMergeOK() {
     // Check if a database is selected
     if (!selectedDatabasePath || selectedDatabasePath.trim() === '') {
-        alert('Please select a source database file to merge.');
+        showToast('Please select a source database file to merge.', 'warning', 3000);
         return;
     }
     
@@ -146,12 +151,9 @@ export async function handleMergeOK() {
         document.body.removeChild(loadingMsg);
         
         // Show success message with statistics
-        const stats = [
-            `Nodes: ${result.nodesAdded} added, ${result.nodesSkipped} skipped, ${result.nodesRenamed} renamed`,
-            `Edges: ${result.edgesAdded} added, ${result.edgesSkipped} skipped, ${result.edgesRenamed} renamed`
-        ].join('\n');
+        const stats = `Nodes: ${result.nodesAdded} added, ${result.nodesSkipped} skipped, ${result.nodesRenamed} renamed. Edges: ${result.edgesAdded} added, ${result.edgesSkipped} skipped, ${result.edgesRenamed} renamed`;
         
-        alert(`Merge completed successfully!\n\n${stats}`);
+        showToast(`Merge completed successfully! ${stats}`, 'success', 5000);
     } catch (error) {
         // Remove loading indicator
         if (document.getElementById('merge-loading-msg')) {
@@ -159,7 +161,7 @@ export async function handleMergeOK() {
         }
         
         console.error('Error merging database:', error);
-        alert(`Failed to merge database: ${error.message}`);
+        showToast(`Failed to merge database: ${error.message}`, 'error', 5000);
     }
 }
 

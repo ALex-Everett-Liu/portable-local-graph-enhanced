@@ -1,5 +1,6 @@
 // Node Search Dialog Module
 import { getGraph } from '../../state/appState.js';
+import { showToast } from '../../utils/toast.js';
 
 // Pagination configuration
 const RESULTS_PER_PAGE = 20;
@@ -645,7 +646,7 @@ function selectDialogNode() {
     const node = graph.nodes.find(n => n.id === nodeId);
     if (!node) {
         console.error('Node not found in graph:', nodeId);
-        alert(`Node not found: ${nodeId}`);
+        showToast(`Node not found: ${nodeId}`, 'error', 3000);
         return;
     }
 
@@ -662,7 +663,9 @@ function selectDialogNode() {
 
     closeSearchDialog();
     
-    if (window.showNotification) {
+    if (window.showToast) {
+        window.showToast(`Selected node: ${node.label || 'Unnamed Node'}`, 'success', 2000);
+    } else if (window.showNotification) {
         window.showNotification(`Selected node: ${node.label || 'Unnamed Node'}`);
     }
 }
@@ -687,7 +690,7 @@ function navigateToSelectedNode() {
     const node = graph.nodes.find(n => n.id === nodeId);
     if (!node) {
         console.error('Node not found in graph:', nodeId);
-        alert(`Node not found: ${nodeId}`);
+        showToast(`Node not found: ${nodeId}`, 'error', 3000);
         return;
     }
 

@@ -311,9 +311,12 @@ async function applySettings() {
 /**
  * Reset settings to defaults
  */
-function resetSettings() {
+async function resetSettings() {
+    // Use window.showConfirmDialog if available (exposed globally), otherwise import
+    const confirmFn = window.showConfirmDialog || (await import('../../utils/confirmDialog.js')).showConfirmDialog;
     const confirmMessage = t('settings.resetConfirm');
-    if (confirm(confirmMessage)) {
+    const confirmed = await confirmFn(confirmMessage, 'warning', 'Reset', 'Cancel');
+    if (confirmed) {
         currentSettings = resetFontSettings();
         originalSettings = { ...currentSettings };
         // Reset language to default (English)

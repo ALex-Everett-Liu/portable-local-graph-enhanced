@@ -391,7 +391,15 @@ export function discardAllChanges() {
 
 // Export clear function for use in event listeners
 export async function clearGraph() {
-    if (confirm('Clear all nodes and edges? This will delete all data from the database.')) {
+    // Use window.showConfirmDialog if available (exposed globally), otherwise import
+    const confirmFn = window.showConfirmDialog || (await import('../utils/confirmDialog.js')).showConfirmDialog;
+    const confirmed = await confirmFn(
+        'Clear all nodes and edges? This will delete all data from the database.',
+        'danger',
+        'Clear',
+        'Cancel'
+    );
+    if (confirmed) {
         await clearGraphInDb();
         const graph = getGraph();
         if (graph) {

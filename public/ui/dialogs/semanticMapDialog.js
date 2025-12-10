@@ -3,6 +3,9 @@
  * Manages semantic map visualization using embeddings
  */
 
+import { showToast } from '../../utils/toast.js';
+import { showConfirmDialog } from '../../utils/confirmDialog.js';
+
 let embeddings = [];
 let currentModel = null;
 let plotlyInstance = null;
@@ -598,7 +601,13 @@ function exitSemanticMapFullscreen(dialog, body, fullscreenBtn, plotDiv) {
  * Clear all embeddings
  */
 async function clearAllEmbeddings() {
-    if (!confirm('Are you sure you want to delete all embeddings? This cannot be undone.')) {
+    const confirmed = await showConfirmDialog(
+        'Are you sure you want to delete all embeddings? This cannot be undone.',
+        'danger',
+        'Delete',
+        'Cancel'
+    );
+    if (!confirmed) {
         return;
     }
 
@@ -844,7 +853,12 @@ function showSearchResults(results, queryText) {
         resultsWindow.document.close();
     } else {
         // Fallback: show in a dialog if popup is blocked
-        alert(`Found ${results.length} results. Please allow popups to view results window.\n\nTop result: ${results[0].title || 'Untitled'} (${(results[0].similarity * 100).toFixed(2)}% similarity)`);
+        const topResult = results[0];
+        showToast(
+            `Found ${results.length} results. Please allow popups to view results window. Top result: ${topResult.title || 'Untitled'} (${(topResult.similarity * 100).toFixed(2)}% similarity)`,
+            'warning',
+            5000
+        );
     }
 }
 

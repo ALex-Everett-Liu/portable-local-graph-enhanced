@@ -1,4 +1,6 @@
 import { getGraph, setGraph, originalState, unsavedChanges } from '../state/appState.js';
+import { showToast } from '../utils/toast.js';
+import { showConfirmDialog } from '../utils/confirmDialog.js';
 
 const API_BASE = '/api/plugins/graph';
 
@@ -307,7 +309,7 @@ export async function loadDatabase(filePath) {
         console.log(`Loaded database from: ${filePath}`);
     } catch (error) {
         console.error('Error loading database:', error);
-        alert(`Failed to load database: ${error.message}`);
+        showToast(`Failed to load database: ${error.message}`, 'error', 5000);
     }
 }
 
@@ -327,9 +329,11 @@ export async function saveAsDatabase(filename) {
         const result = await response.json();
         
         // Ask if user wants to switch to the new database
-        const switchToNew = confirm(
-            `Graph saved successfully to "${filename}".\n\n` +
-            `Would you like to switch to the new database file?`
+        const switchToNew = await showConfirmDialog(
+            `Graph saved successfully to "${filename}".\n\nWould you like to switch to the new database file?`,
+            'info',
+            'Switch',
+            'Keep Current'
         );
         
         if (switchToNew) {
@@ -343,7 +347,7 @@ export async function saveAsDatabase(filename) {
         console.log(`Saved graph to: ${filename}`);
     } catch (error) {
         console.error('Error saving database:', error);
-        alert(`Failed to save database: ${error.message}`);
+        showToast(`Failed to save database: ${error.message}`, 'error', 5000);
     }
 }
 
@@ -369,7 +373,7 @@ export async function createNewDatabase(filename) {
         return result;
     } catch (error) {
         console.error('Error creating new database:', error);
-        alert(`Failed to create new database: ${error.message}`);
+        showToast(`Failed to create new database: ${error.message}`, 'error', 5000);
         throw error;
     }
 }
@@ -430,13 +434,13 @@ export async function backupCurrentDatabase() {
         const result = await response.json();
         
         // Show success message (backup doesn't switch databases, stays on current)
-        alert(`Database backed up successfully to "${backupFilename}"\n\nYour current database remains active.`);
+        showToast(`Database backed up successfully to "${backupFilename}". Your current database remains active.`, 'success', 5000);
         
         console.log(`Database backed up to: ${backupFilename}`);
         return result;
     } catch (error) {
         console.error('Error backing up database:', error);
-        alert(`Failed to backup database: ${error.message}`);
+        showToast(`Failed to backup database: ${error.message}`, 'error', 5000);
         throw error;
     }
 }

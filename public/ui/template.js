@@ -5,12 +5,13 @@ import { getGraph } from '../state/appState.js';
 import { createNewDatabase, saveNodeToDb, saveEdgeToDb, saveViewStateToDb, loadGraphFromDb } from '../services/databaseService.js';
 import { unsavedChanges, originalState } from '../state/appState.js';
 import { updateSaveButtonVisibility } from './saveDiscardUI.js';
+import { showToast } from '../utils/toast.js';
 
 export async function createNewGraphTemplate() {
     // Get graph instance
     const graph = getGraph();
     if (!graph) {
-        alert('Graph instance not available. Please wait for the application to load.');
+        showToast('Graph instance not available. Please wait for the application to load.', 'warning', 4000);
         return;
     }
 
@@ -78,7 +79,7 @@ export async function createNewGraphTemplate() {
         console.log('New graph template created successfully');
     } catch (error) {
         console.error('Error creating template:', error);
-        alert('Failed to create template: ' + error.message);
+        showToast(`Failed to create template: ${error.message}`, 'error', 5000);
     }
 }
 

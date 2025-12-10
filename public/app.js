@@ -9,6 +9,7 @@ import { setupViewStateSaving } from './managers/viewStateManager.js';
 import { setMode } from './managers/modeManager.js';
 import { updateSaveButtonVisibility } from './ui/saveDiscardUI.js';
 import { initSidebarResizer } from './ui/sidebarResizer.js';
+import { showToast } from './utils/toast.js';
 import {
     trackNodeCreate,
     trackNodeUpdate,
@@ -35,6 +36,7 @@ import { initializeExportDialog, showExportDialog } from './ui/dialogs/exportDia
 import { initializeClusteringDialog, showClusteringDialog } from './ui/dialogs/clusteringDialog.js';
 import { initializeSemanticMapDialog, showSemanticMapDialog } from './ui/dialogs/semanticMapDialog.js';
 import { initializeI18n, translatePage } from './managers/i18nManager.js';
+import { showConfirmDialog } from './utils/confirmDialog.js';
 
 async function init() {
     // Initialize i18n first, before other components
@@ -138,6 +140,10 @@ async function init() {
     
     // Expose i18n functions globally
     window.translatePage = translatePage;
+    
+    // Expose toast and confirm dialog functions globally
+    window.showToast = showToast;
+    window.showConfirmDialog = showConfirmDialog;
 
     // Set initial mode - match HTML default (node-mode is active)
     setMode('node');

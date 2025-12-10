@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.2.0, see [CHANGELOG_ARCHIVE.md](docs/CHANGELOG_ARCHIVE.md)
 
+## [0.4.10] - 2025-12-10
+
+### Added
+- Toast notification system (`public/utils/toast.js`) - replaces `alert()` to prevent Electron Windows focus bugs
+- Custom confirmation dialog system (`public/utils/confirmDialog.js`) - replaces `confirm()` with promise-based async API
+- Toast container HTML element added to main template for displaying notifications
+- Comprehensive CSS styles for toast notifications and confirmation dialogs
+- Support for toast types: `success`, `error`, `warning`, `info` with custom durations
+- Stackable toast notifications with auto-dismiss functionality
+- Confirmation dialogs with keyboard support (Enter, Escape) and backdrop click handling
+- Global exposure of `showToast` and `showConfirmDialog` functions for backward compatibility
+
+### Changed
+- **CRITICAL FIX:** Replaced all 20 `alert()` calls in Electron app with `showToast()` to prevent Windows focus bugs
+- **CRITICAL FIX:** Replaced all 6 `confirm()` calls in Electron app with `showConfirmDialog()` to prevent Windows focus bugs
+- Updated `public/services/databaseService.js` - replaced 4 alerts and 1 confirm with toast/confirm dialogs
+- Updated `public/ui/template.js` - replaced 2 alerts with toast notifications
+- Updated `public/ui/dialogs/edgeSearchDialog.js` - replaced 5 alerts with toast notifications (with fallback support)
+- Updated `public/ui/dialogs/searchDialog.js` - replaced 2 alerts with toast notifications
+- Updated `public/ui/dialogs/loadDialog.js` - replaced 2 alerts and 1 confirm with toast/confirm dialogs
+- Updated `public/ui/dialogs/mergeDialog.js` - replaced 2 alerts and 1 confirm with toast/confirm dialogs
+- Updated `public/ui/dialogs/semanticMapDialog.js` - replaced 1 alert and 1 confirm with toast/confirm dialogs
+- Updated `public/ui/dialogs/settingsDialog.js` - replaced 1 confirm with confirmation dialog
+- Updated `public/ui/saveDiscardUI.js` - replaced 1 confirm with confirmation dialog
+- All error messages now use appropriate toast types (`error`, `warning`, `info`, `success`)
+- All confirmations now use custom modal dialogs with proper async/await support
+
+### Fixed
+- **CRITICAL:** Fixed Electron Windows focus bug - synchronous blocking operations (`alert()`, `confirm()`) no longer cause window to lose focus on Windows
+- Fixed all blocking operations that could freeze JavaScript execution in Electron renderer process
+- Improved UX with modern, styled notifications instead of native browser dialogs
+- Better error handling with non-blocking toast notifications
+
+### Technical Details
+- Toast system supports custom duration (default: 3000ms, errors: 5000ms)
+- Confirmation dialogs use Promise-based API for async/await compatibility
+- Toast notifications are stackable and auto-dismiss after duration
+- Confirmation dialogs support custom button text and types (`warning`, `danger`, `info`)
+- All functions exposed globally on `window` object for non-module script compatibility
+- Dynamic imports used in some files to avoid circular dependencies
+- Backward compatibility maintained - existing `showNotification` fallbacks still work
+- Comprehensive documentation added in `docs/TOAST_NOTIFICATIONS_GUIDE.md` and `docs/SYNCHRONOUS_BLOCKING_ISSUES_REPORT.md`
+- Implementation summary available in `docs/TOAST_IMPLEMENTATION_SUMMARY.md`
+
 ## [0.4.9] - 2025-12-10
 
 ### Added

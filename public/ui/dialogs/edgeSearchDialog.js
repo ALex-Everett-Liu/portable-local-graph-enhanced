@@ -346,20 +346,20 @@ function handleEdgeSearchOK() {
 
     // Validate both nodes are selected
     if (!edgeSearchState.sourceNodeId || !edgeSearchState.targetNodeId) {
-        if (window.showNotification) {
+        if (window.showToast) {
+            window.showToast('Please select both source and target nodes', 'error', 3000);
+        } else if (window.showNotification) {
             window.showNotification('Please select both source and target nodes', 'error');
-        } else {
-            alert('Please select both source and target nodes');
         }
         return;
     }
 
     // Prevent self-loops
     if (edgeSearchState.sourceNodeId === edgeSearchState.targetNodeId) {
-        if (window.showNotification) {
+        if (window.showToast) {
+            window.showToast('Source and target nodes cannot be the same', 'error', 3000);
+        } else if (window.showNotification) {
             window.showNotification('Source and target nodes cannot be the same', 'error');
-        } else {
-            alert('Source and target nodes cannot be the same');
         }
         return;
     }
@@ -369,10 +369,10 @@ function handleEdgeSearchOK() {
     const weight = parseFloat(weightInput ? weightInput.value : '1');
     
     if (isNaN(weight) || weight <= 0) {
-        if (window.showNotification) {
+        if (window.showToast) {
+            window.showToast('Weight must be a positive number', 'error', 3000);
+        } else if (window.showNotification) {
             window.showNotification('Weight must be a positive number', 'error');
-        } else {
-            alert('Weight must be a positive number');
         }
         return;
     }
@@ -388,10 +388,10 @@ function handleEdgeSearchOK() {
 
     if (!sourceNode || !targetNode) {
         console.error('Source or target node not found');
-        if (window.showNotification) {
+        if (window.showToast) {
+            window.showToast('One or both nodes not found', 'error', 3000);
+        } else if (window.showNotification) {
             window.showNotification('One or both nodes not found', 'error');
-        } else {
-            alert('One or both nodes not found');
         }
         return;
     }
@@ -403,10 +403,10 @@ function handleEdgeSearchOK() {
     );
 
     if (existingEdge) {
-        if (window.showNotification) {
+        if (window.showToast) {
+            window.showToast('An edge already exists between these nodes', 'error', 3000);
+        } else if (window.showNotification) {
             window.showNotification('An edge already exists between these nodes', 'error');
-        } else {
-            alert('An edge already exists between these nodes');
         }
         return;
     }

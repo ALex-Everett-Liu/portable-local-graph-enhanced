@@ -1,6 +1,8 @@
 import { unsavedChanges } from '../../state/appState.js';
 import { fetchDatabases, loadDatabase } from '../../services/databaseService.js';
 import { updateSaveButtonVisibility } from '../saveDiscardUI.js';
+import { showToast } from '../../utils/toast.js';
+import { showConfirmDialog } from '../../utils/confirmDialog.js';
 
 let selectedDatabasePath = null;
 let allDatabases = [];
@@ -12,9 +14,12 @@ export async function showLoadDialog() {
     const hasUnsavedChanges = unsavedChanges.nodes.size > 0 || unsavedChanges.edges.size > 0;
     
     if (hasUnsavedChanges) {
-        const proceed = confirm(
+        const proceed = await showConfirmDialog(
             `You have ${unsavedChanges.nodes.size + unsavedChanges.edges.size} unsaved change(s). ` +
-            `Loading a new database will discard these changes. Continue?`
+            `Loading a new database will discard these changes. Continue?`,
+            'warning',
+            'Continue',
+            'Cancel'
         );
         if (!proceed) {
             return;
@@ -213,7 +218,7 @@ function goToPage() {
     if (isNaN(requestedPage) || requestedPage < 1 || requestedPage > totalPages) {
         // Invalid page number - reset to current page
         paginationInput.value = currentPage;
-        alert(`Please enter a page number between 1 and ${totalPages}`);
+        showToast(`Please enter a page number between 1 and ${totalPages}`, 'warning', 3000);
         return;
     }
     
@@ -225,7 +230,7 @@ function goToPage() {
 
 export async function handleLoadOK() {
     if (!selectedDatabasePath) {
-        alert('Please select a database file to load.');
+        showToast('Please select a database file to load.', 'warning', 3000);
         return;
     }
     
