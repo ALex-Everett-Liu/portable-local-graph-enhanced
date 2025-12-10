@@ -1,0 +1,352 @@
+/* Dialog-Specific Styles - All dialogs with scrollable content */
+
+/* Edge search dialog styles - prevent dialog from becoming too tall */
+.edge-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.edge-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.edge-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.edge-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.edge-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.edge-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.edge-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Node connections dialog styles - prevent dialog from becoming too tall */
+.connections-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.connections-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.connections-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.connections-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.connections-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.connections-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.connections-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Settings dialog styles - prevent dialog from becoming too tall */
+.settings-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.settings-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.settings-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.settings-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.settings-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.settings-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.settings-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Settings Dialog Styles */
+.settings-tab {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    color: #495057;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+}
+
+.settings-tab:hover {
+    color: #007bff;
+}
+
+.settings-tab.active {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+}
+
+.settings-tab-content {
+    display: block;
+}
+
+.settings-tab-content:not(:first-child) {
+    display: none;
+}
+
+/* Load dialog styles - prevent dialog from becoming too tall */
+.load-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.load-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.load-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.load-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.load-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.load-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.load-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Node search dialog styles - prevent dialog from becoming too tall */
+.node-search-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.node-search-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.node-search-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.node-search-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.node-search-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.node-search-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.node-search-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Merge dialog styles - prevent dialog from becoming too tall */
+.merge-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.merge-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.merge-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.merge-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.merge-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.merge-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.merge-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Layer management dialog styles - prevent dialog from becoming too tall */
+.layer-management-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.layer-management-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.layer-management-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.layer-management-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.layer-management-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.layer-management-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.layer-management-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+/* Clustering dialog styles - prevent dialog from becoming too tall */
+.clustering-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.clustering-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.clustering-dialog-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.clustering-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.clustering-dialog-body::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.clustering-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.clustering-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+

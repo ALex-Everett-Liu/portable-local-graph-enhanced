@@ -1,0 +1,104 @@
+/* Popup Components - Fullscreen Exit Button and Selection Info Popup */
+
+/* Fullscreen exit button */
+.fullscreen-exit-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10001;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #495057;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s;
+}
+
+.fullscreen-exit-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+body.fullscreen-mode .fullscreen-exit-btn {
+    display: flex;
+}
+
+/* Selection info popup */
+.selection-info-popup {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    min-width: 280px;
+    max-width: 400px;
+    z-index: 10002;
+    display: none;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.selection-info-popup.visible {
+    display: block;
+}
+
+.selection-info-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.selection-info-popup-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.selection-info-popup-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.selection-info-popup-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #495057;
+}
+
+.selection-info-popup-content {
+    color: #333;
+}
+
+.selection-info-popup-content div {
+    margin: 6px 0;
+}
+
+.selection-info-popup-content strong {
+    color: #495057;
+    margin-right: 8px;
+}
+
