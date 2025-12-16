@@ -200,6 +200,33 @@ public/
 - Improve error handling consistency
 - Add more comprehensive unit tests
 
+### Merge Dialog Conflict Resolution Simplification
+
+**Status:** 📋 Planned  
+**Priority:** Low  
+**Estimated Effort:** Small
+
+**Description:**
+Evaluate whether conflict resolution UI in merge dialog is necessary. Since merge uses UUID-based comparison:
+- Same UUID = same entity (duplicate) → skip by default
+- Different UUID = different entity → add it
+
+**Considerations:**
+- Current implementation has three strategies: skip, replace, rename
+- Most realistic use case: merging independent databases (no UUID conflicts)
+- Need to survey actual use cases to determine if replace/rename options are needed
+- Simplifying to "skip duplicates" would reduce UI complexity
+
+**Files Affected:**
+- `public/ui/dialogs/mergeDialog.js`
+- `public/templates/dialogs/merge-dialog.html`
+- `services/graphService.js` (mergeFromDatabase function)
+
+**Next Steps:**
+- Survey real-world merge scenarios and use cases
+- Determine if conflict resolution options are actually needed
+- Consider simplifying to default "skip duplicates" behavior
+
 ### Documentation
 
 **Status:** 📋 Planned  
