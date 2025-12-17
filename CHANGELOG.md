@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.2.0, see [CHANGELOG_ARCHIVE.md](docs/CHANGELOG_ARCHIVE.md)
 
-## [0.4.10] - 2025-12-10
+## [0.4.10] - 2025-12-11
 
 ### Added
 - Toast notification system (`public/utils/toast.js`) - replaces `alert()` to prevent Electron Windows focus bugs

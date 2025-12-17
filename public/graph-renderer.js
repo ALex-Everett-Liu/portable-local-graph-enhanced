@@ -384,10 +384,11 @@ export class GraphRenderer {
         return nodes.filter(node => {
             const nodeLayers = node.layers || [];
             const hasMatchingLayer = nodeLayers.some(layer => activeLayers.has(layer));
+            const hasNoLayers = nodeLayers.length === 0;
             
             return layerFilterMode === 'include' 
-                ? hasMatchingLayer 
-                : !hasMatchingLayer;
+                ? (hasMatchingLayer || hasNoLayers)  // Show nodes with matching layers OR nodes without any layers
+                : !hasMatchingLayer;  // Exclude mode: show nodes that don't have matching layers
         });
     }
 
