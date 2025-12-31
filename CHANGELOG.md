@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme Manager (`public/managers/themeManager.js`) - Centralized theme definitions and switching logic
 - **Neumorphism Theme** (default) - Soft UI with dual shadows and cool grey palette
 - **Basic Theme** - Simple and clean theme with minimal styling and standard shadows
+- **Organic Theme** - Warm, natural theme with earth-drawn palette (moss green, terracotta), soft colored shadows, and organic typography (Fraunces + Nunito)
 - Theme tab in Settings dialog - New tab between Fonts and Language for theme selection
 - Theme persistence - User theme preference saved to localStorage and restored on app load
 - Theme descriptions - Each theme shows description in settings dialog
@@ -42,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme reset removes CSS variable overrides to restore CSS defaults from `variables.css`
 - All themes must define required CSS variables: colors, shadows, typography, radius, transitions, shadow presets
 - Theme system architecture documented in `THEME_SYSTEM_GUIDE.md` with examples and best practices
+- Organic theme includes Google Fonts imports (Fraunces + Nunito) added to `fonts.css` for typography support
 
 ## [0.5.0] - 2025-12-31
 
