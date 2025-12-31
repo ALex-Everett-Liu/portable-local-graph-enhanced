@@ -18,9 +18,9 @@
     --shadow-dark: rgba(163, 177, 198, 0.6);
     --shadow-dark-hover: rgba(163, 177, 198, 0.7);
     
-    /* Typography */
-    --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    --font-body: 'DM Sans', -apple-system, sans-serif;
+    /* Typography - Default Neumorphism fonts (can be overridden by user preferences) */
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     
     /* Radius */
     --radius-container: 32px;        /* Cards, sections */

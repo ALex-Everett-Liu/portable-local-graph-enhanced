@@ -1,6 +1,13 @@
 /**
  * Font Settings Manager
  * Handles font preference persistence and application
+ * 
+ * Design System Integration:
+ * - CSS variables (--font-body, --font-display) are defined in variables.css with Neumorphism defaults
+ * - User font preferences override CSS variables when saved
+ * - On initialization: Only overrides CSS variables if user has saved custom preferences
+ * - On reset: Removes CSS variable overrides to restore Neumorphism defaults
+ * - This allows the design system to work by default while respecting user customization
  */
 
 const STORAGE_KEY = 'graphApp_fontSettings';
@@ -45,9 +52,19 @@ export function saveFontSettings(settings) {
 /**
  * Apply UI font to the document
  * @param {string} fontFamily - Font family string
+ * @param {boolean} overrideCSSVariables - Whether to override CSS variables (default: true)
  */
-export function applyUIFont(fontFamily) {
+export function applyUIFont(fontFamily, overrideCSSVariables = true) {
+    // Apply to body element (for backward compatibility)
     document.body.style.fontFamily = fontFamily;
+    
+    // Update CSS variables so design system respects user preferences
+    // This ensures all components using --font-body and --font-display use the user's font
+    // Only override if explicitly requested (when user has custom preferences)
+    if (overrideCSSVariables) {
+        document.documentElement.style.setProperty('--font-body', fontFamily);
+        document.documentElement.style.setProperty('--font-display', fontFamily);
+    }
 }
 
 /**
@@ -100,9 +117,10 @@ export function updateSelectionInfoFontSize(fontSize) {
 /**
  * Apply all font settings
  * @param {Object} settings - Font settings object
+ * @param {boolean} overrideCSSVariables - Whether to override CSS variables (default: true)
  */
-export function applyFontSettings(settings) {
-    applyUIFont(settings.uiFontFamily);
+export function applyFontSettings(settings, overrideCSSVariables = true) {
+    applyUIFont(settings.uiFontFamily, overrideCSSVariables);
     updateCanvasFont(settings.canvasFontFamily);
     updateCanvasChineseFont(settings.canvasChineseFontFamily);
     updateCanvasFontSize(settings.canvasFontSize);
@@ -119,19 +137,43 @@ export function applyFontSettings(settings) {
 
 /**
  * Initialize font settings on app load
+ * Only overrides CSS variables if user has saved custom preferences
  */
 export function initializeFontSettings() {
     const settings = loadFontSettings();
-    applyFontSettings(settings);
+    
+    // Check if user has saved custom preferences
+    const hasCustomPreferences = (() => {
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored !== null;
+        } catch (error) {
+            return false;
+        }
+    })();
+    
+    // Only override CSS variables if user has custom preferences
+    // Otherwise, let CSS defaults from variables.css (Neumorphism fonts) take effect
+    applyFontSettings(settings, hasCustomPreferences);
+    
     return settings;
 }
 
 /**
  * Reset font settings to defaults
+ * Restores CSS variables to Neumorphism design system defaults
  */
 export function resetFontSettings() {
     localStorage.removeItem(STORAGE_KEY);
+    
+    // Restore CSS variables to Neumorphism design system defaults
+    // Remove inline style overrides so CSS defaults from variables.css take effect
+    document.documentElement.style.removeProperty('--font-body');
+    document.documentElement.style.removeProperty('--font-display');
+    
+    // Apply default settings (for canvas fonts, etc.)
     applyFontSettings(DEFAULT_SETTINGS);
+    
     return { ...DEFAULT_SETTINGS };
 }
 
