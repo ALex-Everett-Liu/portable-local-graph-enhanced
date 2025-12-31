@@ -1,6 +1,9 @@
 /* Main Stylesheet - Imports all CSS modules in correct order */
 
-/* 1. Fonts - Must be loaded first */
+/* 0. Design Tokens - Must be loaded first */
+@import url('./css/variables.css');
+
+/* 1. Fonts - Must be loaded second */
 @import url('./css/fonts.css');
 
 /* 2. Base styles - Reset and body */

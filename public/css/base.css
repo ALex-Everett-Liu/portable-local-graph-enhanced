@@ -1,4 +1,4 @@
-/* Base Reset and Body Styles */
+/* Base Reset and Body Styles - Neumorphism Design System */
 * {
     margin: 0;
     padding: 0;
@@ -6,10 +6,33 @@
 }
 
 body {
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #333;
+    font-family: var(--font-body);
+    background-color: var(--background);
+    color: var(--foreground);
     overflow: hidden;
+    scroll-behavior: smooth;
+    line-height: 1.6;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+}
+
+h1 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+p, span, div, label {
+    font-family: var(--font-body);
+    color: var(--foreground);
+}
+
+.secondary-text, .muted {
+    color: var(--muted);
 }
 

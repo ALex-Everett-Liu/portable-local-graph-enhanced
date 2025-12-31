@@ -1,4 +1,7 @@
-/* LXGW Bright Font Face Declarations */
+/* Google Fonts - Neumorphism Design System */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap');
+
+/* LXGW Bright Font Face Declarations - Kept for Chinese text support */
 @font-face {
     font-family: "LXGW Bright";
     src: url("../fonts/LXGWBright-Regular.ttf") format("truetype");

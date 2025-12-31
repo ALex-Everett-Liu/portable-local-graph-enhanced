@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.2.0, see [CHANGELOG_ARCHIVE.md](docs/CHANGELOG_ARCHIVE.md)
 
+## [0.5.0] - 2025-12-31
+
+### Added
+- **Neumorphism (Soft UI) Design System** - Complete visual redesign following modern Neumorphism principles
+- Design tokens system (`public/css/variables.css`) - Centralized CSS variables for colors, shadows, typography, radius, and transitions
+- Google Fonts integration - Plus Jakarta Sans (display font) and DM Sans (body font) for modern typography
+- Dual opposing RGB shadow system - Top-left light shadows and bottom-right dark shadows for realistic depth illusion
+- Neumorphism shadow presets - Extruded (raised), Inset (pressed), and hover states with smooth transitions
+- Comprehensive component styling - All UI elements redesigned with Neumorphism aesthetic (buttons, inputs, dialogs, tooltips, etc.)
+- Neumorphism scrollbars - Custom styled scrollbars matching the design system across all dialogs
+- Toast notifications redesign - Neumorphism styling with colored accent bars for different notification types
+- Confirmation dialogs redesign - Updated with Neumorphism shadows and styling
+- Popup components redesign - Selection info popup and fullscreen exit button updated with Neumorphism styling
+
+### Changed
+- **MAJOR UI REDESIGN:** Complete visual overhaul from gradient-based design to Neumorphism (Soft UI) design system
+- Background changed from purple gradient to cool grey monochromatic palette (`#E0E5EC`)
+- All buttons redesigned with Neumorphism shadows, hover states, and active states
+- All inputs redesigned with inset shadows and focus states using accent color rings
+- All dialogs redesigned with Neumorphism container shadows (32px radius) and consistent styling
+- Toolbar and sidebar redesigned with Neumorphism shadows instead of borders
+- Canvas container redesigned with Neumorphism shadows and hover effects
+- Typography system updated - Display font (Plus Jakarta Sans) for headings, body font (DM Sans) for UI elements
+- Color palette standardized - Cool grey background, dark blue-grey text, light blue accent (`#7FC9FF`)
+- All borders removed - Shadows now define all edges following Neumorphism principles
+- Scrollbars redesigned across all components with Neumorphism inset/extruded shadows
+- Search components redesigned with Neumorphism input styling and dropdown shadows
+- Connection items redesigned with Neumorphism inset shadows and hover effects
+- Filter controls redesigned with Neumorphism styling for inputs and buttons
+
+### Technical Details
+- Design tokens defined in `public/css/variables.css` with CSS custom properties for maintainability
+- Shadow system uses RGBA values for smooth blending (never solid hex colors)
+- Border radius: 32px for containers, 16px for buttons, 12px for inner elements
+- Transitions: 300ms ease-out for UI elements, 500ms for nested depth animations
+- Typography: Plus Jakarta Sans (500, 600, 700, 800 weights) for headings, DM Sans (400, 500, 700) for body
+- Color contrast: Primary text 7.5:1 (WCAG AAA), muted text 4.6:1 (WCAG AA)
+- Touch targets: Minimum 44px × 44px for accessibility
+- Focus states: 2px accent outline with 2px offset on all interactive elements
+- Google Fonts preconnect links added to HTML head for performance optimization
+- All CSS modules updated to use design tokens for consistency
+- LXGW Bright font retained for Chinese text support alongside new typography system
+
 ## [0.4.10] - 2025-12-11
 
 ### Added

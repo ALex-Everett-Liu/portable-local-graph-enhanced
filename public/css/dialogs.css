@@ -18,21 +18,23 @@
 }
 
 .edge-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .edge-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .edge-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .edge-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .edge-dialog-content .dialog-buttons {
@@ -58,21 +60,23 @@
 }
 
 .connections-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .connections-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .connections-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .connections-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .connections-dialog-content .dialog-buttons {
@@ -98,21 +102,23 @@
 }
 
 .settings-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .settings-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .settings-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .settings-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .settings-dialog-content .dialog-buttons {
@@ -122,24 +128,27 @@
 
 /* Settings Dialog Styles */
 .settings-tab {
-    padding: 8px 16px;
+    padding: 10px 20px;
     border: none;
     background: transparent;
     cursor: pointer;
     font-size: 14px;
-    color: #495057;
+    font-weight: 600;
+    font-family: var(--font-body);
+    color: var(--muted);
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
+    position: relative;
 }
 
 .settings-tab:hover {
-    color: #007bff;
+    color: var(--accent);
 }
 
 .settings-tab.active {
-    color: #007bff;
-    border-bottom: 2px solid #007bff;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
 }
 
 .settings-tab-content {
@@ -168,21 +177,23 @@
 }
 
 .load-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .load-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .load-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .load-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .load-dialog-content .dialog-buttons {
@@ -208,21 +219,23 @@
 }
 
 .node-search-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .node-search-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .node-search-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .node-search-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .node-search-dialog-content .dialog-buttons {
@@ -248,21 +261,23 @@
 }
 
 .merge-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .merge-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .merge-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .merge-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .merge-dialog-content .dialog-buttons {
@@ -288,21 +303,23 @@
 }
 
 .layer-management-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .layer-management-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .layer-management-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .layer-management-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .layer-management-dialog-content .dialog-buttons {
@@ -328,21 +345,23 @@
 }
 
 .clustering-dialog-body::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
 }
 
 .clustering-dialog-body::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
 }
 
 .clustering-dialog-body::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .clustering-dialog-body::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    box-shadow: var(--shadow-extruded);
 }
 
 .clustering-dialog-content .dialog-buttons {

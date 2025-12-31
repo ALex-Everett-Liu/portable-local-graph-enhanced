@@ -1,0 +1,42 @@
+/* Neumorphism Design System - Design Tokens */
+
+:root {
+    /* Colors - Cool Monochromatic Palette */
+    --background: #E0E5EC;           /* Base "cool clay" surface */
+    --foreground: #3D4852;           /* Primary text (7.5:1 contrast) */
+    --muted: #6B7280;                /* Secondary text (4.6:1 contrast) */
+    --accent: #7FC9FF;               /* Light blue for interactive elements */
+    --accent-light: #9DD5FF;         /* Lighter blue for hover states */
+    --accent-secondary: #38B2AC;     /* Teal for success states */
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --warning-color: #f59e0b;
+    
+    /* Shadow Colors - RGBA for Smoothness */
+    --shadow-light: rgba(255, 255, 255, 0.5);
+    --shadow-light-hover: rgba(255, 255, 255, 0.6);
+    --shadow-dark: rgba(163, 177, 198, 0.6);
+    --shadow-dark-hover: rgba(163, 177, 198, 0.7);
+    
+    /* Typography */
+    --font-display: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    --font-body: 'DM Sans', -apple-system, sans-serif;
+    
+    /* Radius */
+    --radius-container: 32px;        /* Cards, sections */
+    --radius-button: 16px;           /* Buttons, inputs */
+    --radius-inner: 12px;            /* Inner elements, tags */
+    
+    /* Transitions */
+    --transition-fast: 300ms ease-out;
+    --transition-slow: 500ms ease-out;
+    
+    /* Shadow Presets */
+    --shadow-extruded: 9px 9px 16px var(--shadow-dark), -9px -9px 16px var(--shadow-light);
+    --shadow-extruded-hover: 12px 12px 20px var(--shadow-dark-hover), -12px -12px 20px var(--shadow-light-hover);
+    --shadow-extruded-small: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    --shadow-inset: inset 6px 6px 10px var(--shadow-dark), inset -6px -6px 10px var(--shadow-light);
+    --shadow-inset-deep: inset 10px 10px 20px var(--shadow-dark-hover), inset -10px -10px 20px var(--shadow-light-hover);
+    --shadow-inset-small: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+}
+

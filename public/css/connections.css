@@ -1,44 +1,61 @@
-/* Node Connections Overview Styles */
+/* Node Connections Overview Styles - Neumorphism Design System */
 
 .connections-section {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .connections-section h4 {
+    font-family: var(--font-display);
     font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #495057;
-    border-bottom: 1px solid #dee2e6;
-    padding-bottom: 4px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--foreground);
+    padding-bottom: 8px;
+    position: relative;
+}
+
+.connections-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--shadow-dark);
+    opacity: 0.3;
+    border-radius: 1px;
 }
 
 .connection-item {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
-    margin: 4px 0;
-    background: #f8f9fa;
-    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    background-color: var(--background);
+    border-radius: var(--radius-inner);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     font-size: 13px;
+    font-family: var(--font-body);
+    color: var(--foreground);
+    box-shadow: var(--shadow-inset-small);
 }
 
 .connection-item:hover {
-    background: #e9ecef;
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-inset);
+    transform: translateX(2px);
 }
 
 .connection-node {
     flex: 1;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .connection-chinese {
     font-size: 12px;
-    color: #666;
+    color: var(--muted);
     margin-left: 8px;
+    font-family: var(--font-body);
 }
 
 .connection-edge {
@@ -46,60 +63,69 @@
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: #666;
+    color: var(--muted);
+    font-family: var(--font-body);
 }
 
 .connection-weight {
-    background: #007bff;
+    background-color: var(--accent);
     color: white;
-    padding: 2px 6px;
-    border-radius: 10px;
+    padding: 4px 8px;
+    border-radius: var(--radius-inner);
     font-size: 11px;
     font-weight: 600;
+    font-family: var(--font-body);
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .connection-category {
-    background: #28a745;
+    background-color: var(--accent-secondary);
     color: white;
-    padding: 2px 6px;
-    border-radius: 10px;
+    padding: 4px 8px;
+    border-radius: var(--radius-inner);
     font-size: 11px;
+    font-family: var(--font-body);
+    box-shadow: var(--shadow-extruded-small);
 }
 
 .connection-direction {
     font-size: 11px;
-    color: #666;
+    color: var(--muted);
     font-weight: 600;
+    font-family: var(--font-body);
 }
 
 .direction-incoming {
-    color: #dc3545;
+    color: var(--error-color);
 }
 
 .direction-outgoing {
-    color: #007bff;
+    color: var(--accent);
 }
 
 .direction-bidirectional {
-    color: #28a745;
+    color: var(--accent-secondary);
 }
 
 .connection-count {
     text-align: center;
-    margin: 15px 0;
+    margin: 20px 0;
     font-size: 14px;
-    color: #495057;
+    color: var(--foreground);
+    font-family: var(--font-body);
 }
 
 .connection-count strong {
-    color: #007bff;
+    color: var(--accent);
+    font-weight: 700;
 }
 
 .empty-connections {
     text-align: center;
-    color: #666;
-    padding: 20px;
+    color: var(--muted);
+    padding: 32px 20px;
     font-style: italic;
+    font-family: var(--font-body);
 }
 
 /* Ensure node connections dialog has proper z-index */
@@ -109,7 +135,19 @@
 
 /* Connection highlight styles */
 .connection-highlight {
-    background: #fff3cd !important;
-    border-left: 4px solid #ffc107;
+    background-color: var(--background) !important;
+    box-shadow: var(--shadow-inset-deep) !important;
+    position: relative;
+}
+
+.connection-highlight::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--warning-color);
+    border-radius: var(--radius-inner) 0 0 var(--radius-inner);
 }
 
