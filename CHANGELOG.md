@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > **Note:** For versions prior to 0.2.0, see [CHANGELOG_ARCHIVE.md](docs/CHANGELOG_ARCHIVE.md)
 
+## [0.5.1] - 2025-12-31
+
+### Added
+- **Theme System** - Complete theme switching system allowing users to choose between different design styles
+- Theme Manager (`public/managers/themeManager.js`) - Centralized theme definitions and switching logic
+- **Neumorphism Theme** (default) - Soft UI with dual shadows and cool grey palette
+- **Basic Theme** - Simple and clean theme with minimal styling and standard shadows
+- Theme tab in Settings dialog - New tab between Fonts and Language for theme selection
+- Theme persistence - User theme preference saved to localStorage and restored on app load
+- Theme descriptions - Each theme shows description in settings dialog
+- Theme reset functionality - Reset button restores default Neumorphism theme
+- Theme System Guide (`docs/THEME_SYSTEM_GUIDE.md`) - Comprehensive guide for creating new themes
+
+### Changed
+- **Font Settings Integration** - Font preferences now properly override theme CSS variables
+- Font settings manager updated to set CSS variables when user preferences are applied
+- Theme initialization happens before font settings (so user fonts can override theme fonts)
+- Settings dialog now includes Theme tab alongside Fonts and Language tabs
+- Theme switching applies immediately with visual feedback
+- Cancel button in settings dialog now reverts theme changes
+
+### Fixed
+- Fixed font preferences not overriding design system CSS variables - user font choices now properly override theme fonts
+- Fixed theme persistence - theme selection now persists across sessions
+- Fixed theme reset - reset button now properly restores default theme and removes CSS variable overrides
+
+### Technical Details
+- Themes defined as CSS variable sets in `themeManager.js` - easy to add new themes
+- Theme system uses `document.documentElement.style.setProperty()` to apply CSS variables dynamically
+- Theme class (`theme-{themeId}`) added to body element for theme-specific styling if needed
+- Theme initialization in `app.js` happens before font settings initialization
+- Font settings only override CSS variables if user has saved custom preferences (preserves theme defaults)
+- Theme reset removes CSS variable overrides to restore CSS defaults from `variables.css`
+- All themes must define required CSS variables: colors, shadows, typography, radius, transitions, shadow presets
+- Theme system architecture documented in `THEME_SYSTEM_GUIDE.md` with examples and best practices
+
 ## [0.5.0] - 2025-12-31
 
 ### Added
