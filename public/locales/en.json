@@ -3,6 +3,7 @@
     "title": "Settings",
     "tabs": {
       "fonts": "Fonts",
+      "theme": "Theme",
       "language": "Language"
     },
     "fonts": {
@@ -27,6 +28,11 @@
         "description": "Font size for selection info display in sidebar and popup (default: 13px)"
       },
       "preview": "Preview:"
+    },
+    "theme": {
+      "title": "Theme",
+      "description": "Choose your preferred design theme",
+      "selectLabel": "Theme:"
     },
     "language": {
       "title": "Language",

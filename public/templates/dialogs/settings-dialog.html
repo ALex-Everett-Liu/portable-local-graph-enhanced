@@ -23,6 +23,24 @@
                 Fonts
             </button>
             <button
+                id="settings-tab-theme"
+                class="settings-tab"
+                data-tab="theme"
+                style="
+                    padding: 8px 16px;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+                    font-size: 14px;
+                    color: #495057;
+                    border-bottom: none;
+                    margin-bottom: -1px;
+                "
+                data-i18n="settings.tabs.theme"
+            >
+                Theme
+            </button>
+            <button
                 id="settings-tab-language"
                 class="settings-tab"
                 data-tab="language"
@@ -196,6 +214,39 @@
                     <span>10px</span>
                     <span id="selection-info-font-size-value" style="font-weight: 600; color: #007bff;">13px</span>
                     <span>20px</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme Tab Content -->
+        <div id="settings-content-theme" class="settings-tab-content" style="display: none;">
+            <div style="margin-bottom: 20px">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #495057;" data-i18n="settings.theme.title">
+                    Theme
+                </h4>
+                <p style="font-size: 12px; color: #666; margin-bottom: 16px;" data-i18n="settings.theme.description">
+                    Choose your preferred design theme
+                </p>
+                <div style="margin-bottom: 12px">
+                    <label style="font-size: 13px; font-weight: 500; display: block; margin-bottom: 8px; color: #495057;" data-i18n="settings.theme.selectLabel">
+                        Theme:
+                    </label>
+                    <select
+                        id="theme-select"
+                        style="
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            font-size: 13px;
+                            margin-bottom: 8px;
+                        "
+                    >
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                    <p id="theme-description" style="font-size: 12px; color: #666; margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px;">
+                        <!-- Description will be populated by JavaScript -->
+                    </p>
                 </div>
             </div>
         </div>

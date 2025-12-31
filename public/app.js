@@ -31,6 +31,7 @@ import { deactivateHotkeyMode } from './managers/hotkeyManager.js';
 import { closeCommandPalette } from './managers/commandPalette.js';
 import { initializeSettingsDialog } from './ui/dialogs/settingsDialog.js';
 import { initializeFontSettings } from './managers/fontSettingsManager.js';
+import { initializeTheme } from './managers/themeManager.js';
 import { initializeFullscreen } from './managers/fullscreenManager.js';
 import { initializeExportDialog, showExportDialog } from './ui/dialogs/exportDialog.js';
 import { initializeClusteringDialog, showClusteringDialog } from './ui/dialogs/clusteringDialog.js';
@@ -98,6 +99,9 @@ async function init() {
     initializeLayerManagement();
     initializeLayerDialog();
     
+    // Initialize theme first (before fonts so fonts can override theme fonts if needed)
+    initializeTheme();
+    
     // Setup settings dialog
     initializeSettingsDialog();
     
@@ -110,7 +114,7 @@ async function init() {
     // Setup semantic map dialog
     initializeSemanticMapDialog();
     
-    // Initialize and apply font settings
+    // Initialize and apply font settings (after theme so user fonts can override theme fonts)
     initializeFontSettings();
     
     // Setup global keyboard shortcuts (Alt+P for palette, Alt+H for hotkey mode)

@@ -3,6 +3,7 @@
     "title": "设置",
     "tabs": {
       "fonts": "字体",
+      "theme": "主题",
       "language": "语言"
     },
     "fonts": {
@@ -27,6 +28,11 @@
         "description": "侧边栏和弹出窗口中选择信息的字体大小（默认：13px）"
       },
       "preview": "预览："
+    },
+    "theme": {
+      "title": "主题",
+      "description": "选择您首选的设计主题",
+      "selectLabel": "主题："
     },
     "language": {
       "title": "语言",

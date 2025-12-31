@@ -18,11 +18,20 @@ import {
     translatePage,
     t
 } from '../../managers/i18nManager.js';
+import {
+    getAllThemes,
+    getCurrentTheme,
+    getThemeInfo,
+    applyTheme,
+    resetTheme
+} from '../../managers/themeManager.js';
 
 let currentSettings = { ...DEFAULT_SETTINGS };
 let originalSettings = { ...DEFAULT_SETTINGS };
 let currentLanguage = 'en';
 let originalLanguage = 'en';
+let currentTheme = 'neumorphism';
+let originalTheme = 'neumorphism';
 
 /**
  * Initialize settings dialog
@@ -56,9 +65,21 @@ function setupSettingsDialogEvents() {
         fontsTab.addEventListener("click", () => switchTab("fonts"));
     }
     
+    const themeTab = document.getElementById("settings-tab-theme");
+    if (themeTab) {
+        themeTab.addEventListener("click", () => switchTab("theme"));
+    }
+    
     const languageTab = document.getElementById("settings-tab-language");
     if (languageTab) {
         languageTab.addEventListener("click", () => switchTab("language"));
+    }
+    
+    // Theme selector
+    const themeSelect = document.getElementById("theme-select");
+    if (themeSelect) {
+        populateThemeSelect();
+        themeSelect.addEventListener("change", updateThemeDescription);
     }
     
     // Language selector
@@ -123,6 +144,46 @@ function setupSettingsDialogEvents() {
 }
 
 /**
+ * Populate theme select dropdown
+ */
+function populateThemeSelect() {
+    const themeSelect = document.getElementById("theme-select");
+    if (!themeSelect) return;
+    
+    const themes = getAllThemes();
+    themeSelect.innerHTML = '';
+    
+    Object.entries(themes).forEach(([themeId, theme]) => {
+        const option = document.createElement('option');
+        option.value = themeId;
+        option.textContent = theme.name;
+        themeSelect.appendChild(option);
+    });
+    
+    // Set current theme
+    const currentThemeId = getCurrentTheme();
+    themeSelect.value = currentThemeId;
+    updateThemeDescription();
+}
+
+/**
+ * Update theme description
+ */
+function updateThemeDescription() {
+    const themeSelect = document.getElementById("theme-select");
+    const descriptionEl = document.getElementById("theme-description");
+    
+    if (!themeSelect || !descriptionEl) return;
+    
+    const themeId = themeSelect.value;
+    const themeInfo = getThemeInfo(themeId);
+    
+    if (themeInfo) {
+        descriptionEl.textContent = themeInfo.description;
+    }
+}
+
+/**
  * Load current settings into dialog
  */
 function loadCurrentSettings() {
@@ -132,6 +193,10 @@ function loadCurrentSettings() {
     // Load current language
     currentLanguage = getCurrentLanguage();
     originalLanguage = currentLanguage;
+    
+    // Load current theme
+    currentTheme = getCurrentTheme();
+    originalTheme = currentTheme;
 
     // Update UI
     const uiFontSelect = document.getElementById("ui-font-family");
@@ -165,6 +230,13 @@ function loadCurrentSettings() {
     }
     if (languageSelect) {
         languageSelect.value = currentLanguage;
+    }
+    
+    // Update theme selector
+    const themeSelect = document.getElementById("theme-select");
+    if (themeSelect) {
+        themeSelect.value = currentTheme;
+        updateThemeDescription();
     }
     
     // Translate dialog content
@@ -264,6 +336,13 @@ export function closeSettingsDialog() {
     // Revert to original settings
     currentSettings = { ...originalSettings };
     currentLanguage = originalLanguage;
+    
+    // Revert theme to original if changed
+    if (currentTheme !== originalTheme) {
+        applyTheme(originalTheme);
+        currentTheme = originalTheme;
+    }
+    
     loadCurrentSettings();
     
     dialog.classList.add("hidden");
@@ -280,6 +359,7 @@ async function applySettings() {
     const canvasFontSizeSlider = document.getElementById("canvas-font-size");
     const selectionInfoFontSizeSlider = document.getElementById("selection-info-font-size");
     const languageSelect = document.getElementById("language-select");
+    const themeSelect = document.getElementById("theme-select");
 
     currentSettings = {
         uiFontFamily: uiFontSelect ? uiFontSelect.value : currentSettings.uiFontFamily,
@@ -293,6 +373,14 @@ async function applySettings() {
     saveFontSettings(currentSettings);
     applyFontSettings(currentSettings);
     originalSettings = { ...currentSettings };
+
+    // Apply theme change if different
+    const selectedTheme = themeSelect ? themeSelect.value : currentTheme;
+    if (selectedTheme !== originalTheme) {
+        applyTheme(selectedTheme);
+        originalTheme = selectedTheme;
+        currentTheme = selectedTheme;
+    }
 
     // Apply language change if different
     const selectedLanguage = languageSelect ? languageSelect.value : currentLanguage;
@@ -319,6 +407,11 @@ async function resetSettings() {
     if (confirmed) {
         currentSettings = resetFontSettings();
         originalSettings = { ...currentSettings };
+        
+        // Reset theme to default
+        currentTheme = resetTheme();
+        originalTheme = currentTheme;
+        
         // Reset language to default (English)
         currentLanguage = 'en';
         originalLanguage = 'en';
