@@ -369,3 +369,44 @@
     flex-shrink: 0; /* Prevent buttons from shrinking */
 }
 
+/* Node edit dialog styles - prevent dialog from becoming too tall */
+.node-edit-dialog-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+}
+
+.node-edit-dialog-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    margin-right: -8px;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.node-edit-dialog-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.node-edit-dialog-body::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-inset-small);
+}
+
+.node-edit-dialog-body::-webkit-scrollbar-thumb {
+    background: var(--background);
+    border-radius: 5px;
+    box-shadow: var(--shadow-extruded-small);
+}
+
+.node-edit-dialog-body::-webkit-scrollbar-thumb:hover {
+    box-shadow: var(--shadow-extruded);
+}
+
+.node-edit-dialog-content .dialog-buttons {
+    margin-top: 16px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}

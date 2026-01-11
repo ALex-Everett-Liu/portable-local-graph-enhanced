@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed font preferences not overriding design system CSS variables - user font choices now properly override theme fonts
 - Fixed theme persistence - theme selection now persists across sessions
 - Fixed theme reset - reset button now properly restores default theme and removes CSS variable overrides
+- Fixed node edit dialog becoming too tall when many form fields are displayed - dialog now has max-height constraint (85vh) with scrollable content area matching other dialogs
 
 ### Technical Details
 - Themes defined as CSS variable sets in `themeManager.js` - easy to add new themes

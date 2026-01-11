@@ -1,81 +1,83 @@
 <div id="node-dialog" class="dialog hidden">
-    <div class="dialog-content">
+    <div class="dialog-content node-edit-dialog-content">
         <h3>Edit Node</h3>
-        <input
-            type="text"
-            id="node-label"
-            placeholder="Node label (English)"
-        />
-        <input
-            type="text"
-            id="node-chinese"
-            placeholder="中文标签 (Chinese)"
-        />
-        <div
-            style="
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            "
-        >
+        <div class="node-edit-dialog-body">
             <input
-                type="color"
-                id="node-color"
-                value="#507F80"
+                type="text"
+                id="node-label"
+                placeholder="Node label (English)"
             />
             <input
                 type="text"
-                id="node-color-hex"
-                placeholder="#507F80"
-                style="width: 80px; font-family: monospace"
+                id="node-chinese"
+                placeholder="中文标签 (Chinese)"
             />
-        </div>
-        <label>Position:</label>
-        <div
-            style="
-                display: flex;
-                gap: 8px;
-                align-items: center;
-            "
-        >
-            <label style="font-size: 12px">X:</label>
+            <div
+                style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                "
+            >
+                <input
+                    type="color"
+                    id="node-color"
+                    value="#507F80"
+                />
+                <input
+                    type="text"
+                    id="node-color-hex"
+                    placeholder="#507F80"
+                    style="width: 80px; font-family: monospace"
+                />
+            </div>
+            <label>Position:</label>
+            <div
+                style="
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                "
+            >
+                <label style="font-size: 12px">X:</label>
+                <input
+                    type="number"
+                    id="node-x"
+                    placeholder="X coordinate"
+                    step="1"
+                    style="width: 80px"
+                />
+                <label style="font-size: 12px">Y:</label>
+                <input
+                    type="number"
+                    id="node-y"
+                    placeholder="Y coordinate"
+                    step="1"
+                    style="width: 80px"
+                />
+            </div>
             <input
-                type="number"
-                id="node-x"
-                placeholder="X coordinate"
-                step="1"
-                style="width: 80px"
+                type="text"
+                id="node-category"
+                placeholder="Category (optional)"
             />
-            <label style="font-size: 12px">Y:</label>
+            <label>Layers:</label>
             <input
-                type="number"
-                id="node-y"
-                placeholder="Y coordinate"
-                step="1"
-                style="width: 80px"
+                type="text"
+                id="node-layers"
+                placeholder="Enter layers (comma-separated)"
             />
+            <label>Size:</label>
+            <input
+                type="range"
+                id="node-size"
+                min="1"
+                max="100"
+                value="20"
+                step="1"
+            />
+            <span id="size-display">20</span>
         </div>
-        <input
-            type="text"
-            id="node-category"
-            placeholder="Category (optional)"
-        />
-        <label>Layers:</label>
-        <input
-            type="text"
-            id="node-layers"
-            placeholder="Enter layers (comma-separated)"
-        />
-        <label>Size:</label>
-        <input
-            type="range"
-            id="node-size"
-            min="1"
-            max="100"
-            value="20"
-            step="1"
-        />
-        <span id="size-display">20</span>
         <div class="dialog-buttons">
             <button
                 id="node-connections-btn"
